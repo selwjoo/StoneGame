@@ -1,3 +1,4 @@
+import { useState } from "react"
 import Crack from './Crack';
 import Money from './Money';
 import Moss from "./Moss";
@@ -21,7 +22,7 @@ function App() {
   return (
     <div>
       <Crack />
-      <Money />
+      <Money money={money} setMoney={setMoney} combo={combo} setCombo={setCombo} />
       <Moss />
       <Potion />
     </div>
