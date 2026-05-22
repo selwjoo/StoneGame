@@ -1,10 +1,10 @@
 import { useState, useRef } from "react"
 
-import Crack from './Crack';
-import Moss from "./Moss";
+//import Crack from './Crack';
+//import Moss from "./Moss";
 import Money from './Money';
-import Potion from './Potion';
-import GameOver from './GameOver';
+//import Potion from './Potion';
+//import GameOver from './GameOver';
 
 function App() {
   const [money, setMoney] = useState(0); // 돈
@@ -21,62 +21,12 @@ function App() {
   // 부활 횟수..! 초기에 0으로 선언하여 (부활횟수) x (포션 가격) x 3 하여 포션 가격을 업데이트 후, 부활 횟수에 1을 더하는 형태
 
   return (
-    <div>
-      <Crack 
+    <div style={{ background: "#0a0a0f", minHeight: "100vh" }}>
+     <Money
         money = {money}
         setMoney = {setMoney}
         combo = {combo}
         setCombo = {setCombo}
-        moss = {moss}
-        setMoss = {setMoss}
-        crack = {crack}
-        setCrack = {setCrack}
-        gameOver = {gameOver}
-        setGameOver = {setGameOver}
-        message = {message}
-        setMessage = {setMessage}
-      />
-
-      <Money
-        money = {money}
-        setMoney = {setMoney}
-        combo = {combo}
-        setCombo = {setCombo}
-      />
-      <Moss 
-      
-      />
-      <Potion 
-        money = {money}
-        setMoney = {setMoney}
-        combo = {combo}
-        setCombo = {setCombo}
-        moss = {moss}
-        setMoss = {setMoss}
-        crack = {crack}
-        setCrack = {setCrack}
-        gameOver = {gameOver}
-        setGameOver = {setGameOver}
-        message = {message}
-        setMessage = {setMessage}
-        potionPrice = {potionPrice}
-        setPotionPrice = {potionPrice}
-        reviveCount = {reviveCount}
-        setReviveCount = {setReviveCount}
-      />
-      <GameOver
-        money = {money}
-        setMoney = {setMoney}
-        combo = {combo}
-        setCombo = {setCombo}
-        moss = {moss}
-        setMoss = {setMoss}
-        crack = {crack}
-        setCrack = {setCrack}
-        gameOver = {gameOver}
-        setGameOver = {setGameOver}
-        message = {message}
-        setMessage = {setMessage}
       />
     </div>
   );
