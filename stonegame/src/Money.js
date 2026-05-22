@@ -1,7 +1,7 @@
-import { useState, useRef } from "react"
+import { useRef } from "react"
 
 
-export default function App() {
+export default function Money({money, setMoney, combo, setCombo}) {
   const lastClickTime = useRef(0) // 마지막 클릭 시간은 화면에 표시할거 아니니까 기억만 하면 되서 useState가 아니라 useRef임. 유가릿? 
   
 
