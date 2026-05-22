@@ -2,9 +2,7 @@ import { useState, useRef } from "react"
 
 
 export default function App() {
-  const [money, setMoney] = useState(0)  // 시작 돈은 0원
   const lastClickTime = useRef(0) // 마지막 클릭 시간은 화면에 표시할거 아니니까 기억만 하면 되서 useState가 아니라 useRef임. 유가릿? 
-  const [combo, setCombo] = useState(1)       // 콤보 배율 (1, 2, 3, 4...)
   
 
   function handleClick() {
