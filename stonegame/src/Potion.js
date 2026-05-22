@@ -6,6 +6,10 @@ export default function Potion({money, SetMoney, combo, setCombo, moss, setMoss,
     return(
         <div>
 
+<<<<<<< HEAD
         </div>
     )
 }
+=======
+
+>>>>>>> e05f3a8 (money 어느정도 해가고있읍니다.)
