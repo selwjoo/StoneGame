@@ -1,4 +1,3 @@
-import { useState } from "react"
 import Crack from './Crack';
 import Money from './Money';
 import Moss from "./Moss";
