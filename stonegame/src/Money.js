@@ -31,8 +31,8 @@ const crystals = [
   },
 ]
 
-export default function Money({ money, setMoney, combo, setCombo }) {
-  const [crystalIdx, setCrystalIdx] = useState(0)
+export default function Money({ money, setMoney, combo, setCombo, selectedCrystal}) {
+  const [crystalIdx, setCrystalIdx] = useState(selectedCrystal ?? 0)
   const [particles, setParticles] = useState([])
   const [pressing, setPressing] = useState(false)
   const lastClickTime = useRef(0)
