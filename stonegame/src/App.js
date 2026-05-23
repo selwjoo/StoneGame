@@ -29,7 +29,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={ <Start money={money} setMoney={setMoney} selectedCrystal={selectedCrystal} setSelectedCrystal={setSelectedCrystal}/>} />
-        <Route path="/money" element={<Money  money = {money} setMoney = {setMoney} combo = {combo} setCombo = {setCombo} selectedCrystal={selectedCrystal}/>} />
+        <Route path="/money" element={<Money  money = {money} setMoney = {setMoney} combo = {combo} setCombo = {setCombo} selectedCrystal={selectedCrystal}  moss={moss} setMoss={setMoss} gameOver={gameOver} setGameOver={setGameOver} setMessage={setMessage}/>} />
       </Routes>
     </BrowserRouter>
     </div>
