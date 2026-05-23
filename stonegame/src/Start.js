@@ -2,16 +2,16 @@ import { useNavigate } from 'react-router-dom';
 
 const crystals = [
   {
-    name: "레인보우",
-    price: 0, // 기본 무료
+    name: "일반",
+    price: 0,
     style: {
-      background: "radial-gradient(circle at 35% 30%, #ff9a9e, #ffd93d 30%, #6bcb77 55%, #4d96ff 75%, #c77dff)",
-      boxShadow: "0 8px 40px rgba(180,107,255,0.45)",
+      background: "radial-gradient(circle at 35% 30%, #d0d0d0, #a0a0a0 40%, #6b6b6b 70%, #3a3a3a)",
+      boxShadow: "0 8px 40px rgba(100,100,100,0.4), 0 0 0 2px rgba(255,255,255,0.1) inset",
     },
   },
   {
     name: "오션",
-    price: 100,
+    price: 6000000,
     style: {
       background: "radial-gradient(circle at 35% 30%, #a8edea, #4d96ff 45%, #0d47a1 80%)",
       boxShadow: "0 8px 40px rgba(77,150,255,0.45)",
@@ -19,7 +19,7 @@ const crystals = [
   },
   {
     name: "파이어",
-    price: 300,
+    price: 90000000000,
     style: {
       background: "radial-gradient(circle at 35% 30%, #fff176, #ffd93d 30%, #ff6b35 60%, #c0392b)",
       boxShadow: "0 8px 40px rgba(255,107,53,0.5)",
@@ -27,7 +27,7 @@ const crystals = [
   },
   {
     name: "갤럭시",
-    price: 500,
+    price: 100000000000000000000,
     style: {
       background: "radial-gradient(circle at 35% 30%, #e0c3fc, #c77dff 35%, #6a0dad 65%, #1a003d)",
       boxShadow: "0 8px 40px rgba(199,125,255,0.5)",
@@ -107,7 +107,7 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
 
       {/* 크리스탈 이름 */}
       <p style={{ color: "#fff", fontSize: 20, fontWeight: 700, margin: 0 }}>
-        {crystal.name} 크리스탈
+        {crystal.name} 돌멩이
       </p>
 
       {/* 가격 */}
