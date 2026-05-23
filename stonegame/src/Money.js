@@ -1,5 +1,4 @@
 import { useRef, useState} from "react"
-import Moss from './Moss'
 
 const crystals = [
   {
@@ -33,7 +32,7 @@ const crystals = [
   },
 ]
 
-export default function Money({ money, setMoney, combo, setCombo, selectedCrystal,  moss, setMoss, gameOver, setGameOver, setMessage }) {
+export default function Money({ money, setMoney, combo, setCombo, selectedCrystal}) {
   const [crystalIdx, setCrystalIdx] = useState(selectedCrystal ?? 0)
   const [particles, setParticles] = useState([])
   const [pressing, setPressing] = useState(false)
@@ -87,7 +86,7 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
         textTransform: "uppercase",
         margin: 0,
       }}>
-        {crystal.name} 돌멩이
+        {crystal.name} 크리스탈
       </p>
 
       {/* 슬라이더 */}
@@ -165,8 +164,6 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
 
         
       </div>
-      {/* 이끼 */}
-      <Moss moss={moss} setMoss={setMoss} setGameOver={setGameOver} setMessage={setMessage} lastClickTime={lastClickTime} gameOver={gameOver}/>
 
       {/* 돈 표시 */}
       <div style={{
@@ -183,6 +180,22 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
         {money.toLocaleString()}원
       </div>
 
+      {/* 클릭 버튼 */}
+      <button
+        onClick={() => handleClick(0, 0, true)}
+        style={{
+          padding: "14px 40px",
+          borderRadius: 40,
+          background: "rgba(255,255,255,0.07)",
+          border: "1px solid rgba(255,255,255,0.18)",
+          color: "rgba(255,255,255,0.85)",
+          fontSize: 16,
+          cursor: "pointer",
+          letterSpacing: "0.05em",
+        }}
+      >
+        클릭해서 돈 벌기
+      </button>
     </div>
   )
 }

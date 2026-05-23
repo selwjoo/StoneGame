@@ -78,7 +78,7 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
       </div>
 
       <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, letterSpacing: "0.2em", margin: 0 }}>
-        돌멩이을 선택하세요
+        크리스탈을 선택하세요
       </p>
 
       {/* 슬라이더 */}
