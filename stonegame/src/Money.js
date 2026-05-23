@@ -2,10 +2,11 @@ import { useRef, useState} from "react"
 
 const crystals = [
   {
-    name: "레인보우",
+    name: "일반",
+    price: 0,
     style: {
-      background: "radial-gradient(circle at 35% 30%, #ff9a9e, #ffd93d 30%, #6bcb77 55%, #4d96ff 75%, #c77dff)",
-      boxShadow: "0 8px 40px rgba(180,107,255,0.45), 0 0 0 2px rgba(255,255,255,0.15) inset",
+      background: "radial-gradient(circle at 35% 30%, #d0d0d0, #a0a0a0 40%, #6b6b6b 70%, #3a3a3a)",
+      boxShadow: "0 8px 40px rgba(100,100,100,0.4), 0 0 0 2px rgba(255,255,255,0.1) inset",
     },
   },
   {
@@ -58,14 +59,6 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
     handleClick(e.clientX - rect.left, e.clientY - rect.top)
   }
 
-  function prevCrystal() {
-    setCrystalIdx(i => (i - 1 + crystals.length) % crystals.length)
-    setCombo(1)
-  }
-  function nextCrystal() {
-    setCrystalIdx(i => (i + 1) % crystals.length)
-    setCombo(1)
-  }
 
   const crystal = crystals[crystalIdx]
 
@@ -98,19 +91,7 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
 
       {/* 슬라이더 */}
       <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-        <button
-          onClick={prevCrystal}
-          style={{
-            width: 48, height: 48, borderRadius: "50%",
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            color: "rgba(255,255,255,0.7)",
-            fontSize: 20, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >
-          ‹
-        </button>
+       
 
         {/* 크리스탈 구체 */}
         <div
@@ -181,19 +162,7 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
           ))}
         </div>
 
-        <button
-          onClick={nextCrystal}
-          style={{
-            width: 48, height: 48, borderRadius: "50%",
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            color: "rgba(255,255,255,0.7)",
-            fontSize: 20, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >
-          ›
-        </button>
+        
       </div>
 
       {/* 돈 표시 */}
