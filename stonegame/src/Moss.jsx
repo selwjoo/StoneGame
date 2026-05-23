@@ -26,7 +26,7 @@ function Moss({
 
           if (next >= 100) {
             setGameOver(true);
-            setMessage("🌿 이끼가 돌을 완전히 덮었습니다...");
+            setMessage("이끼가 돌을 완전히 덮었습니다a");
             return 100;
           }
 
