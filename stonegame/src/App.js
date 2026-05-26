@@ -1,10 +1,10 @@
 import { useState, useRef } from "react"
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-//import Crack from './Crack';
-//import Moss from "./Moss";
+import Crack from './Crack';
+import Moss from "./Moss";
 import Money from './Money';
-//import Potion from './Potion';
-//import GameOver from './GameOver';
+import Potion from './Potion';
+import GameOver from './GameOver';
 import Start from './Start';
 
 function App() {
@@ -29,8 +29,25 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={ <Start money={money} setMoney={setMoney} selectedCrystal={selectedCrystal} setSelectedCrystal={setSelectedCrystal}/>} />
-        <Route path="/money" element={<Money  money = {money} setMoney = {setMoney} combo = {combo} setCombo = {setCombo} selectedCrystal={selectedCrystal}  moss={moss} setMoss={setMoss} gameOver={gameOver} setGameOver={setGameOver} setMessage={setMessage}/>} />
+        <Route path="/money" element={<Money  money = {money} setMoney = {setMoney} combo = {combo} setCombo = {setCombo} selectedCrystal={selectedCrystal}  moss={moss} setMoss={setMoss} gameOver={gameOver} setGameOver={setGameOver} setMessage={setMessage} crack={crack} setCrack={setCrack}/>} />
       </Routes>
+      <GameOver
+      money={money}
+      setMoney={setMoney}
+      moss={moss}
+      setMoss={setMoss}
+      crack={crack}
+      setCrack={setCrack}
+      gameOver={gameOver}
+      setGameOver={setGameOver}
+      message={message}
+      setMessage={setMessage}
+      potionPrice={potionPrice}
+      setPotionPrice={setPotionPrice}
+      reviveCount={reviveCount}
+      setReviveCount={setReviveCount}
+      setCombo={setCombo}
+    />
     </BrowserRouter>
     </div>
 

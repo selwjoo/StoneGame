@@ -62,6 +62,7 @@ export default function GameOver({
           money={money}
           setMoney={setMoney}
           potionPrice={potionPrice}
+          setPotionPrice={setPotionPrice}
           reviveCount={reviveCount}
           setReviveCount={setReviveCount}
           setMoss={setMoss}
