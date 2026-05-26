@@ -1,11 +1,13 @@
 import { useRef, useState} from "react"
+import Moss from './Moss'
 
 const crystals = [
   {
-    name: "레인보우",
+    name: "일반",
+    price: 0,
     style: {
-      background: "radial-gradient(circle at 35% 30%, #ff9a9e, #ffd93d 30%, #6bcb77 55%, #4d96ff 75%, #c77dff)",
-      boxShadow: "0 8px 40px rgba(180,107,255,0.45), 0 0 0 2px rgba(255,255,255,0.15) inset",
+      background: "radial-gradient(circle at 35% 30%, #d0d0d0, #a0a0a0 40%, #6b6b6b 70%, #3a3a3a)",
+      boxShadow: "0 8px 40px rgba(100,100,100,0.4), 0 0 0 2px rgba(255,255,255,0.1) inset",
     },
   },
   {
@@ -31,8 +33,8 @@ const crystals = [
   },
 ]
 
-export default function Money({ money, setMoney, combo, setCombo }) {
-  const [crystalIdx, setCrystalIdx] = useState(0)
+export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage })  {
+  const [crystalIdx, setCrystalIdx] = useState(selectedCrystal ?? 0)
   const [particles, setParticles] = useState([])
   const [pressing, setPressing] = useState(false)
   const lastClickTime = useRef(0)
@@ -58,14 +60,6 @@ export default function Money({ money, setMoney, combo, setCombo }) {
     handleClick(e.clientX - rect.left, e.clientY - rect.top)
   }
 
-  function prevCrystal() {
-    setCrystalIdx(i => (i - 1 + crystals.length) % crystals.length)
-    setCombo(1)
-  }
-  function nextCrystal() {
-    setCrystalIdx(i => (i + 1) % crystals.length)
-    setCombo(1)
-  }
 
   const crystal = crystals[crystalIdx]
 
@@ -93,24 +87,12 @@ export default function Money({ money, setMoney, combo, setCombo }) {
         textTransform: "uppercase",
         margin: 0,
       }}>
-        {crystal.name} 크리스탈
+        {crystal.name} 돌멩이
       </p>
 
       {/* 슬라이더 */}
       <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-        <button
-          onClick={prevCrystal}
-          style={{
-            width: 48, height: 48, borderRadius: "50%",
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            color: "rgba(255,255,255,0.7)",
-            fontSize: 20, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >
-          ‹
-        </button>
+       
 
         {/* 크리스탈 구체 */}
         <div
@@ -181,20 +163,11 @@ export default function Money({ money, setMoney, combo, setCombo }) {
           ))}
         </div>
 
-        <button
-          onClick={nextCrystal}
-          style={{
-            width: 48, height: 48, borderRadius: "50%",
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.12)",
-            color: "rgba(255,255,255,0.7)",
-            fontSize: 20, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >
-          ›
-        </button>
+        
       </div>
+
+      {/* 이끼 */}
+      <Moss moss={moss} setMoss={setMoss} setGameOver={setGameOver} setMessage={setMessage} lastClickTime={lastClickTime} gameOver={gameOver}/>
 
       {/* 돈 표시 */}
       <div style={{
@@ -211,22 +184,7 @@ export default function Money({ money, setMoney, combo, setCombo }) {
         {money.toLocaleString()}원
       </div>
 
-      {/* 클릭 버튼 */}
-      <button
-        onClick={() => handleClick(0, 0, true)}
-        style={{
-          padding: "14px 40px",
-          borderRadius: 40,
-          background: "rgba(255,255,255,0.07)",
-          border: "1px solid rgba(255,255,255,0.18)",
-          color: "rgba(255,255,255,0.85)",
-          fontSize: 16,
-          cursor: "pointer",
-          letterSpacing: "0.05em",
-        }}
-      >
-        클릭해서 돈 벌기
-      </button>
+    
     </div>
   )
 }
