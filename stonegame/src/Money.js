@@ -1,5 +1,6 @@
 import { useRef, useState} from "react"
 import Moss from './Moss'
+import Crack from './Crack'
 
 const crystals = [
   {
@@ -33,10 +34,11 @@ const crystals = [
   },
 ]
 
-export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage })  {
+export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage, crack, setCrack})  {
   const [crystalIdx, setCrystalIdx] = useState(selectedCrystal ?? 0)
   const [particles, setParticles] = useState([])
   const [pressing, setPressing] = useState(false)
+  const [clicked, setClicked] = useState(0);
   const lastClickTime = useRef(0)
   const particleId = useRef(0)
 
@@ -53,6 +55,8 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
     const y = fromBtn ? 100 : clientY
     setParticles(prev => [...prev, { id, x, y, combo: newCombo }])
     setTimeout(() => setParticles(prev => prev.filter(p => p.id !== id)), 700)
+
+    setClicked(prev => prev + 1) 
   }
 
   function handleCrystalClick(e) {
@@ -168,6 +172,9 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
 
       {/* 이끼 */}
       <Moss moss={moss} setMoss={setMoss} setGameOver={setGameOver} setMessage={setMessage} lastClickTime={lastClickTime} gameOver={gameOver}/>
+
+      {/* 깨짐 */}
+      <Crack  crack={crack} setCrack={setCrack} setGameOver={setGameOver} setMessage={setMessage} clicked = {clicked} gameOver = {gameOver}/>
 
       {/* 돈 표시 */}
       <div style={{
