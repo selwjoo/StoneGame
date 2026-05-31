@@ -43,7 +43,7 @@ function Crack({
       return next;
     });
 
-  }, [clicked]);
+  }, [clicked, gameOver, setCrack, setGameOver, setMessage]);
 
   return (
     <div style={{ width: "300px" }}>

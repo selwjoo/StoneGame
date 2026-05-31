@@ -2,7 +2,7 @@ export default function Potion({
   money,
   setMoney,
   potionPrice,
-  reviveCount,
+  setPotionPrice,
   setReviveCount,
   setMoss,
   setCrack,
@@ -21,6 +21,7 @@ export default function Potion({
     if (setCombo) setCombo(1);
 
     setReviveCount(prev => prev + 1);
+    setPotionPrice(prev => prev * 3)  // <- 살 수록 3배씩 비싸진ㅁ.. 크하학
     setGameOver(false);
     setMessage("");
   }
@@ -28,7 +29,6 @@ export default function Potion({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
       <p style={{ margin: 0 }}>포션 가격: {potionPrice}원</p>
-      <p style={{ margin: 0 }}>현재 부활 횟수: {reviveCount}회</p>
 
       {!canBuy && (
         <p style={{ margin: 0, color: "#ff6b6b", fontWeight: "bold" }}>

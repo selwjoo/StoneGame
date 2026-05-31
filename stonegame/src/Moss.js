@@ -1,5 +1,14 @@
 import { useEffect } from "react";
 
+function getMossIncrease(moss) {
+  if (moss < 15) return 1.2;
+  if (moss < 35) return 2.1;
+  if (moss < 55) return 3.4;
+  if (moss < 75) return 5.2;
+  if (moss < 90) return 7.4;
+  return 10;
+}
+
 function Moss({
   moss,
   setMoss,
@@ -17,30 +26,22 @@ function Moss({
 
       const now = Date.now();
 
-      // 2초 이상 클릭 안 하면 이끼 증가
-      if (now - lastClickTime.current > 2000) {
+      if (now - lastClickTime.current <= 1200) return;
 
-        setMoss((prev) => {
+      setMoss((prev) => {
 
-          let next = prev + 5;
+        const next = prev + getMossIncrease(prev);
 
-          if (next >= 100) {
-            setGameOver(true);
-            setMessage("이끼가 돌을 완전히 덮었습니다a");
-            return 100;
-          }
+        if (next >= 100) {
+          setGameOver(true);
+          setMessage("이끼가 돌을 완전히 덮었습니다");
+          return 100;
+        }
 
-          return next;
-        });
+        return next;
+      });
 
-      } else {
-
-      // 클릭하면 이끼 초기화
-       setMoss(0);
-
-   }
-
-    }, 1000);
+    }, 700);
 
     return () => clearInterval(timer);
 
