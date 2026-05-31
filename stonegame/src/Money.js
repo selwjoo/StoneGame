@@ -1,7 +1,8 @@
-import { useRef, useState} from "react"
-import Moss from './Moss'
-import Crack from './Crack'
-import Exit from './Exit'
+import { Fragment, useRef, useState } from "react";
+import Moss, { reduceMossOnClick } from "./Moss";
+import Crack from "./Crack";
+import Crystal from "./Crystal";
+import Exit from "./Exit";
 
 const crystals = [
   {
@@ -33,112 +34,142 @@ const crystals = [
       boxShadow: "0 8px 40px rgba(199,125,255,0.5), 0 0 0 2px rgba(255,255,255,0.15) inset",
     },
   },
-]
+];
 
-const mossDots = [
-  { cx: 44, cy: 56, r: 5, start: 4, shade: "#77d65d" },
-  { cx: 56, cy: 72, r: 4, start: 8, shade: "#53b74c" },
-  { cx: 68, cy: 54, r: 3, start: 12, shade: "#9ce874" },
-  { cx: 130, cy: 50, r: 4, start: 16, shade: "#7cd957" },
-  { cx: 146, cy: 60, r: 5, start: 20, shade: "#49a942" },
-  { cx: 118, cy: 70, r: 3, start: 24, shade: "#95df6f" },
-  { cx: 54, cy: 120, r: 6, start: 28, shade: "#66c257" },
-  { cx: 70, cy: 132, r: 4, start: 32, shade: "#8fe66b" },
-  { cx: 88, cy: 116, r: 3, start: 36, shade: "#57b94a" },
-  { cx: 136, cy: 126, r: 5, start: 40, shade: "#7dd161" },
-  { cx: 122, cy: 144, r: 4, start: 44, shade: "#a4ef7e" },
-  { cx: 154, cy: 138, r: 3, start: 48, shade: "#4da845" },
-  { cx: 96, cy: 88, r: 6, start: 52, shade: "#7ed866" },
-  { cx: 108, cy: 102, r: 4, start: 56, shade: "#65bc56" },
-  { cx: 82, cy: 92, r: 3, start: 60, shade: "#95ea72" },
-  { cx: 44, cy: 148, r: 5, start: 64, shade: "#5eb650" },
-  { cx: 156, cy: 92, r: 4, start: 68, shade: "#81da64" },
-  { cx: 100, cy: 146, r: 6, start: 72, shade: "#6bc95a" },
-  { cx: 72, cy: 40, r: 3, start: 76, shade: "#a4ef85" },
-  { cx: 128, cy: 154, r: 4, start: 80, shade: "#4ea446" },
-]
-
-const crackPaths = [
-  { d: "M102 18 L96 48 L103 86 L97 120 L106 156", start: 8, width: 2.2 },
-  { d: "M98 62 L78 78 L64 96", start: 20, width: 1.8 },
-  { d: "M101 92 L122 108 L138 126", start: 32, width: 1.8 },
-  { d: "M97 118 L76 138 L60 154", start: 48, width: 1.6 },
-  { d: "M103 50 L126 42 L146 34", start: 58, width: 1.5 },
-  { d: "M108 136 L128 150 L144 164", start: 72, width: 1.4 },
-  { d: "M92 38 L78 26 L62 20", start: 82, width: 1.3 },
-]
+const comboAnchors = [
+  { x: 100, y: 44 },
+  { x: 62, y: 70 },
+  { x: 138, y: 72 },
+  { x: 72, y: 128 },
+  { x: 128, y: 126 },
+];
 
 function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max)
+  return Math.min(Math.max(value, min), max);
 }
 
-export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage, crack, setCrack, onExit })  {
-  const crystalIdx = selectedCrystal ?? 0
-  const [comboBursts, setComboBursts] = useState([])
-  const [pressing, setPressing] = useState(false)
-  const [clicked, setClicked] = useState(0);
-  const lastClickTime = useRef(0)
-  const particleId = useRef(0)
-  const [exitHover, setExitHover] = useState(false)
-  const [showExit, setShowExit] = useState(false)
+export default function Money({
+  money,
+  setMoney,
+  combo,
+  setCombo,
+  selectedCrystal,
+  moss,
+  setMoss,
+  gameOver,
+  setGameOver,
+  setMessage,
+  crack,
+  setCrack,
+}) {
+  const crystalIdx = selectedCrystal ?? 0;
+  const [comboBursts, setComboBursts] = useState([]);
+  const [pressing, setPressing] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickAt, setLastClickAt] = useState(0);
+  const particleId = useRef(0);
+  const comboAnchorIndex = useRef(0);
+  const [exitHover, setExitHover] = useState(false);
+  const [showExit, setShowExit] = useState(false);
 
 
-  function handleClick() {
-    const now = Date.now()
-    const diff = now - lastClickTime.current
-    let newCombo = diff < 500 ? combo + 1 : 1
-    setCombo(newCombo)
-    lastClickTime.current = now
-    setMoney(prev => prev + newCombo)
-    setMoss(prev => Math.max(0, prev - 3))
+  function handleClick(clientX, clientY) {
+    const now = Date.now();
+    const diff = now - lastClickAt;
+    const newCombo = diff < 500 ? combo + 1 : 1;
+    setCombo(newCombo);
+    setLastClickAt(now);
+    setMoney((prev) => prev + newCombo);
+    reduceMossOnClick(setMoss);
 
-    const id = particleId.current++
+    const id = particleId.current++;
     const accent =
-      newCombo >= 15 ? "#ff9cfb" :
-      newCombo >= 10 ? "#ffd166" :
-      newCombo >= 5 ? "#8be9fd" :
-      "#ffffff"
-    const size = Math.min(42 + newCombo * 2.4, 86)
+      newCombo >= 15 ? "#d9c27a" :
+      newCombo >= 10 ? "#c9d1db" :
+      newCombo >= 5 ? "#b8c4b0" :
+      "#e8e3d6";
+    const labelColor =
+      newCombo >= 10 ? "rgba(214, 205, 184, 0.58)" : "rgba(196, 192, 180, 0.48)";
+    const moneyColor =
+      newCombo >= 10 ? "rgba(228, 221, 196, 0.92)" : "rgba(214, 210, 198, 0.86)";
+    const comboSize = Math.min(28 + newCombo * 2.1, 60);
+    const moneySize = Math.min(16 + newCombo * 0.5, 24);
+    const anchor = comboAnchors[comboAnchorIndex.current % comboAnchors.length];
+    comboAnchorIndex.current += 1;
 
-    setComboBursts(prev => [
+    const comboX = anchor.x + (-6 + Math.random() * 12);
+    const comboY = anchor.y + (-6 + Math.random() * 12);
+    const comboDriftX = -16 + Math.random() * 32;
+    const comboDriftY = -30 - Math.random() * 18;
+    const comboSpin = -10 + Math.random() * 20;
+
+    const moneyX = clamp(clientX + (-10 + Math.random() * 20), 52, 148);
+    const moneyY = clamp(clientY + (-8 + Math.random() * 16), 58, 150);
+    const moneyDriftX = -10 + Math.random() * 20;
+    const moneyDriftY = -44 - Math.random() * 18;
+
+    setComboBursts((prev) => [
       ...prev,
-      { id, combo: newCombo, earned: newCombo, accent, size },
-    ])
+      {
+        id,
+        combo: newCombo,
+        earned: newCombo,
+        accent,
+        comboSize,
+        moneySize,
+        comboX,
+        comboY,
+        comboDriftX,
+        comboDriftY,
+        comboSpin,
+        moneyX,
+        moneyY,
+        moneyDriftX,
+        moneyDriftY,
+        labelColor,
+        moneyColor,
+      },
+    ]);
     setTimeout(() => {
-      setComboBursts(prev => prev.filter(burst => burst.id !== id))
-    }, 650)
+      setComboBursts((prev) => prev.filter((burst) => burst.id !== id));
+    }, 650);
 
-    setClicked(prev => prev + 1) 
+    setClickCount((prev) => prev + 1);
   }
 
-  function handleCrystalClick() {
-    handleClick()
+  function handleCrystalClick(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    handleClick(x, y);
   }
 
-  const crystal = crystals[crystalIdx]
-  const mossLevel = clamp(moss / 100, 0, 1)
+  const crystal = crystals[crystalIdx];
 
   return (
     <div style={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 32,
-      padding: 32,
+      gap: "clamp(18px, 4vw, 32px)",
+      padding: "calc(env(safe-area-inset-top, 0px) + 16px) clamp(16px, 5vw, 28px) calc(env(safe-area-inset-bottom, 0px) + 24px)",
       position: "relative",
-      
+      boxSizing: "border-box",
+      width: "100%",
+      maxWidth: 520,
+      margin: "0 auto",
     }}>
       {/* 나가기 버튼 */}
       <button
-        onClick= {() => setShowExit(true)}
+          onClick={() => setShowExit(true)}
         onMouseEnter={() => setExitHover(true)}
         onMouseLeave={() => setExitHover(false)}
         style={{
           position: "absolute",
-          top: 16,
-          right: 16,
-          width: 44,
-          height: 44,
+          top: "calc(env(safe-area-inset-top, 0px) + 4px)",
+          right: "clamp(10px, 3vw, 16px)",
+          width: "clamp(40px, 11vw, 44px)",
+          height: "clamp(40px, 11vw, 44px)",
           padding: 0,
           border: "none",
           background: exitHover
@@ -172,19 +203,45 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
         @keyframes comboPop {
           0% {
             opacity: 0;
-            transform: translate(-50%, 12px) scale(0.55);
+            transform: translate(-50%, -50%) scale(0.82) rotate(0deg);
           }
-          20% {
+          18% {
             opacity: 1;
-            transform: translate(-50%, 0) scale(1.14);
+            transform: translate(-50%, -50%) scale(1.08) rotate(-3deg);
           }
-          45% {
+          48% {
             opacity: 1;
-            transform: translate(-50%, -4px) scale(1);
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
           }
           100% {
             opacity: 0;
-            transform: translate(-50%, -42px) scale(0.94);
+            transform:
+              translate(
+                calc(-50% + var(--drift-x)),
+                calc(-50% + var(--drift-y))
+              )
+              scale(0.92)
+              rotate(var(--spin));
+          }
+        }
+
+        @keyframes moneyPop {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.72);
+          }
+          20% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform:
+              translate(
+                calc(-50% + var(--money-drift-x)),
+                calc(-50% + var(--money-drift-y))
+              )
+              scale(0.9);
           }
         }
       `}</style>
@@ -192,205 +249,133 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
       {/* 크리스탈 이름 */}
       <p style={{
         color: "rgba(255,255,255,0.4)",
-        fontSize: 13,
-        letterSpacing: "0.2em",
+        fontSize: "clamp(11px, 2.8vw, 13px)",
+        letterSpacing: "0.18em",
         textTransform: "uppercase",
         margin: 0,
+        textAlign: "center",
       }}>
         {crystal.name} 돌멩이
       </p>
 
       {/* 슬라이더 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-       
-
-        {/* 크리스탈 구체 */}
-        <div
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px, 4vw, 32px)", width: "100%" }}>
+        <Crystal
+          crystalStyle={crystal.style}
+          moss={moss}
+          crack={crack}
+          pressing={pressing}
           onClick={handleCrystalClick}
-          onMouseDown={() => setPressing(true)}
-          onMouseUp={() => setPressing(false)}
-          onMouseLeave={() => setPressing(false)}
-          style={{
-            position: "relative",
-            width: 200,
-            height: 200,
-            cursor: "pointer",
-            userSelect: "none",
-          }}
+          onPressStart={() => setPressing(true)}
+          onPressEnd={() => setPressing(false)}
         >
-          <div style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            ...crystal.style,
-            transform: pressing ? "scale(0.93)" : "scale(1)",
-            transition: "transform 0.12s cubic-bezier(0.34,1.56,0.64,1)",
-          }} />
-
-          <div style={{
-            position: "absolute",
-            inset: 0,
-            borderRadius: "50%",
-            overflow: "hidden",
-            pointerEvents: "none",
-          }}>
-            <svg
-              viewBox="0 0 200 200"
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-              }}
-            >
-              <defs>
-                <clipPath id="crystalClip">
-                  <circle cx="100" cy="100" r="100" />
-                </clipPath>
-                <filter id="mossBlur">
-                  <feGaussianBlur stdDeviation="0.9" />
-                </filter>
-              </defs>
-
-              <g clipPath="url(#crystalClip)">
-                <ellipse
-                  cx="100"
-                  cy="140"
-                  rx="72"
-                  ry="38"
-                  fill="rgba(28, 84, 32, 0.10)"
-                  opacity={mossLevel}
-                />
-
-                {mossDots.map((dot, index) => {
-                  const strength = clamp((moss - dot.start) / 14, 0, 1)
-
-                  return (
-                    <g key={index} opacity={strength} filter="url(#mossBlur)">
-                      <circle
-                        cx={dot.cx}
-                        cy={dot.cy}
-                        r={dot.r + strength * 1.2}
-                        fill={dot.shade}
-                      />
-                      <circle
-                        cx={dot.cx - 1}
-                        cy={dot.cy - 1}
-                        r={Math.max(dot.r * 0.45, 1.4)}
-                        fill="rgba(198, 255, 173, 0.34)"
-                      />
-                    </g>
-                  )
-                })}
-
-                {crackPaths.map((path, index) => {
-                  const strength = clamp((crack - path.start) / 18, 0, 1)
-
-                  return (
-                    <g key={index} opacity={strength}>
-                      <path
-                        d={path.d}
-                        fill="none"
-                        stroke="rgba(18, 18, 18, 0.62)"
-                        strokeWidth={path.width + 1}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d={path.d}
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.36)"
-                        strokeWidth={Math.max(path.width - 0.6, 0.8)}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                  )
-                })}
-              </g>
-            </svg>
-          </div>
-
-          {/* 하이라이트 */}
-          <div style={{
-            position: "absolute",
-            top: "14%", left: "20%",
-            width: "35%", height: "22%",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.28)",
-            filter: "blur(6px)",
-            pointerEvents: "none",
-          }} />
-
-          {comboBursts.map(burst => (
-            <div key={burst.id} style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              pointerEvents: "none",
-              animation: "comboPop 0.65s cubic-bezier(0.2, 0.9, 0.25, 1) forwards",
-              whiteSpace: "nowrap",
-              textAlign: "center",
-              lineHeight: 1,
-              transform: "translate(-50%, 0)",
-              textShadow: "0 0 28px rgba(255,255,255,0.2), 0 8px 24px rgba(0, 0, 0, 0.45)",
-            }}>
-              <div style={{
-                fontSize: 12,
-                fontWeight: 800,
-                letterSpacing: "0.32em",
-                color: "rgba(255,255,255,0.72)",
-                marginBottom: 6,
-                paddingLeft: "0.32em",
-              }}>
-                COMBO
+          {comboBursts.map((burst) => (
+            <Fragment key={burst.id}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: burst.comboX,
+                  top: burst.comboY,
+                  pointerEvents: "none",
+                  animation: "comboPop 0.68s cubic-bezier(0.2, 0.9, 0.25, 1) forwards",
+                  whiteSpace: "nowrap",
+                  textAlign: "center",
+                  lineHeight: 1,
+                  transform: "translate(-50%, -50%)",
+                  textShadow: "0 0 26px rgba(255,255,255,0.16), 0 10px 24px rgba(0, 0, 0, 0.42)",
+                  "--drift-x": `${burst.comboDriftX}px`,
+                  "--drift-y": `${burst.comboDriftY}px`,
+                  "--spin": `${burst.comboSpin}deg`,
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 900,
+                    letterSpacing: "0.28em",
+                    color: burst.labelColor,
+                    marginBottom: 4,
+                    paddingLeft: "0.28em",
+                  }}
+                >
+                  COMBO
+                </div>
+                <div
+                  style={{
+                    fontSize: `clamp(22px, ${burst.comboSize / 200 * 100}vw, ${burst.comboSize}px)`,
+                    fontWeight: 900,
+                    letterSpacing: "-0.08em",
+                    color: burst.accent,
+                    lineHeight: 0.92,
+                  }}
+                >
+                  x{burst.combo}
+                </div>
               </div>
-              <div style={{
-                fontSize: burst.size,
-                fontWeight: 900,
-                letterSpacing: "-0.06em",
-                color: burst.accent,
-              }}>
-                {burst.combo}
-              </div>
-              <div style={{
-                marginTop: 4,
-                fontSize: 18,
-                fontWeight: 800,
-                color: "rgba(255,255,255,0.92)",
-                letterSpacing: "-0.03em",
-              }}>
+
+              <div
+                style={{
+                  position: "absolute",
+                  left: burst.moneyX,
+                  top: burst.moneyY,
+                  pointerEvents: "none",
+                  animation: "moneyPop 0.56s ease-out forwards",
+                  whiteSpace: "nowrap",
+                  textAlign: "center",
+                  transform: "translate(-50%, -50%)",
+                  textShadow: "0 6px 18px rgba(0, 0, 0, 0.32)",
+                  "--money-drift-x": `${burst.moneyDriftX}px`,
+                  "--money-drift-y": `${burst.moneyDriftY}px`,
+                  fontSize: `clamp(13px, ${burst.moneySize / 200 * 100}vw, ${burst.moneySize}px)`,
+                  fontWeight: 800,
+                  color: burst.moneyColor,
+                  letterSpacing: "-0.03em",
+                }}
+              >
                 +{burst.earned}원
               </div>
-            </div>
+            </Fragment>
           ))}
-        </div>
-
-        
+        </Crystal>
       </div>
 
-      {/* 이끼 */}
-      <Moss moss={moss} setMoss={setMoss} setGameOver={setGameOver} setMessage={setMessage} lastClickTime={lastClickTime} gameOver={gameOver}/>
+      <Moss
+        moss={moss}
+        setMoss={setMoss}
+        setGameOver={setGameOver}
+        setMessage={setMessage}
+        lastClickAt={lastClickAt}
+        gameOver={gameOver}
+      />
 
-      {/* 깨짐 */}
-      <Crack  crack={crack} setCrack={setCrack} setGameOver={setGameOver} setMessage={setMessage} clicked = {clicked} gameOver = {gameOver}/>
+      <Crack
+        crack={crack}
+        setCrack={setCrack}
+        setGameOver={setGameOver}
+        setMessage={setMessage}
+        clickCount={clickCount}
+        gameOver={gameOver}
+      />
 
       {/* 돈 표시 */}
       <div style={{
         background: "rgba(255,249,160,0.12)",
         border: "1px solid rgba(255,249,160,0.3)",
         color: "#fffaaa",
-        fontSize: 26,
+        fontSize: "clamp(20px, 5.4vw, 26px)",
         fontWeight: 700,
-        padding: "12px 36px",
+        padding: "clamp(10px, 2.8vw, 12px) clamp(18px, 6vw, 36px)",
         borderRadius: 14,
-        minWidth: 200,
+        width: "min(100%, 320px)",
+        minWidth: 0,
         textAlign: "center",
+        boxSizing: "border-box",
+        lineHeight: 1.2,
       }}>
         {money.toLocaleString()}원
       </div>
 
     
     </div>
-  )
+  );
 }

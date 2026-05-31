@@ -60,8 +60,10 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      minHeight: "100vh",
-      gap: 28,
+      minHeight: "100dvh",
+      gap: "clamp(18px, 4vw, 28px)",
+      padding: "calc(env(safe-area-inset-top, 0px) + 20px) clamp(16px, 5vw, 28px) calc(env(safe-area-inset-bottom, 0px) + 24px)",
+      boxSizing: "border-box",
     }}>
 
       {/* 현재 보유 돈 */}
@@ -69,23 +71,25 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         background: "rgba(255,249,160,0.12)",
         border: "1px solid rgba(255,249,160,0.3)",
         color: "#fffaaa",
-        fontSize: 20,
+        fontSize: "clamp(16px, 4.2vw, 20px)",
         fontWeight: 700,
-        padding: "10px 32px",
+        padding: "clamp(9px, 2.3vw, 10px) clamp(18px, 6vw, 32px)",
         borderRadius: 14,
+        maxWidth: "100%",
+        textAlign: "center",
       }}>
         💰 {money.toLocaleString()}원
       </div>
 
-      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, letterSpacing: "0.2em", margin: 0 }}>
+      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px, 2.8vw, 13px)", letterSpacing: "0.18em", margin: 0, textAlign: "center" }}>
         크리스탈을 선택하세요
       </p>
 
       {/* 슬라이더 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px, 4vw, 32px)", width: "100%" }}>
         <button onClick={prev} style={arrowBtn}>‹</button>
 
-        <div style={{ position: "relative", width: 200, height: 200 }}>
+        <div style={{ position: "relative", width: "min(62vw, 260px)", aspectRatio: "1 / 1", flex: "0 1 auto" }}>
           <div style={{
             width: "100%", height: "100%",
             borderRadius: "50%",
@@ -106,16 +110,19 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
       </div>
 
       {/* 크리스탈 이름 */}
-      <p style={{ color: "#fff", fontSize: 20, fontWeight: 700, margin: 0 }}>
+      <p style={{ color: "#fff", fontSize: "clamp(18px, 4.8vw, 22px)", fontWeight: 700, margin: 0, textAlign: "center" }}>
         {crystal.name} 돌멩이
       </p>
 
       {/* 가격 */}
       <p style={{
         color: canBuy ? "#6bcb77" : "#ff6b6b",
-        fontSize: 16,
+        fontSize: "clamp(14px, 3.8vw, 16px)",
         fontWeight: 600,
         margin: 0,
+        textAlign: "center",
+        maxWidth: "min(100%, 320px)",
+        lineHeight: 1.4,
       }}>
         {crystal.price === 0 ? "무료" : `${crystal.price.toLocaleString()}원`}
         {!canBuy && "  (돈이 부족해요)"}
@@ -126,18 +133,19 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         onClick={handleBuy}
         disabled={!canBuy}
         style={{
-          padding: "14px 48px",
+          padding: "14px 24px",
           borderRadius: 40,
           background: canBuy
             ? "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05))"
             : "rgba(255,255,255,0.03)",
           border: `1px solid ${canBuy ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.08)"}`,
           color: canBuy ? "#fff" : "rgba(255,255,255,0.3)",
-          fontSize: 18,
+          fontSize: "clamp(16px, 4.2vw, 18px)",
           fontWeight: 700,
           cursor: canBuy ? "pointer" : "not-allowed",
           letterSpacing: "0.05em",
           marginTop: 8,
+          width: "min(100%, 320px)",
         }}
       >
         {crystal.price === 0 ? "플레이하기 ▶" : `구매 후 플레이 ▶`}
@@ -147,10 +155,10 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
 }
 
 const arrowBtn = {
-  width: 48, height: 48, borderRadius: "50%",
+  width: "clamp(42px, 11vw, 48px)", height: "clamp(42px, 11vw, 48px)", borderRadius: "50%",
   background: "rgba(255,255,255,0.06)",
   border: "1px solid rgba(255,255,255,0.12)",
   color: "rgba(255,255,255,0.7)",
-  fontSize: 20, cursor: "pointer",
+  fontSize: "clamp(18px, 5vw, 20px)", cursor: "pointer",
   display: "flex", alignItems: "center", justifyContent: "center",
 };

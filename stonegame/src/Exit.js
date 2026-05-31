@@ -35,18 +35,21 @@ const overlayStyle = {
   alignItems: "center",
   justifyContent: "center",
   zIndex: 999,
+  padding: "clamp(16px, 5vw, 24px)",
+  boxSizing: "border-box",
 };
 
 const modalStyle = {
-  width: "360px",
+  width: "min(100%, 360px)",
   background: "#1b1b1b",
   color: "#fff",
-  padding: "24px",
+  padding: "clamp(18px, 5vw, 24px)",
   borderRadius: "16px",
   display: "flex",
   flexDirection: "column",
   gap: "16px",
   textAlign: "center",
+  boxSizing: "border-box",
 };
 
 const confirmBtnStyle = {
