@@ -142,8 +142,8 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
           padding: 0,
           border: "none",
           background: exitHover
-            ? "rgba(255, 255, 255, 0.15)"
-            : "rgba(255, 255, 255, 0.07)",
+            ? "rgba(255, 255, 255, 0.50)"
+            : "rgba(255, 255, 255, 0.30)",
           borderRadius: "50%",
           cursor: "pointer",
           display: "flex",
