@@ -1,6 +1,7 @@
 import { useRef, useState} from "react"
 import Moss from './Moss'
 import Crack from './Crack'
+import Exit from './Exit'
 
 const crystals = [
   {
@@ -71,13 +72,16 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max)
 }
 
-export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage, crack, setCrack})  {
+export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage, crack, setCrack, onExit })  {
   const crystalIdx = selectedCrystal ?? 0
   const [comboBursts, setComboBursts] = useState([])
   const [pressing, setPressing] = useState(false)
   const [clicked, setClicked] = useState(0);
   const lastClickTime = useRef(0)
   const particleId = useRef(0)
+  const [exitHover, setExitHover] = useState(false)
+  const [showExit, setShowExit] = useState(false)
+
 
   function handleClick() {
     const now = Date.now()
@@ -111,7 +115,6 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
     handleClick()
   }
 
-
   const crystal = crystals[crystalIdx]
   const mossLevel = clamp(moss / 100, 0, 1)
 
@@ -123,7 +126,48 @@ export default function Money({ money, setMoney, combo, setCombo, selectedCrysta
       gap: 32,
       padding: 32,
       position: "relative",
+      
     }}>
+      {/* 나가기 버튼 */}
+      <button
+        onClick= {() => setShowExit(true)}
+        onMouseEnter={() => setExitHover(true)}
+        onMouseLeave={() => setExitHover(false)}
+        style={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          width: 44,
+          height: 44,
+          padding: 0,
+          border: "none",
+          background: exitHover
+            ? "rgba(255, 255, 255, 0.50)"
+            : "rgba(255, 255, 255, 0.30)",
+          borderRadius: "50%",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "background 0.18s ease, transform 0.15s ease",
+          transform: exitHover ? "scale(1.1)" : "scale(1)",
+        }}
+      >
+        <img
+          src="/icons8-수출-50.png"
+          alt="나가기"
+          style={{
+            width: 26,
+            height: 26,
+            objectFit: "contain",
+            opacity: exitHover ? 1 : 0.7,
+            transition: "opacity 0.18s ease",
+          }}
+        />
+      </button>
+
+      <Exit showExit={showExit} setShowExit={setShowExit} />
+
       <style>{`
         @keyframes comboPop {
           0% {
