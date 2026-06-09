@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Potion from "./Potion";
+import { modalStyle, overlayStyle } from "./modalStyles";
 
 export default function GameOver({
   money,
@@ -18,6 +19,7 @@ export default function GameOver({
   reviveCount,
   setReviveCount,
   setCombo,
+  onResetGame,
 }) {
   const navigate = useNavigate();
 
@@ -42,11 +44,7 @@ export default function GameOver({
   ]);
 
   function handleExitGame() {
-    setGameOver(false);
-    setMessage("");
-    setMoss(0);
-    setCrack(0);
-    if (setCombo) setCombo(1);
+    if (onResetGame) onResetGame();
     navigate("/");
   }
 
@@ -79,31 +77,6 @@ export default function GameOver({
     </div>
   );
 }
-
-const overlayStyle = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.7)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 999,
-  padding: "clamp(16px, 5vw, 24px)",
-  boxSizing: "border-box",
-};
-
-const modalStyle = {
-  width: "min(100%, 360px)",
-  background: "#1b1b1b",
-  color: "#fff",
-  padding: "clamp(18px, 5vw, 24px)",
-  borderRadius: "16px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "16px",
-  textAlign: "center",
-  boxSizing: "border-box",
-};
 
 const exitBtnStyle = {
   padding: "12px",
