@@ -4,6 +4,7 @@ import Crack from "./Crack";
 import Crystal from "./Crystal";
 import Exit from "./Exit";
 
+
 const crystals = [
   {
     name: "일반",
@@ -71,6 +72,7 @@ export default function Money({
   const comboAnchorIndex = useRef(0);
   const [exitHover, setExitHover] = useState(false);
   const [showExit, setShowExit] = useState(false);
+ 
 
 
   function handleClick(clientX, clientY) {
@@ -197,7 +199,10 @@ export default function Money({
         />
       </button>
 
+      
+
       <Exit showExit={showExit} setShowExit={setShowExit} />
+
 
       <style>{`
         @keyframes comboPop {
