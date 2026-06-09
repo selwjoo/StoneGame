@@ -1,6 +1,8 @@
-import { useRef, useState} from "react"
-import Moss from './Moss'
-import Crack from './Crack'
+import { Fragment, useRef, useState } from "react";
+import Moss, { reduceMossOnClick } from "./Moss";
+import Crack from "./Crack";
+import Crystal from "./Crystal";
+import Exit from "./Exit";
 
 const crystals = [
   {
@@ -32,166 +34,348 @@ const crystals = [
       boxShadow: "0 8px 40px rgba(199,125,255,0.5), 0 0 0 2px rgba(255,255,255,0.15) inset",
     },
   },
-]
+];
 
-export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage, crack, setCrack})  {
-  const [crystalIdx, setCrystalIdx] = useState(selectedCrystal ?? 0)
-  const [particles, setParticles] = useState([])
-  const [pressing, setPressing] = useState(false)
-  const [clicked, setClicked] = useState(0);
-  const lastClickTime = useRef(0)
-  const particleId = useRef(0)
+const comboAnchors = [
+  { x: 100, y: 44 },
+  { x: 62, y: 70 },
+  { x: 138, y: 72 },
+  { x: 72, y: 128 },
+  { x: 128, y: 126 },
+];
 
-  function handleClick(clientX, clientY, fromBtn = false) {
-    const now = Date.now()
-    const diff = now - lastClickTime.current
-    let newCombo = diff < 500 ? combo + 1 : 1
-    setCombo(newCombo)
-    lastClickTime.current = now
-    setMoney(prev => prev + newCombo)
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
 
-    const id = particleId.current++
-    const x = fromBtn ? 100 : clientX
-    const y = fromBtn ? 100 : clientY
-    setParticles(prev => [...prev, { id, x, y, combo: newCombo }])
-    setTimeout(() => setParticles(prev => prev.filter(p => p.id !== id)), 700)
+export default function Money({
+  money,
+  setMoney,
+  combo,
+  setCombo,
+  selectedCrystal,
+  moss,
+  setMoss,
+  gameOver,
+  setGameOver,
+  setMessage,
+  crack,
+  setCrack,
+}) {
+  const crystalIdx = selectedCrystal ?? 0;
+  const [comboBursts, setComboBursts] = useState([]);
+  const [pressing, setPressing] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickAt, setLastClickAt] = useState(0);
+  const particleId = useRef(0);
+  const comboAnchorIndex = useRef(0);
+  const [exitHover, setExitHover] = useState(false);
+  const [showExit, setShowExit] = useState(false);
 
-    setClicked(prev => prev + 1) 
+
+  function handleClick(clientX, clientY) {
+    const now = Date.now();
+    const diff = now - lastClickAt;
+    const newCombo = diff < 500 ? combo + 1 : 1;
+    setCombo(newCombo);
+    setLastClickAt(now);
+    setMoney((prev) => prev + newCombo);
+    reduceMossOnClick(setMoss);
+
+    const id = particleId.current++;
+    const accent =
+      newCombo >= 15 ? "#d9c27a" :
+      newCombo >= 10 ? "#c9d1db" :
+      newCombo >= 5 ? "#b8c4b0" :
+      "#e8e3d6";
+    const labelColor =
+      newCombo >= 10 ? "rgba(214, 205, 184, 0.58)" : "rgba(196, 192, 180, 0.48)";
+    const moneyColor =
+      newCombo >= 10 ? "rgba(228, 221, 196, 0.92)" : "rgba(214, 210, 198, 0.86)";
+    const comboSize = Math.min(28 + newCombo * 2.1, 60);
+    const moneySize = Math.min(16 + newCombo * 0.5, 24);
+    const anchor = comboAnchors[comboAnchorIndex.current % comboAnchors.length];
+    comboAnchorIndex.current += 1;
+
+    const comboX = anchor.x + (-6 + Math.random() * 12);
+    const comboY = anchor.y + (-6 + Math.random() * 12);
+    const comboDriftX = -16 + Math.random() * 32;
+    const comboDriftY = -30 - Math.random() * 18;
+    const comboSpin = -10 + Math.random() * 20;
+
+    const moneyX = clamp(clientX + (-10 + Math.random() * 20), 52, 148);
+    const moneyY = clamp(clientY + (-8 + Math.random() * 16), 58, 150);
+    const moneyDriftX = -10 + Math.random() * 20;
+    const moneyDriftY = -44 - Math.random() * 18;
+
+    setComboBursts((prev) => [
+      ...prev,
+      {
+        id,
+        combo: newCombo,
+        earned: newCombo,
+        accent,
+        comboSize,
+        moneySize,
+        comboX,
+        comboY,
+        comboDriftX,
+        comboDriftY,
+        comboSpin,
+        moneyX,
+        moneyY,
+        moneyDriftX,
+        moneyDriftY,
+        labelColor,
+        moneyColor,
+      },
+    ]);
+    setTimeout(() => {
+      setComboBursts((prev) => prev.filter((burst) => burst.id !== id));
+    }, 650);
+
+    setClickCount((prev) => prev + 1);
   }
 
-  function handleCrystalClick(e) {
-    const rect = e.currentTarget.getBoundingClientRect()
-    handleClick(e.clientX - rect.left, e.clientY - rect.top)
+  function handleCrystalClick(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    handleClick(x, y);
   }
 
-
-  const crystal = crystals[crystalIdx]
+  const crystal = crystals[crystalIdx];
 
   return (
     <div style={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 32,
-      padding: 32,
+      gap: "clamp(18px, 4vw, 32px)",
+      padding: "calc(env(safe-area-inset-top, 0px) + 16px) clamp(16px, 5vw, 28px) calc(env(safe-area-inset-bottom, 0px) + 24px)",
       position: "relative",
+      boxSizing: "border-box",
+      width: "100%",
+      maxWidth: 520,
+      margin: "0 auto",
     }}>
+      {/* 나가기 버튼 */}
+      <button
+          onClick={() => setShowExit(true)}
+        onMouseEnter={() => setExitHover(true)}
+        onMouseLeave={() => setExitHover(false)}
+        style={{
+          position: "absolute",
+          top: "calc(env(safe-area-inset-top, 0px) + 4px)",
+          right: "clamp(10px, 3vw, 16px)",
+          width: "clamp(40px, 11vw, 44px)",
+          height: "clamp(40px, 11vw, 44px)",
+          padding: 0,
+          border: "none",
+          background: exitHover
+            ? "rgba(255, 255, 255, 0.50)"
+            : "rgba(255, 255, 255, 0.30)",
+          borderRadius: "50%",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "background 0.18s ease, transform 0.15s ease",
+          transform: exitHover ? "scale(1.1)" : "scale(1)",
+        }}
+      >
+        <img
+          src="exit.png"
+          alt="나가기"
+          style={{
+            width: 26,
+            height: 26,
+            objectFit: "contain",
+            opacity: exitHover ? 1 : 0.7,
+            transition: "opacity 0.18s ease",
+          }}
+        />
+      </button>
+
+      <Exit showExit={showExit} setShowExit={setShowExit} />
+
       <style>{`
-        @keyframes floatUp {
-          0%   { opacity: 1; transform: translateY(0) scale(1); }
-          100% { opacity: 0; transform: translateY(-70px) scale(1.2); }
+        @keyframes comboPop {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.82) rotate(0deg);
+          }
+          18% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.08) rotate(-3deg);
+          }
+          48% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+          }
+          100% {
+            opacity: 0;
+            transform:
+              translate(
+                calc(-50% + var(--drift-x)),
+                calc(-50% + var(--drift-y))
+              )
+              scale(0.92)
+              rotate(var(--spin));
+          }
+        }
+
+        @keyframes moneyPop {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.72);
+          }
+          20% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform:
+              translate(
+                calc(-50% + var(--money-drift-x)),
+                calc(-50% + var(--money-drift-y))
+              )
+              scale(0.9);
+          }
         }
       `}</style>
 
       {/* 크리스탈 이름 */}
       <p style={{
         color: "rgba(255,255,255,0.4)",
-        fontSize: 13,
-        letterSpacing: "0.2em",
+        fontSize: "clamp(11px, 2.8vw, 13px)",
+        letterSpacing: "0.18em",
         textTransform: "uppercase",
         margin: 0,
+        textAlign: "center",
       }}>
         {crystal.name} 돌멩이
       </p>
 
       {/* 슬라이더 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-       
-
-        {/* 크리스탈 구체 */}
-        <div
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px, 4vw, 32px)", width: "100%" }}>
+        <Crystal
+          crystalStyle={crystal.style}
+          moss={moss}
+          crack={crack}
+          pressing={pressing}
           onClick={handleCrystalClick}
-          onMouseDown={() => setPressing(true)}
-          onMouseUp={() => setPressing(false)}
-          onMouseLeave={() => setPressing(false)}
-          style={{
-            position: "relative",
-            width: 200,
-            height: 200,
-            cursor: "pointer",
-            userSelect: "none",
-          }}
+          onPressStart={() => setPressing(true)}
+          onPressEnd={() => setPressing(false)}
         >
-          <div style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            ...crystal.style,
-            transform: pressing ? "scale(0.93)" : "scale(1)",
-            transition: "transform 0.12s cubic-bezier(0.34,1.56,0.64,1)",
-          }} />
+          {comboBursts.map((burst) => (
+            <Fragment key={burst.id}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: burst.comboX,
+                  top: burst.comboY,
+                  pointerEvents: "none",
+                  animation: "comboPop 0.68s cubic-bezier(0.2, 0.9, 0.25, 1) forwards",
+                  whiteSpace: "nowrap",
+                  textAlign: "center",
+                  lineHeight: 1,
+                  transform: "translate(-50%, -50%)",
+                  textShadow: "0 0 26px rgba(255,255,255,0.16), 0 10px 24px rgba(0, 0, 0, 0.42)",
+                  "--drift-x": `${burst.comboDriftX}px`,
+                  "--drift-y": `${burst.comboDriftY}px`,
+                  "--spin": `${burst.comboSpin}deg`,
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 900,
+                    letterSpacing: "0.28em",
+                    color: burst.labelColor,
+                    marginBottom: 4,
+                    paddingLeft: "0.28em",
+                  }}
+                >
+                  COMBO
+                </div>
+                <div
+                  style={{
+                    fontSize: `clamp(22px, ${burst.comboSize / 200 * 100}vw, ${burst.comboSize}px)`,
+                    fontWeight: 900,
+                    letterSpacing: "-0.08em",
+                    color: burst.accent,
+                    lineHeight: 0.92,
+                  }}
+                >
+                  x{burst.combo}
+                </div>
+              </div>
 
-          {/* 하이라이트 */}
-          <div style={{
-            position: "absolute",
-            top: "14%", left: "20%",
-            width: "35%", height: "22%",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.28)",
-            filter: "blur(6px)",
-            pointerEvents: "none",
-          }} />
-
-          {/* 콤보 뱃지 */}
-          {combo >= 2 && (
-            <div style={{
-              position: "absolute",
-              top: -10, right: -10,
-              background: "linear-gradient(135deg, #ffd93d, #ff6b35)",
-              color: "#fff",
-              fontSize: 12,
-              fontWeight: 700,
-              padding: "4px 10px",
-              borderRadius: 20,
-              whiteSpace: "nowrap",
-            }}>
-              x{combo} 콤보!
-            </div>
-          )}
-
-          {/* 클릭 파티클 */}
-          {particles.map(p => (
-            <div key={p.id} style={{
-              position: "absolute",
-              left: p.x - 20,
-              top: p.y - 20,
-              color: p.combo >= 3 ? "#ffd93d" : "rgba(255,255,255,0.9)",
-              fontSize: p.combo >= 3 ? 16 : 14,
-              fontWeight: 700,
-              pointerEvents: "none",
-              animation: "floatUp 0.7s ease-out forwards",
-              whiteSpace: "nowrap",
-            }}>
-              {p.combo >= 2 ? `+${p.combo} 콤보!` : "+1"}
-            </div>
+              <div
+                style={{
+                  position: "absolute",
+                  left: burst.moneyX,
+                  top: burst.moneyY,
+                  pointerEvents: "none",
+                  animation: "moneyPop 0.56s ease-out forwards",
+                  whiteSpace: "nowrap",
+                  textAlign: "center",
+                  transform: "translate(-50%, -50%)",
+                  textShadow: "0 6px 18px rgba(0, 0, 0, 0.32)",
+                  "--money-drift-x": `${burst.moneyDriftX}px`,
+                  "--money-drift-y": `${burst.moneyDriftY}px`,
+                  fontSize: `clamp(13px, ${burst.moneySize / 200 * 100}vw, ${burst.moneySize}px)`,
+                  fontWeight: 800,
+                  color: burst.moneyColor,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                +{burst.earned}원
+              </div>
+            </Fragment>
           ))}
-        </div>
-
-        
+        </Crystal>
       </div>
 
-      {/* 이끼 */}
-      <Moss moss={moss} setMoss={setMoss} setGameOver={setGameOver} setMessage={setMessage} lastClickTime={lastClickTime} gameOver={gameOver}/>
+      <Moss
+        moss={moss}
+        setMoss={setMoss}
+        setGameOver={setGameOver}
+        setMessage={setMessage}
+        lastClickAt={lastClickAt}
+        gameOver={gameOver}
+      />
 
-      {/* 깨짐 */}
-      <Crack  crack={crack} setCrack={setCrack} setGameOver={setGameOver} setMessage={setMessage} clicked = {clicked} gameOver = {gameOver}/>
+      <Crack
+        crack={crack}
+        setCrack={setCrack}
+        setGameOver={setGameOver}
+        setMessage={setMessage}
+        clickCount={clickCount}
+        gameOver={gameOver}
+      />
 
       {/* 돈 표시 */}
       <div style={{
         background: "rgba(255,249,160,0.12)",
         border: "1px solid rgba(255,249,160,0.3)",
         color: "#fffaaa",
-        fontSize: 26,
+        fontSize: "clamp(20px, 5.4vw, 26px)",
         fontWeight: 700,
-        padding: "12px 36px",
+        padding: "clamp(10px, 2.8vw, 12px) clamp(18px, 6vw, 36px)",
         borderRadius: 14,
-        minWidth: 200,
+        width: "min(100%, 320px)",
+        minWidth: 0,
         textAlign: "center",
+        boxSizing: "border-box",
+        lineHeight: 1.2,
       }}>
         {money.toLocaleString()}원
       </div>
 
     
     </div>
-  )
+  );
 }

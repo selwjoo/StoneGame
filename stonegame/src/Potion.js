@@ -28,7 +28,7 @@ export default function Potion({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <p style={{ margin: 0 }}>포션 가격: {potionPrice}원</p>
+      <p style={{ margin: 0, lineHeight: 1.4, wordBreak: "keep-all" }}>포션 가격: {potionPrice}원</p>
 
       {!canBuy && (
         <p style={{ margin: 0, color: "#ff6b6b", fontWeight: "bold" }}>
@@ -46,6 +46,7 @@ export default function Potion({
           background: canBuy ? "#6bcb77" : "#666",
           color: "#fff",
           cursor: canBuy ? "pointer" : "not-allowed",
+          width: "100%",
         }}
       >
         물약 구매
