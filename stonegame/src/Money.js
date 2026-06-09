@@ -185,7 +185,7 @@ export default function Money({
         }}
       >
         <img
-          src="/icons8-수출-50.png"
+          src="exit.png"
           alt="나가기"
           style={{
             width: 26,
