@@ -19,7 +19,7 @@ export default function Explain({ showExplain, setShowExplain }) {
     alignItems: "center",
     zIndex: 999,
   };
-  
+
   const modalStyle = {
     width: "500px",
     background: "#fff",
@@ -29,7 +29,7 @@ export default function Explain({ showExplain, setShowExplain }) {
     flexDirection: "column",
     gap: "20px",
   };
-  
+
   const confirmBtnStyle = {
     flex: 1,
     padding: "12px",
@@ -39,7 +39,7 @@ export default function Explain({ showExplain, setShowExplain }) {
     color: "white",
     cursor: "pointer",
   };
-  
+
   const cancelBtnStyle = {
     flex: 1,
     padding: "12px",
@@ -51,7 +51,9 @@ export default function Explain({ showExplain, setShowExplain }) {
   };
 
   function handleExplainGame() {
-    navigate("/");
+    setShowExplain(false);
+    setStep(0);
+    navigate("/", { state: { memo } });
   }
 
   function handleCancel() {
@@ -68,29 +70,30 @@ export default function Explain({ showExplain, setShowExplain }) {
         {step === 0 && (
           <>
             <h2>게임 설명</h2>
-            <p>돌을 탭해서 금을 만들고 깨뜨려 보세요!</p>
+            <p>돌을 탭해서 돈을 벌어 다른 돌도 사보세용ㅇ</p>
 
-            <button
-              style={confirmBtnStyle}
-              onClick={() => setStep(1)}
-            >
-              다음
-            </button>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                style={cancelBtnStyle}
+                onClick={handleCancel}
+              >
+                닫기
+              </button>
+
+              <button
+                style={confirmBtnStyle}
+                onClick={() => setStep(1)}
+              >
+                다음
+              </button>
+            </div>
           </>
         )}
 
         {step === 1 && (
           <>
-            <h2>예시 이미지</h2>
-
-            <img
-              src="/stone.png"
-              alt="stone"
-              style={{
-                width: "100%",
-                borderRadius: "12px",
-              }}
-            />
+            <h2>게임 설명</h2>
+            <p>돌을 빨리 클릭하면 콤보가 쌓여 돈을 더 빨리 벌 수 있어요.</p>
 
             <div style={{ display: "flex", gap: 12 }}>
               <button
@@ -112,24 +115,82 @@ export default function Explain({ showExplain, setShowExplain }) {
 
         {step === 2 && (
           <>
-            <h2>메모</h2>
-
-            <textarea
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              placeholder="내용을 입력하세요..."
-              style={{
-                width: "100%",
-                height: "120px",
-                borderRadius: "10px",
-                padding: "10px",
-              }}
-            />
+            <h2>게임 설명</h2>
+            <p>하지만 너무 빨리 클릭하면 돌이 깨짉 수 있답니다!!</p>
 
             <div style={{ display: "flex", gap: 12 }}>
               <button
                 style={cancelBtnStyle}
                 onClick={() => setStep(1)}
+              >
+                이전
+              </button>
+
+              <button
+                style={confirmBtnStyle}
+                onClick={() => setStep(3)}
+              >
+                다음
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <h2>게임 설명</h2>
+            <p>만약 돌이 깨졌다면 물약을 사서 부활을 할 수 있어요!</p>
+
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                style={cancelBtnStyle}
+                onClick={() => setStep(2)}
+              >
+                이전
+              </button>
+
+              <button
+                style={confirmBtnStyle}
+                onClick={() => setStep(4)}
+              >
+                다음
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === 4 && (
+          <>
+            <h2>게임 설명</h2>
+            <p>반면에 너무 가만히 있으면 이끼가 껴서 돌이 망가질 수 있답니다. </p>
+
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                style={cancelBtnStyle}
+                onClick={() => setStep(3)}
+              >
+                이전
+              </button>
+
+              <button
+                style={confirmBtnStyle}
+                onClick={() => setStep(5)}
+              >
+                다음
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === 5 && (
+          <>
+            <h2>게임 설명</h2>
+            <p>즐겜하세영크크 </p>
+
+            <div style={{ display: "flex", gap: 12 }}>
+              <button
+                style={cancelBtnStyle}
+                onClick={() => setStep(3)}
               >
                 이전
               </button>
@@ -146,9 +207,5 @@ export default function Explain({ showExplain, setShowExplain }) {
 
       </div>
     </div>
-
-    
   );
-
- 
 }

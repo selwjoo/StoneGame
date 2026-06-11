@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Money from './Money';
 import GameOver from './GameOver';
@@ -20,12 +20,56 @@ function App() {
 
   const [selectedCrystal, setSelectedCrystal] = useState(0); // 고른 크리스탈 공유
 
+  // 보유한 크리스탈 목록 (0번 "일반"은 기본 보유)
+  // localStorage에서 불러오고, 없으면 [0]으로 시작
+  const [ownedCrystals, setOwnedCrystals] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ownedCrystals");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("ownedCrystals 불러오기 실패", e);
+    }
+    return [0];
+  });
+
+  // ownedCrystals가 바뀔 때마다 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem("ownedCrystals", JSON.stringify(ownedCrystals));
+  }, [ownedCrystals]);
+
+  // money도 새로고침해도 유지되도록 저장/불러오기
+  const [moneyLoaded, setMoneyLoaded] = useState(false);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("money");
+      if (saved !== null) setMoney(Number(saved));
+    } catch (e) {
+      console.error("money 불러오기 실패", e);
+    } finally {
+      setMoneyLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!moneyLoaded) return; // 초기 로드 전에는 덮어쓰지 않음
+    localStorage.setItem("money", String(money));
+  }, [money, moneyLoaded]);
+
   return (
     <div style={{ background: "#0a0a0f", minHeight: "100vh" }} >
-ㅇ
+
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={ <Start money={money} setMoney={setMoney} selectedCrystal={selectedCrystal} setSelectedCrystal={setSelectedCrystal}/>} />
+        <Route path="/" element={
+          <Start
+            money={money}
+            setMoney={setMoney}
+            selectedCrystal={selectedCrystal}
+            setSelectedCrystal={setSelectedCrystal}
+            ownedCrystals={ownedCrystals}
+            setOwnedCrystals={setOwnedCrystals}
+          />
+        } />
         <Route path="/money" element={<Money  money = {money} setMoney = {setMoney} combo = {combo} setCombo = {setCombo} selectedCrystal={selectedCrystal}  moss={moss} setMoss={setMoss} gameOver={gameOver} setGameOver={setGameOver} setMessage={setMessage} crack={crack} setCrack={setCrack}/>} />
       </Routes>
       <GameOver
@@ -48,7 +92,7 @@ function App() {
     </BrowserRouter>
     </div>
 
-    
+
   );
 }
 
