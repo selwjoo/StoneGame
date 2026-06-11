@@ -1,4 +1,6 @@
+import {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import Explain from "./Explain";
 
 const crystals = [
   {
@@ -37,7 +39,8 @@ const crystals = [
 
 export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal }) {
   const navigate = useNavigate();
-
+  const [explainHover, setExplainHover] = useState(false);
+  const [showExplain, setShowExplain] = useState(false);
   function prev() {
     setSelectedCrystal(i => (i - 1 + crystals.length) % crystals.length);
   }
@@ -127,6 +130,47 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         {crystal.price === 0 ? "무료" : `${crystal.price.toLocaleString()}원`}
         {!canBuy && "  (돈이 부족해요)"}
       </p>
+
+      
+       {/* 설명 버튼 */}
+       <button
+          onClick={() => setShowExplain(true)}
+        onMouseEnter={() => setExplainHover(true)}
+        onMouseLeave={() => setExplainHover(false)}
+        style={{
+          position: "absolute",
+          top: "calc(env(safe-area-inset-top, 0px) + 4px)",
+          right: "clamp(10px, 3vw, 16px)",
+          width: "clamp(40px, 11vw, 44px)",
+          height: "clamp(40px, 11vw, 44px)",
+          padding: 0,
+          border: "none",
+          background: explainHover
+            ? "rgba(255, 255, 255, 0.50)"
+            : "rgba(255, 255, 255, 0.30)",
+          borderRadius: "50%",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "background 0.18s ease, transform 0.15s ease",
+          transform: explainHover ? "scale(1.1)" : "scale(1)",
+        }}
+      >
+        <img
+          src="explain.png"
+          alt="설명하기"
+          style={{
+            width: 26,
+            height: 26,
+            objectFit: "contain",
+            opacity: explainHover ? 1 : 0.7,
+            transition: "opacity 0.18s ease",
+          }}
+        />
+      </button>
+
+      <Explain showExplain={showExplain} setShowExplain = {setShowExplain} />
 
       {/* 구매 & 플레이 버튼 */}
       <button
