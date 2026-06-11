@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -41,6 +42,22 @@ export function CrackOverlay({ crack }) {
   );
 }
 
+// 클릭 간격(ms)에 따라 "깰 확률"을 계산.
+// 빠르게 칠수록(간격이 짧을수록) 확률이 높아짐.
+function getBreakProbability(intervalMs) {
+  if (intervalMs == null) return 0.05; // 첫 클릭은 낮은 확률로 시작
+
+  const FAST = 80;    // 이보다 빠르면 거의 확정 (광클)
+  const SLOW = 700;   // 이보다 느리면 거의 0%
+
+  if (intervalMs <= FAST) return 0.98;
+  if (intervalMs >= SLOW) return 0.01;
+
+  // FAST ~ SLOW 사이를 0.98 ~ 0.01 로 선형 보간
+  const t = (intervalMs - FAST) / (SLOW - FAST);
+  return 0.98 - t * (0.98 - 0.01);
+}
+
 export default function Crack({
   crack,
   setCrack,
@@ -49,31 +66,70 @@ export default function Crack({
   clickCount,
   gameOver,
 }) {
+  const location = useLocation();
+  const probMultiplier = location.state?.probMultiplier ?? 1;
+
+  const lastClickTimeRef = useRef(null);
+  const isFirstRun = useRef(true);
+
+  // 클릭 시마다: 클릭 속도에 따른 확률로 금이 증가
   useEffect(() => {
     if (gameOver) return;
 
+    // 마운트 시 최초 effect는 클릭이 아니므로 스킵
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+
+    const now = Date.now();
+    const interval = lastClickTimeRef.current
+      ? now - lastClickTimeRef.current
+      : null;
+    lastClickTimeRef.current = now;
+
+    const probability = getBreakProbability(interval) * probMultiplier;
+    const success = Math.random() < probability;
+
+    if (!success) return; // 실패하면 금 증가 없음
+
+    // 빠르게 칠수록 한 번에 늘어나는 양도 약간 더 큼
+    const speedFactor = interval == null ? 1 : clamp(1 - interval / 700, 0, 1);
+    const increase = 3 + speedFactor * 17; // 3 ~ 20 사이 (광클하면 한방에 훅훅)
+
     setCrack((prev) => {
-      let increase = 0;
-
-      if (prev < 35) {   // 개발할떄 기다리기 힘들어서 임시로 수정함
-        increase = 1;
-      } else if (prev < 80) {
-        increase = 1;
-      } else {
-        increase = 1;
-      }
-
-      const next = prev + increase;
+      const next = clamp(prev + increase, 0, 100);
 
       if (next >= 100) {
         setGameOver(true);
         setMessage("💥 돌이 완전히 깨졌습니다...");
-        return 100;
       }
 
       return next;
     });
-  }, [clickCount, gameOver, setCrack, setGameOver, setMessage]);
+  }, [clickCount]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 클릭을 안 하면 시간이 지날수록 서서히 감소
+  useEffect(() => {
+    if (gameOver) return;
+
+    const decayInterval = setInterval(() => {
+      const now = Date.now();
+      const sinceLastClick = lastClickTimeRef.current
+        ? now - lastClickTimeRef.current
+        : Infinity;
+
+      // 마지막 클릭 후 일정 시간(예: 250ms) 지나면 감소 시작
+      if (sinceLastClick < 250) return;
+
+      setCrack((prev) => {
+        if (prev <= 0) return 0;
+        return clamp(prev - 2.5, 0, 100); // 빠르게 훅 떨어짐
+      });
+    }, 80);
+
+    return () => clearInterval(decayInterval);
+  }, [gameOver, setCrack]);
 
   return (
     <div style={{ width: "min(100%, 360px)" }}>
