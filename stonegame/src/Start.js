@@ -1,9 +1,11 @@
 import {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import Explain from "./Explain";
-import crystals from "./crystals";
+import TopRightIconButton from "./TopRightIconButton";
+import MoneyHeader from "./MoneyHeader";
+import { crystals } from "./crystals";
+import { screenShellStyle } from "./screenStyles";
 
-export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal, ownedCrystals, setOwnedCrystals }) {
+export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal }) {
   const navigate = useNavigate();
   const [explainHover, setExplainHover] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
@@ -30,59 +32,61 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
   }
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minHeight: "100dvh",
-      gap: "clamp(18px, 4vw, 28px)",
-      padding: "calc(env(safe-area-inset-top, 0px) + 20px) clamp(16px, 5vw, 28px) calc(env(safe-area-inset-bottom, 0px) + 24px)",
-      boxSizing: "border-box",
-    }}>
+    <div style={startScreenStyle}>
+      <TopRightIconButton src="/explain.png" alt="설명" />
+      <MoneyHeader money={money} />
 
-      {/* 현재 보유 돈 */}
-      <div style={{
-        background: "rgba(255,249,160,0.12)",
-        border: "1px solid rgba(255,249,160,0.3)",
-        color: "#fffaaa",
-        fontSize: "clamp(16px, 4.2vw, 20px)",
-        fontWeight: 700,
-        padding: "clamp(9px, 2.3vw, 10px) clamp(18px, 6vw, 32px)",
-        borderRadius: 14,
-        maxWidth: "100%",
-        textAlign: "center",
-      }}>
-        💰 {money.toLocaleString()}원
-      </div>
+      <div style={contentColumnStyle}>
+        <p style={subtitleStyle}>
+          크리스탈을 선택하세요
+        </p>
 
-      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px, 2.8vw, 13px)", letterSpacing: "0.18em", margin: 0, textAlign: "center" }}>
-        크리스탈을 선택하세요
-      </p>
+        <div style={sliderStyle}>
+          <button type="button" onClick={prev} style={arrowImageButtonStyle} aria-label="이전 크리스탈">
+            <img src="/left.png" alt="" style={arrowImageStyle} />
+          </button>
 
-      {/* 슬라이더 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px, 4vw, 32px)", width: "100%" }}>
-        <button onClick={prev} style={arrowBtn}>‹</button>
+          <div style={crystalPreviewStyle}>
+            <div style={{
+              width: "100%", height: "100%",
+              borderRadius: "50%",
+              ...crystal.style,
+              transition: "all 0.3s ease",
+            }} />
+            <div style={{
+              position: "absolute", top: "14%", left: "20%",
+              width: "35%", height: "22%",
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.28)",
+              filter: "blur(6px)",
+              pointerEvents: "none",
+            }} />
+          </div>
 
-        <div style={{ position: "relative", width: "min(62vw, 260px)", aspectRatio: "1 / 1", flex: "0 1 auto" }}>
-          <div style={{
-            width: "100%", height: "100%",
-            borderRadius: "50%",
-            ...crystal.style,
-            transition: "all 0.3s ease",
-          }} />
-          <div style={{
-            position: "absolute", top: "14%", left: "20%",
-            width: "35%", height: "22%",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.28)",
-            filter: "blur(6px)",
-            pointerEvents: "none",
-          }} />
+          <button type="button" onClick={next} style={arrowImageButtonStyle} aria-label="다음 크리스탈">
+            <img src="/right.png" alt="" style={arrowImageStyle} />
+          </button>
         </div>
 
-        <button onClick={next} style={arrowBtn}>›</button>
-      </div>
+        <p style={crystalNameStyle}>
+          {crystal.name} 돌멩이
+        </p>
+
+        <div style={priceBlockStyle}>
+          <div
+            style={{
+              ...priceValueStyle,
+              color: canBuy ? "#cec9be" : "#b88c8c",
+            }}
+          >
+            {crystal.price === 0 ? "무료" : `${crystal.price.toLocaleString()}원`}
+          </div>
+          {!canBuy && (
+            <div style={priceNoticeStyle}>
+              잔액이 부족합니다
+            </div>
+          )}
+        </div>
 
       {/* 크리스탈 이름 */}
       <p style={{ color: "#fff", fontSize: "clamp(18px, 4.8vw, 22px)", fontWeight: 700, margin: 0, textAlign: "center" }}>
