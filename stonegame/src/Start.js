@@ -1,43 +1,12 @@
+import {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import Explain from "./Explain";
+import crystals from "./crystals";
 
-const crystals = [
-  {
-    name: "일반",
-    price: 0,
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #d0d0d0, #a0a0a0 40%, #6b6b6b 70%, #3a3a3a)",
-      boxShadow: "0 8px 40px rgba(100,100,100,0.4), 0 0 0 2px rgba(255,255,255,0.1) inset",
-    },
-  },
-  {
-    name: "오션",
-    price: 6000000,
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #a8edea, #4d96ff 45%, #0d47a1 80%)",
-      boxShadow: "0 8px 40px rgba(77,150,255,0.45)",
-    },
-  },
-  {
-    name: "파이어",
-    price: 90000000000,
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #fff176, #ffd93d 30%, #ff6b35 60%, #c0392b)",
-      boxShadow: "0 8px 40px rgba(255,107,53,0.5)",
-    },
-  },
-  {
-    name: "갤럭시",
-    price: 100000000000000000000,
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #e0c3fc, #c77dff 35%, #6a0dad 65%, #1a003d)",
-      boxShadow: "0 8px 40px rgba(199,125,255,0.5)",
-    },
-  },
-];
-
-export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal }) {
+export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal, ownedCrystals, setOwnedCrystals }) {
   const navigate = useNavigate();
-
+  const [explainHover, setExplainHover] = useState(false);
+  const [showExplain, setShowExplain] = useState(false);
   function prev() {
     setSelectedCrystal(i => (i - 1 + crystals.length) % crystals.length);
   }
@@ -46,12 +15,18 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
   }
 
   const crystal = crystals[selectedCrystal];
-  const canBuy = money >= crystal.price;
+  const isOwned = ownedCrystals.includes(selectedCrystal);
+  const canBuy = isOwned || money >= crystal.price;
 
-  function handleBuy() {
+  function handleAction() {
+    if (isOwned) {
+      navigate('/money', { state: { probMultiplier: crystal.probMultiplier } });
+      return;
+    }
     if (!canBuy) return;
-    if (crystal.price > 0) setMoney(prev => prev - crystal.price);
-    navigate('/money');
+    setMoney(prev => prev - crystal.price);
+    setOwnedCrystals(prev => [...prev, selectedCrystal]);
+    navigate('/money', { state: { probMultiplier: crystal.probMultiplier } });
   }
 
   return (
@@ -124,13 +99,67 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         maxWidth: "min(100%, 320px)",
         lineHeight: 1.4,
       }}>
-        {crystal.price === 0 ? "무료" : `${crystal.price.toLocaleString()}원`}
-        {!canBuy && "  (돈이 부족해요)"}
+        {isOwned
+          ? "보유중 ✅"
+          : crystal.price === 0
+            ? "무료"
+            : `${crystal.price.toLocaleString()}원`}
+        {!isOwned && !canBuy && "  (돈이 부족해요)"}
       </p>
+
+      {/* 단단함(확률) 표시 */}
+      <p style={{
+        color: "rgba(255,255,255,0.55)",
+        fontSize: "clamp(11px, 2.8vw, 13px)",
+        margin: 0,
+        textAlign: "center",
+      }}>
+        🪨 단단함: {Math.round((1 - crystal.probMultiplier) * 100)}%
+      </p>
+
+       {/* 설명 버튼 */}
+       <button
+          onClick={() => setShowExplain(true)}
+        onMouseEnter={() => setExplainHover(true)}
+        onMouseLeave={() => setExplainHover(false)}
+        style={{
+          position: "absolute",
+          top: "calc(env(safe-area-inset-top, 0px) + 4px)",
+          right: "clamp(10px, 3vw, 16px)",
+          width: "clamp(40px, 11vw, 44px)",
+          height: "clamp(40px, 11vw, 44px)",
+          padding: 0,
+          border: "none",
+          background: explainHover
+            ? "rgba(255, 255, 255, 0.50)"
+            : "rgba(255, 255, 255, 0.30)",
+          borderRadius: "50%",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "background 0.18s ease, transform 0.15s ease",
+          transform: explainHover ? "scale(1.1)" : "scale(1)",
+        }}
+      >
+        <img
+          src="explain.png"
+          alt="설명하기"
+          style={{
+            width: 26,
+            height: 26,
+            objectFit: "contain",
+            opacity: explainHover ? 1 : 0.7,
+            transition: "opacity 0.18s ease",
+          }}
+        />
+      </button>
+
+      <Explain showExplain={showExplain} setShowExplain = {setShowExplain} />
 
       {/* 구매 & 플레이 버튼 */}
       <button
-        onClick={handleBuy}
+        onClick={handleAction}
         disabled={!canBuy}
         style={{
           padding: "14px 24px",
@@ -148,7 +177,7 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
           width: "min(100%, 320px)",
         }}
       >
-        {crystal.price === 0 ? "플레이하기 ▶" : `구매 후 플레이 ▶`}
+        {isOwned || crystal.price === 0 ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
       </button>
     </div>
   );
