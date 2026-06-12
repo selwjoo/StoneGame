@@ -37,7 +37,7 @@ export default function Potion({
         justifyContent: "space-between",
         alignItems: "center",
       }}>
-        <span style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "rgba(255,255,255,0.5)" }}>🧪 회복 물약</span>
+        <span style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "rgba(255,255,255,0.5)" }}>회복 물약</span>
         <span style={{ fontSize: "clamp(14px, 3.8vw, 16px)", fontWeight: 700, color: "#6bcb77" }}>
           {potionPrice.toLocaleString()}원
         </span>

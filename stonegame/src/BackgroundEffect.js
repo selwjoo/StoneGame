@@ -47,19 +47,30 @@ export default function BackgroundEffect({ crystalName }) {
             life: 1,
           });
           break;
-        case "갤럭시":
+        case "갤럭시": {
+          const isMilkyWay = Math.random() > 0.35;
+          let gx, gy;
+          if (isMilkyWay) {
+            const t = Math.random();
+            // 대각선 띠 (좌상→우하)
+            gx = t * W();
+            gy = (t * H() * 0.7) + H() * 0.1 + (Math.random() - 0.5) * H() * 0.18;
+          } else {
+            gx = Math.random() * W();
+            gy = Math.random() * H();
+          }
           particles.push({
-            x: Math.random() * W(),
-            y: Math.random() * H(),
-            r: 2 + Math.random() * 4,
+            x: gx, y: gy,
+            r: isMilkyWay ? 1 + Math.random() * 3 : 2 + Math.random() * 4,
             alpha: 0,
-            maxAlpha: 0.6 + Math.random() * 0.4,
-            hue: 250 + Math.random() * 80,
+            maxAlpha: isMilkyWay ? 0.6 + Math.random() * 0.4 : 0.5 + Math.random() * 0.4,
+            hue: isMilkyWay ? 200 + Math.random() * 60 : 260 + Math.random() * 60,
             phase: Math.random() * Math.PI * 2,
-            speed: 0.03 + Math.random() * 0.05,
-            born: true,
+            speed: 0.025 + Math.random() * 0.04,
+            isMilkyWay,
           });
           break;
+        }
         case "썬더":
           particles.push({
             x: Math.random() * W(),
@@ -95,6 +106,23 @@ export default function BackgroundEffect({ crystalName }) {
           });
           break;
         }
+        case "다이아": {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * Math.max(W(), H()) * 0.6;
+          particles.push({
+            x: W()/2 + Math.cos(angle) * dist,
+            y: H()/2 + Math.sin(angle) * dist,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            r: 2 + Math.random() * 4,
+            alpha: 0,
+            maxAlpha: 0.3 + Math.random() * 0.25,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.05 + Math.random() * 0.07,
+            hue: 180 + Math.random() * 60,
+          });
+          break;
+        }
         default: // 일반
           particles.push({
             x: Math.random() * W(),
@@ -108,7 +136,7 @@ export default function BackgroundEffect({ crystalName }) {
     }
 
     // 초기 파티클
-    const initCount = crystalName === "갤럭시" ? 40 : 50;
+    const initCount = crystalName === "갤럭시" ? 150 : 50;
     for (let i = 0; i < initCount; i++) spawnParticle();
 
     let frame = 0;
@@ -119,7 +147,7 @@ export default function BackgroundEffect({ crystalName }) {
 
       // 주기적 스폰
       const spawnRate = crystalName === "갤럭시" ? 12 : 2;
-      if (frame % spawnRate === 0 && particles.length < (crystalName === "갤럭시" ? 50 : 150)) spawnParticle();
+      if (frame % spawnRate === 0 && particles.length < (crystalName === "갤럭시" ? 180 : 150)) spawnParticle();
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
@@ -163,9 +191,15 @@ export default function BackgroundEffect({ crystalName }) {
             p.alpha = p.maxAlpha * (0.4 + Math.abs(Math.sin(p.phase)) * 0.6);
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = `hsla(${p.hue},90%,85%,${p.alpha})`;
-            ctx.shadowColor = `hsla(${p.hue},100%,80%,0.6)`;
-            ctx.shadowBlur = 6;
+            if (p.isMilkyWay) {
+              ctx.fillStyle = `hsla(${p.hue},100%,92%,${p.alpha})`;
+              ctx.shadowColor = `hsla(${p.hue},100%,85%,0.9)`;
+              ctx.shadowBlur = 12;
+            } else {
+              ctx.fillStyle = `hsla(${p.hue},90%,85%,${p.alpha})`;
+              ctx.shadowColor = `hsla(${p.hue},100%,80%,0.6)`;
+              ctx.shadowBlur = 6;
+            }
             ctx.fill();
             ctx.shadowBlur = 0;
             break;
@@ -212,6 +246,37 @@ export default function BackgroundEffect({ crystalName }) {
               ctx.fill();
               ctx.restore();
             }
+            break;
+
+          case "다이아":
+            p.phase += p.speed;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha = p.maxAlpha * (0.3 + Math.abs(Math.sin(p.phase)) * 0.7);
+            if (p.x < 0 || p.x > W() || p.y < 0 || p.y > H()) {
+              p.x = Math.random() * W();
+              p.y = Math.random() * H();
+            }
+            ctx.save();
+            ctx.beginPath();
+            // 다이아 별 모양
+            for (let s = 0; s < 4; s++) {
+              const a = (s / 4) * Math.PI * 2 + p.phase * 0.3;
+              const outerX = p.x + Math.cos(a) * p.r * 2;
+              const outerY = p.y + Math.sin(a) * p.r * 2;
+              const innerA = a + Math.PI / 4;
+              const innerX = p.x + Math.cos(innerA) * p.r * 0.6;
+              const innerY = p.y + Math.sin(innerA) * p.r * 0.6;
+              if (s === 0) ctx.moveTo(outerX, outerY);
+              else ctx.lineTo(outerX, outerY);
+              ctx.lineTo(innerX, innerY);
+            }
+            ctx.closePath();
+            ctx.fillStyle = `hsla(${p.hue},90%,90%,${p.alpha})`;
+            ctx.shadowColor = `hsla(${p.hue},100%,95%,0.8)`;
+            ctx.shadowBlur = 6;
+            ctx.fill();
+            ctx.restore();
             break;
 
           case "보이드":

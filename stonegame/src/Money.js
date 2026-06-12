@@ -1,10 +1,11 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Moss, { reduceMossOnClick } from "./Moss";
 import Crack from "./Crack";
 import Crystal from "./Crystal";
 import Exit from "./Exit";
 import { crystals } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
+import MoneyHeader from "./MoneyHeader";
 
 const comboAnchors = [
   { x: 100, y: 44 },
@@ -56,11 +57,19 @@ export default function Money({
   const [exitHover, setExitHover] = useState(false);
   const [showExit, setShowExit] = useState(false);
 
+  // 물약 구매 후 게임 재개 시 clickCount 리셋
+  useEffect(() => {
+    if (!gameOver) {
+      setClickCount(0);
+      setCombo(1);
+    }
+  }, [gameOver]);
+
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
     const { mult } = getCrackMultiplier(clickCount);
-    const finalAmount = Math.floor(pendingMoney * mult);
-    setTotalMoney(prev => prev + finalAmount);
+    const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10); // 이끼 0%=1.0, 이끼 100%=0.1
+    setTotalMoney(prev => prev + Math.floor(pendingMoney * mult * mossRatio));
     setPendingMoney(0);
     setMoss(0);
     setCrack(0);
@@ -79,7 +88,7 @@ export default function Money({
     setLastClickAt(now);
 
     // 돌멩이 수익 배율 적용
-    const earned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
+    const earned = Math.floor(Math.pow(clickCount + 1, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
     setPendingMoney(prev => prev + earned);
     reduceMossOnClick(setMoss);
 
@@ -135,7 +144,6 @@ export default function Money({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: "clamp(14px, 3.5vw, 24px)",
       padding: "calc(env(safe-area-inset-top,0px) + 16px) clamp(16px,5vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px)",
       position: "relative",
       boxSizing: "border-box",
@@ -144,6 +152,7 @@ export default function Money({
       margin: "0 auto",
       zIndex: 1,
     }}>
+      <MoneyHeader money={totalMoney} />
 
       {/* 나가기 버튼 */}
       <button
@@ -152,19 +161,19 @@ export default function Money({
         onMouseLeave={() => setExitHover(false)}
         style={{
           position: "absolute",
-          top: "calc(env(safe-area-inset-top,0px) + 4px)",
-          right: "clamp(10px,3vw,16px)",
+          top: "calc(env(safe-area-inset-top,0px) + 25px)",
+          right: "clamp(14px,4vw,25px)",
           width: "clamp(40px,11vw,44px)",
           height: "clamp(40px,11vw,44px)",
           padding: 0, border: "none",
-          background: exitHover ? "rgba(255,255,255,0.50)" : "rgba(255,255,255,0.30)",
+          background: "transparent",
           borderRadius: "50%", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "background 0.18s ease, transform 0.15s ease",
+          transition: "transform 0.15s ease",
           transform: exitHover ? "scale(1.1)" : "scale(1)",
         }}
       >
-        <img src="exit.png" alt="나가기" style={{ width: 26, height: 26, objectFit: "contain", opacity: exitHover ? 1 : 0.7, transition: "opacity 0.18s ease" }} />
+        <img src="exit.png" alt="나가기" style={{ width: 20, height: 20, objectFit: "contain", opacity: exitHover ? 1 : 0.82, transition: "opacity 0.18s ease" }} />
       </button>
 
       <Exit showExit={showExit} setShowExit={setShowExit} />
@@ -188,13 +197,14 @@ export default function Money({
         }
       `}</style>
 
+      <div style={playContentStyle}>
       {/* 돌멩이 이름 + 베네핏 */}
       <div style={{ textAlign: "center" }}>
         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
           {crystal.name} 돌멩이
         </p>
         {crystal.benefit && (
-          <p style={{ color: "rgba(255,255,255,0.28)", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
+          <p style={{ color: "#60a5fa", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
             {crystal.benefit}
           </p>
         )}
@@ -266,8 +276,9 @@ export default function Money({
       {/* 수거 UI */}
       {(() => {
         const crackInfo = getCrackMultiplier(clickCount);
-        const nextEarned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
-        const finalPreview = Math.floor(pendingMoney * crackInfo.mult);
+        const nextEarned = Math.floor(Math.pow(clickCount + 1, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
+        const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10);
+        const finalPreview = Math.floor(pendingMoney * crackInfo.mult * mossRatio);
         return (
           <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
 
@@ -313,6 +324,22 @@ export default function Money({
                   → {finalPreview.toLocaleString()}원
                 </span>
               </div>
+              {/* 이끼 수익률 */}
+              <div style={{
+                borderTop: "0.5px solid rgba(255,255,255,0.06)",
+                padding: "5px 14px",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <span style={{ fontSize: "clamp(10px,2.4vw,11px)", color: "rgba(255,255,255,0.35)" }}>
+                  이끼 페널티
+                </span>
+                <span style={{
+                  fontSize: "clamp(11px,2.6vw,12px)", fontWeight: 700,
+                  color: moss > 70 ? "#ff6b6b" : moss > 40 ? "#ff9f43" : "#86efac",
+                }}>
+                  {Math.round(mossRatio * 100)}% 수익
+                </span>
+              </div>
             </div>
 
             {/* 수거 버튼 */}
@@ -331,22 +358,32 @@ export default function Money({
                 boxSizing: "border-box", width: "100%",
               }}
             >
-              💰 수거하기
+              수거하기
             </button>
 
             {/* 총 보유 */}
             <div style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "transparent", border: "none",
               color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
               padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
             }}>
-              총 보유: {totalMoney.toLocaleString()}원
+              총 보유  {totalMoney.toLocaleString()}원
             </div>
           </div>
         );
       })()}
+      </div>
 
     </div>
     </>
   );
 }
+
+const playContentStyle = {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "clamp(14px, 3.5vw, 24px)",
+  marginTop: "clamp(112px,27vw,136px)",
+};
