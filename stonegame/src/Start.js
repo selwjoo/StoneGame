@@ -30,9 +30,18 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
     }}>
       <MoneyHeader money={money} />
 
-      <div style={contentColumnStyle}>
-      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: "0 0 clamp(12px,3vw,16px)", textAlign: "center" }}>
-        돌멩이를 선택하세요
+      {/* 보유 돈 */}
+      <div style={{
+        background: "rgba(255,249,160,0.12)", border: "1px solid rgba(255,249,160,0.3)",
+        color: "#fffaaa", fontSize: "clamp(16px,4.2vw,20px)", fontWeight: 700,
+        padding: "clamp(9px,2.3vw,10px) clamp(18px,6vw,32px)",
+        borderRadius: 14, maxWidth: "100%", textAlign: "center",
+      }}>
+        {money.toLocaleString()}원
+      </div>
+
+      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: 0, textAlign: "center" }}>
+        크리스탈을 선택하세요
       </p>
 
       {/* 슬라이더 */}
@@ -66,8 +75,8 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         </p>
         {crystal.benefit && (
           <p style={{
-            color: "#6bcb77", fontSize: "clamp(12px,3vw,13px)", fontWeight: 600, margin: 0,
-            background: "rgba(107,203,119,0.08)", border: "0.5px solid rgba(107,203,119,0.2)",
+            color: "#60a5fa", fontSize: "clamp(12px,3vw,13px)", fontWeight: 600, margin: 0,
+            background: "rgba(96,165,250,0.08)", border: "0.5px solid rgba(96,165,250,0.2)",
             borderRadius: 8, padding: "4px 12px", display: "inline-block",
           }}>
             ✦ {crystal.benefit}
@@ -101,7 +110,6 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         {crystal.price === 0 ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
       </button>
       </div>
-    </div>
     </>
   );
 }

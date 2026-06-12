@@ -18,16 +18,22 @@ export default function GameOver({
   reviveCount,
   setReviveCount,
   setCombo,
+  setSelectedCrystal,
 }) {
   const navigate = useNavigate();
 
   function handleExitGame() {
+    // 완전 초기화
     setGameOver(false);
     setMessage("");
     setMoss(0);
     setCrack(0);
     setPendingMoney(0);
+    setTotalMoney(0);
+    setPotionPrice(50000);
+    setReviveCount(0);
     if (setCombo) setCombo(1);
+    if (setSelectedCrystal) setSelectedCrystal(0);
     navigate("/");
   }
 
@@ -36,7 +42,7 @@ export default function GameOver({
   return (
     <div style={overlayStyle}>
       <div style={modalStyle}>
-        <div style={iconStyle}>💥</div>
+        <div style={iconStyle}></div>
         <h2 style={{ margin: 0, fontSize: "clamp(18px, 4.8vw, 22px)" }}>게임 오버</h2>
         <p style={{ margin: 0, color: "rgba(255,255,255,0.55)", fontSize: "clamp(13px, 3.4vw, 15px)", lineHeight: 1.5 }}>
           {message}
