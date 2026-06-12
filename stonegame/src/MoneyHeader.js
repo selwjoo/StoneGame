@@ -18,6 +18,7 @@ const moneyReadoutStyle = {
   alignItems: "center",
   gap: 8,
   pointerEvents: "none",
+  zIndex: 2,
 };
 
 const moneyLabelStyle = {

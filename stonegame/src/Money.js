@@ -5,6 +5,7 @@ import Crystal from "./Crystal";
 import Exit from "./Exit";
 import { crystals } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
+import MoneyHeader from "./MoneyHeader";
 
 const comboAnchors = [
   { x: 100, y: 44 },
@@ -143,7 +144,6 @@ export default function Money({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: "clamp(14px, 3.5vw, 24px)",
       padding: "calc(env(safe-area-inset-top,0px) + 16px) clamp(16px,5vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px)",
       position: "relative",
       boxSizing: "border-box",
@@ -152,6 +152,7 @@ export default function Money({
       margin: "0 auto",
       zIndex: 1,
     }}>
+      <MoneyHeader money={totalMoney} />
 
       {/* 나가기 버튼 */}
       <button
@@ -160,19 +161,19 @@ export default function Money({
         onMouseLeave={() => setExitHover(false)}
         style={{
           position: "absolute",
-          top: "calc(env(safe-area-inset-top,0px) + 4px)",
-          right: "clamp(10px,3vw,16px)",
+          top: "calc(env(safe-area-inset-top,0px) + 25px)",
+          right: "clamp(14px,4vw,25px)",
           width: "clamp(40px,11vw,44px)",
           height: "clamp(40px,11vw,44px)",
           padding: 0, border: "none",
-          background: exitHover ? "rgba(255,255,255,0.50)" : "rgba(255,255,255,0.30)",
+          background: "transparent",
           borderRadius: "50%", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "background 0.18s ease, transform 0.15s ease",
+          transition: "transform 0.15s ease",
           transform: exitHover ? "scale(1.1)" : "scale(1)",
         }}
       >
-        <img src="exit.png" alt="나가기" style={{ width: 26, height: 26, objectFit: "contain", opacity: exitHover ? 1 : 0.7, transition: "opacity 0.18s ease" }} />
+        <img src="exit.png" alt="나가기" style={{ width: 20, height: 20, objectFit: "contain", opacity: exitHover ? 1 : 0.82, transition: "opacity 0.18s ease" }} />
       </button>
 
       <Exit showExit={showExit} setShowExit={setShowExit} />
@@ -196,6 +197,7 @@ export default function Money({
         }
       `}</style>
 
+      <div style={playContentStyle}>
       {/* 돌멩이 이름 + 베네핏 */}
       <div style={{ textAlign: "center" }}>
         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
@@ -361,7 +363,7 @@ export default function Money({
 
             {/* 총 보유 */}
             <div style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "transparent", border: "none",
               color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
               padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
             }}>
@@ -370,8 +372,18 @@ export default function Money({
           </div>
         );
       })()}
+      </div>
 
     </div>
     </>
   );
 }
+
+const playContentStyle = {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "clamp(14px, 3.5vw, 24px)",
+  marginTop: "clamp(112px,27vw,136px)",
+};
