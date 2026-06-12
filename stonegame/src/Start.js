@@ -30,19 +30,10 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
     }}>
       <MoneyHeader money={money} />
 
-      {/* 보유 돈 */}
-      <div style={{
-        background: "rgba(255,249,160,0.12)", border: "1px solid rgba(255,249,160,0.3)",
-        color: "#fffaaa", fontSize: "clamp(16px,4.2vw,20px)", fontWeight: 700,
-        padding: "clamp(9px,2.3vw,10px) clamp(18px,6vw,32px)",
-        borderRadius: 14, maxWidth: "100%", textAlign: "center",
-      }}>
-        {money.toLocaleString()}원
-      </div>
-
-      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: 0, textAlign: "center" }}>
-        크리스탈을 선택하세요
-      </p>
+      <div style={contentColumnStyle}>
+        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: 0, textAlign: "center" }}>
+          크리스탈을 선택하세요
+        </p>
 
       {/* 슬라이더 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px,4vw,32px)", width: "100%", marginBottom: "clamp(12px,3vw,16px)" }}>
@@ -110,6 +101,7 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         {crystal.price === 0 ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
       </button>
       </div>
+    </div>
     </>
   );
 }
