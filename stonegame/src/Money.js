@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Moss, { reduceMossOnClick } from "./Moss";
 import Crack from "./Crack";
 import Crystal from "./Crystal";
@@ -56,11 +56,19 @@ export default function Money({
   const [exitHover, setExitHover] = useState(false);
   const [showExit, setShowExit] = useState(false);
 
+  // 물약 구매 후 게임 재개 시 clickCount 리셋
+  useEffect(() => {
+    if (!gameOver) {
+      setClickCount(0);
+      setCombo(1);
+    }
+  }, [gameOver]);
+
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
     const { mult } = getCrackMultiplier(clickCount);
-    const finalAmount = Math.floor(pendingMoney * mult);
-    setTotalMoney(prev => prev + finalAmount);
+    const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10); // 이끼 0%=1.0, 이끼 100%=0.1
+    setTotalMoney(prev => prev + Math.floor(pendingMoney * mult * mossRatio));
     setPendingMoney(0);
     setMoss(0);
     setCrack(0);
@@ -79,7 +87,7 @@ export default function Money({
     setLastClickAt(now);
 
     // 돌멩이 수익 배율 적용
-    const earned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
+    const earned = Math.floor(Math.pow(clickCount + 1, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
     setPendingMoney(prev => prev + earned);
     reduceMossOnClick(setMoss);
 
@@ -194,7 +202,7 @@ export default function Money({
           {crystal.name} 돌멩이
         </p>
         {crystal.benefit && (
-          <p style={{ color: "rgba(255,255,255,0.28)", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
+          <p style={{ color: "#60a5fa", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
             {crystal.benefit}
           </p>
         )}
@@ -266,8 +274,9 @@ export default function Money({
       {/* 수거 UI */}
       {(() => {
         const crackInfo = getCrackMultiplier(clickCount);
-        const nextEarned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
-        const finalPreview = Math.floor(pendingMoney * crackInfo.mult);
+        const nextEarned = Math.floor(Math.pow(clickCount + 1, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
+        const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10);
+        const finalPreview = Math.floor(pendingMoney * crackInfo.mult * mossRatio);
         return (
           <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
 
@@ -313,6 +322,22 @@ export default function Money({
                   → {finalPreview.toLocaleString()}원
                 </span>
               </div>
+              {/* 이끼 수익률 */}
+              <div style={{
+                borderTop: "0.5px solid rgba(255,255,255,0.06)",
+                padding: "5px 14px",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <span style={{ fontSize: "clamp(10px,2.4vw,11px)", color: "rgba(255,255,255,0.35)" }}>
+                  이끼 페널티
+                </span>
+                <span style={{
+                  fontSize: "clamp(11px,2.6vw,12px)", fontWeight: 700,
+                  color: moss > 70 ? "#ff6b6b" : moss > 40 ? "#ff9f43" : "#86efac",
+                }}>
+                  {Math.round(mossRatio * 100)}% 수익
+                </span>
+              </div>
             </div>
 
             {/* 수거 버튼 */}
@@ -331,7 +356,7 @@ export default function Money({
                 boxSizing: "border-box", width: "100%",
               }}
             >
-              💰 수거하기
+              수거하기
             </button>
 
             {/* 총 보유 */}
@@ -340,7 +365,7 @@ export default function Money({
               color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
               padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
             }}>
-              총 보유: {totalMoney.toLocaleString()}원
+              총 보유  {totalMoney.toLocaleString()}원
             </div>
           </div>
         );
