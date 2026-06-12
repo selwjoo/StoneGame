@@ -1,12 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { modalStyle, overlayStyle } from "./modalStyles";
 
-export default function Exit({ showExit, setShowExit, onResetGame }) {
+export default function Exit({ showExit, setShowExit }) {
   const navigate = useNavigate();
 
   function handleExitGame() {
-    if (onResetGame) onResetGame();
-    setShowExit(false);
     navigate("/");
   }
 
@@ -29,6 +26,31 @@ export default function Exit({ showExit, setShowExit, onResetGame }) {
     </div>
   );
 }
+
+const overlayStyle = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.7)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 999,
+  padding: "clamp(16px, 5vw, 24px)",
+  boxSizing: "border-box",
+};
+
+const modalStyle = {
+  width: "min(100%, 360px)",
+  background: "#1b1b1b",
+  color: "#fff",
+  padding: "clamp(18px, 5vw, 24px)",
+  borderRadius: "16px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "16px",
+  textAlign: "center",
+  boxSizing: "border-box",
+};
 
 const confirmBtnStyle = {
   flex: 1,
