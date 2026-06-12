@@ -42,7 +42,6 @@ export default function Crystal({
             ...crystalStyle,
           }}
         />
-
         <div
           style={{
             position: "absolute",
@@ -55,7 +54,6 @@ export default function Crystal({
           <MossOverlay moss={moss} />
           <CrackOverlay crack={crack} />
         </div>
-
         <div
           style={{
             position: "absolute",
@@ -70,7 +68,6 @@ export default function Crystal({
           }}
         />
       </div>
-
       {children}
     </div>
   );
