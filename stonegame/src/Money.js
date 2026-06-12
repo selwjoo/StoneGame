@@ -1,396 +1,352 @@
-import { useRef, useState} from "react"
-import Moss from './Moss'
-import Crack from './Crack'
-import Exit from './Exit'
+import { Fragment, useRef, useState } from "react";
+import Moss, { reduceMossOnClick } from "./Moss";
+import Crack from "./Crack";
+import Crystal from "./Crystal";
+import Exit from "./Exit";
+import { crystals } from "./crystalList";
+import BackgroundEffect from "./BackgroundEffect";
 
-const crystals = [
-  {
-    name: "일반",
-    price: 0,
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #d0d0d0, #a0a0a0 40%, #6b6b6b 70%, #3a3a3a)",
-      boxShadow: "0 8px 40px rgba(100,100,100,0.4), 0 0 0 2px rgba(255,255,255,0.1) inset",
-    },
-  },
-  {
-    name: "오션",
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #a8edea, #4d96ff 45%, #0d47a1 80%)",
-      boxShadow: "0 8px 40px rgba(77,150,255,0.45), 0 0 0 2px rgba(255,255,255,0.15) inset",
-    },
-  },
-  {
-    name: "파이어",
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #fff176, #ffd93d 30%, #ff6b35 60%, #c0392b)",
-      boxShadow: "0 8px 40px rgba(255,107,53,0.5), 0 0 0 2px rgba(255,255,255,0.15) inset",
-    },
-  },
-  {
-    name: "갤럭시",
-    style: {
-      background: "radial-gradient(circle at 35% 30%, #e0c3fc, #c77dff 35%, #6a0dad 65%, #1a003d)",
-      boxShadow: "0 8px 40px rgba(199,125,255,0.5), 0 0 0 2px rgba(255,255,255,0.15) inset",
-    },
-  },
-]
-
-const mossDots = [
-  { cx: 44, cy: 56, r: 5, start: 4, shade: "#77d65d" },
-  { cx: 56, cy: 72, r: 4, start: 8, shade: "#53b74c" },
-  { cx: 68, cy: 54, r: 3, start: 12, shade: "#9ce874" },
-  { cx: 130, cy: 50, r: 4, start: 16, shade: "#7cd957" },
-  { cx: 146, cy: 60, r: 5, start: 20, shade: "#49a942" },
-  { cx: 118, cy: 70, r: 3, start: 24, shade: "#95df6f" },
-  { cx: 54, cy: 120, r: 6, start: 28, shade: "#66c257" },
-  { cx: 70, cy: 132, r: 4, start: 32, shade: "#8fe66b" },
-  { cx: 88, cy: 116, r: 3, start: 36, shade: "#57b94a" },
-  { cx: 136, cy: 126, r: 5, start: 40, shade: "#7dd161" },
-  { cx: 122, cy: 144, r: 4, start: 44, shade: "#a4ef7e" },
-  { cx: 154, cy: 138, r: 3, start: 48, shade: "#4da845" },
-  { cx: 96, cy: 88, r: 6, start: 52, shade: "#7ed866" },
-  { cx: 108, cy: 102, r: 4, start: 56, shade: "#65bc56" },
-  { cx: 82, cy: 92, r: 3, start: 60, shade: "#95ea72" },
-  { cx: 44, cy: 148, r: 5, start: 64, shade: "#5eb650" },
-  { cx: 156, cy: 92, r: 4, start: 68, shade: "#81da64" },
-  { cx: 100, cy: 146, r: 6, start: 72, shade: "#6bc95a" },
-  { cx: 72, cy: 40, r: 3, start: 76, shade: "#a4ef85" },
-  { cx: 128, cy: 154, r: 4, start: 80, shade: "#4ea446" },
-]
-
-const crackPaths = [
-  { d: "M102 18 L96 48 L103 86 L97 120 L106 156", start: 8, width: 2.2 },
-  { d: "M98 62 L78 78 L64 96", start: 20, width: 1.8 },
-  { d: "M101 92 L122 108 L138 126", start: 32, width: 1.8 },
-  { d: "M97 118 L76 138 L60 154", start: 48, width: 1.6 },
-  { d: "M103 50 L126 42 L146 34", start: 58, width: 1.5 },
-  { d: "M108 136 L128 150 L144 164", start: 72, width: 1.4 },
-  { d: "M92 38 L78 26 L62 20", start: 82, width: 1.3 },
-]
+const comboAnchors = [
+  { x: 100, y: 44 },
+  { x: 62, y: 70 },
+  { x: 138, y: 72 },
+  { x: 72, y: 128 },
+  { x: 128, y: 126 },
+];
 
 function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max)
+  return Math.min(Math.max(value, min), max);
 }
 
-export default function Money({ money, setMoney, combo, setCombo, selectedCrystal, moss, setMoss, gameOver, setGameOver, setMessage, crack, setCrack, onExit })  {
-  const crystalIdx = selectedCrystal ?? 0
-  const [comboBursts, setComboBursts] = useState([])
-  const [pressing, setPressing] = useState(false)
-  const [clicked, setClicked] = useState(0);
-  const lastClickTime = useRef(0)
-  const particleId = useRef(0)
-  const [exitHover, setExitHover] = useState(false)
-  const [showExit, setShowExit] = useState(false)
+// 클릭 횟수 구간별 수거 배율
+function getCrackMultiplier(clickCount) {
+  if (clickCount <= 10) return { mult: 0.5, label: "×0.5", color: "#888",    desc: "너무 이른 수거" };
+  if (clickCount <= 18) return { mult: 1,   label: "×1",   color: "#aaa",    desc: "기본" };
+  if (clickCount <= 24) return { mult: 2,   label: "×2",   color: "#ffd93d", desc: "스윗스팟" };
+  if (clickCount <= 29) return { mult: 4,   label: "×4",   color: "#ff9f43", desc: "고위험" };
+  return                       { mult: 8,   label: "×8",   color: "#ff4444", desc: "초고위험" };
+}
 
+export default function Money({
+  totalMoney,
+  setTotalMoney,
+  pendingMoney,
+  setPendingMoney,
+  combo,
+  setCombo,
+  selectedCrystal,
+  moss,
+  setMoss,
+  gameOver,
+  setGameOver,
+  setMessage,
+  crack,
+  setCrack,
+}) {
+  const crystalIdx = selectedCrystal ?? 0;
+  const crystal = crystals[crystalIdx];
 
-  function handleClick() {
-    const now = Date.now()
-    const diff = now - lastClickTime.current
-    let newCombo = diff < 500 ? combo + 1 : 1
-    setCombo(newCombo)
-    lastClickTime.current = now
-    setMoney(prev => prev + newCombo)
-    setMoss(prev => Math.max(0, prev - 3))
+  const [comboBursts, setComboBursts] = useState([]);
+  const [pressing, setPressing] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickAt, setLastClickAt] = useState(0);
+  const [collectFlash, setCollectFlash] = useState(false);
+  const particleId = useRef(0);
+  const comboAnchorIndex = useRef(0);
+  const [exitHover, setExitHover] = useState(false);
+  const [showExit, setShowExit] = useState(false);
 
-    const id = particleId.current++
+  function handleCollect() {
+    if (pendingMoney <= 0 || gameOver) return;
+    const { mult } = getCrackMultiplier(clickCount);
+    const finalAmount = Math.floor(pendingMoney * mult);
+    setTotalMoney(prev => prev + finalAmount);
+    setPendingMoney(0);
+    setMoss(0);
+    setCrack(0);
+    setCombo(1);
+    setClickCount(0);
+    setCollectFlash(true);
+    setTimeout(() => setCollectFlash(false), 600);
+  }
+
+  function handleClick(clientX, clientY) {
+    const now = Date.now();
+    const diff = now - lastClickAt;
+    const comboWindow = crystal.comboWindowMs ?? 500;
+    const newCombo = diff < comboWindow ? combo + 1 : 1;
+    setCombo(newCombo);
+    setLastClickAt(now);
+
+    // 돌멩이 수익 배율 적용
+    const earned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
+    setPendingMoney(prev => prev + earned);
+    reduceMossOnClick(setMoss);
+
+    const id = particleId.current++;
     const accent =
-      newCombo >= 15 ? "#ff9cfb" :
-      newCombo >= 10 ? "#ffd166" :
-      newCombo >= 5 ? "#8be9fd" :
-      "#ffffff"
-    const size = Math.min(42 + newCombo * 2.4, 86)
+      newCombo >= 15 ? "#d9c27a" :
+      newCombo >= 10 ? "#c9d1db" :
+      newCombo >= 5  ? "#b8c4b0" :
+                       "#e8e3d6";
+    const labelColor  = newCombo >= 10 ? "rgba(214,205,184,0.58)" : "rgba(196,192,180,0.48)";
+    const moneyColor  = newCombo >= 10 ? "rgba(228,221,196,0.92)" : "rgba(214,210,198,0.86)";
+    const comboSize   = Math.min(28 + newCombo * 2.1, 60);
+    const moneySize   = Math.min(16 + newCombo * 0.5, 24);
+    const anchor      = comboAnchors[comboAnchorIndex.current % comboAnchors.length];
+    comboAnchorIndex.current += 1;
+
+    const comboX      = anchor.x + (-6 + Math.random() * 12);
+    const comboY      = anchor.y + (-6 + Math.random() * 12);
+    const comboDriftX = -16 + Math.random() * 32;
+    const comboDriftY = -30 - Math.random() * 18;
+    const comboSpin   = -10 + Math.random() * 20;
+    const moneyX      = clamp(clientX + (-10 + Math.random() * 20), 52, 148);
+    const moneyY      = clamp(clientY + (-8  + Math.random() * 16), 58, 150);
+    const moneyDriftX = -10 + Math.random() * 20;
+    const moneyDriftY = -44 - Math.random() * 18;
 
     setComboBursts(prev => [
       ...prev,
-      { id, combo: newCombo, earned: newCombo, accent, size },
-    ])
+      {
+        id, combo: newCombo, earned, accent,
+        comboSize, moneySize,
+        comboX, comboY, comboDriftX, comboDriftY, comboSpin,
+        moneyX, moneyY, moneyDriftX, moneyDriftY,
+        labelColor, moneyColor,
+      },
+    ]);
     setTimeout(() => {
-      setComboBursts(prev => prev.filter(burst => burst.id !== id))
-    }, 650)
+      setComboBursts(prev => prev.filter(b => b.id !== id));
+    }, 650);
 
-    setClicked(prev => prev + 1) 
+    setClickCount(prev => prev + 1);
   }
 
-  function handleCrystalClick() {
-    handleClick()
+  function handleCrystalClick(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    handleClick(event.clientX - rect.left, event.clientY - rect.top);
   }
-
-  const crystal = crystals[crystalIdx]
-  const mossLevel = clamp(moss / 100, 0, 1)
 
   return (
+    <>
+    <BackgroundEffect crystalName={crystal.name} />
     <div style={{
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 32,
-      padding: 32,
+      gap: "clamp(14px, 3.5vw, 24px)",
+      padding: "calc(env(safe-area-inset-top,0px) + 16px) clamp(16px,5vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px)",
       position: "relative",
-      
+      boxSizing: "border-box",
+      width: "100%",
+      maxWidth: 520,
+      margin: "0 auto",
+      zIndex: 1,
     }}>
+
       {/* 나가기 버튼 */}
       <button
-        onClick= {() => setShowExit(true)}
+        onClick={() => setShowExit(true)}
         onMouseEnter={() => setExitHover(true)}
         onMouseLeave={() => setExitHover(false)}
         style={{
           position: "absolute",
-          top: 16,
-          right: 16,
-          width: 44,
-          height: 44,
-          padding: 0,
-          border: "none",
-          background: exitHover
-            ? "rgba(255, 255, 255, 0.50)"
-            : "rgba(255, 255, 255, 0.30)",
-          borderRadius: "50%",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          top: "calc(env(safe-area-inset-top,0px) + 4px)",
+          right: "clamp(10px,3vw,16px)",
+          width: "clamp(40px,11vw,44px)",
+          height: "clamp(40px,11vw,44px)",
+          padding: 0, border: "none",
+          background: exitHover ? "rgba(255,255,255,0.50)" : "rgba(255,255,255,0.30)",
+          borderRadius: "50%", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
           transition: "background 0.18s ease, transform 0.15s ease",
           transform: exitHover ? "scale(1.1)" : "scale(1)",
         }}
       >
-        <img
-          src="/icons8-수출-50.png"
-          alt="나가기"
-          style={{
-            width: 26,
-            height: 26,
-            objectFit: "contain",
-            opacity: exitHover ? 1 : 0.7,
-            transition: "opacity 0.18s ease",
-          }}
-        />
+        <img src="exit.png" alt="나가기" style={{ width: 26, height: 26, objectFit: "contain", opacity: exitHover ? 1 : 0.7, transition: "opacity 0.18s ease" }} />
       </button>
 
       <Exit showExit={showExit} setShowExit={setShowExit} />
 
       <style>{`
         @keyframes comboPop {
-          0% {
-            opacity: 0;
-            transform: translate(-50%, 12px) scale(0.55);
-          }
-          20% {
-            opacity: 1;
-            transform: translate(-50%, 0) scale(1.14);
-          }
-          45% {
-            opacity: 1;
-            transform: translate(-50%, -4px) scale(1);
-          }
-          100% {
-            opacity: 0;
-            transform: translate(-50%, -42px) scale(0.94);
-          }
+          0%   { opacity:0; transform:translate(-50%,-50%) scale(0.82) rotate(0deg); }
+          18%  { opacity:1; transform:translate(-50%,-50%) scale(1.08) rotate(-3deg); }
+          48%  { opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg); }
+          100% { opacity:0; transform:translate(calc(-50% + var(--drift-x)),calc(-50% + var(--drift-y))) scale(0.92) rotate(var(--spin)); }
+        }
+        @keyframes moneyPop {
+          0%   { opacity:0; transform:translate(-50%,-50%) scale(0.72); }
+          20%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+          100% { opacity:0; transform:translate(calc(-50% + var(--money-drift-x)),calc(-50% + var(--money-drift-y))) scale(0.9); }
+        }
+        @keyframes collectFlash {
+          0%   { transform:scale(1); }
+          30%  { transform:scale(1.06); }
+          100% { transform:scale(1); }
         }
       `}</style>
 
-      {/* 크리스탈 이름 */}
-      <p style={{
-        color: "rgba(255,255,255,0.4)",
-        fontSize: 13,
-        letterSpacing: "0.2em",
-        textTransform: "uppercase",
-        margin: 0,
-      }}>
-        {crystal.name} 돌멩이
-      </p>
+      {/* 돌멩이 이름 + 베네핏 */}
+      <div style={{ textAlign: "center" }}>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
+          {crystal.name} 돌멩이
+        </p>
+        {crystal.benefit && (
+          <p style={{ color: "rgba(255,255,255,0.28)", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
+            {crystal.benefit}
+          </p>
+        )}
+      </div>
 
-      {/* 슬라이더 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-       
-
-        {/* 크리스탈 구체 */}
-        <div
-          onClick={handleCrystalClick}
-          onMouseDown={() => setPressing(true)}
-          onMouseUp={() => setPressing(false)}
-          onMouseLeave={() => setPressing(false)}
-          style={{
-            position: "relative",
-            width: 200,
-            height: 200,
-            cursor: "pointer",
-            userSelect: "none",
-          }}
-        >
-          <div style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            ...crystal.style,
-            transform: pressing ? "scale(0.93)" : "scale(1)",
-            transition: "transform 0.12s cubic-bezier(0.34,1.56,0.64,1)",
-          }} />
-
-          <div style={{
-            position: "absolute",
-            inset: 0,
-            borderRadius: "50%",
-            overflow: "hidden",
-            pointerEvents: "none",
-          }}>
-            <svg
-              viewBox="0 0 200 200"
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-              }}
-            >
-              <defs>
-                <clipPath id="crystalClip">
-                  <circle cx="100" cy="100" r="100" />
-                </clipPath>
-                <filter id="mossBlur">
-                  <feGaussianBlur stdDeviation="0.9" />
-                </filter>
-              </defs>
-
-              <g clipPath="url(#crystalClip)">
-                <ellipse
-                  cx="100"
-                  cy="140"
-                  rx="72"
-                  ry="38"
-                  fill="rgba(28, 84, 32, 0.10)"
-                  opacity={mossLevel}
-                />
-
-                {mossDots.map((dot, index) => {
-                  const strength = clamp((moss - dot.start) / 14, 0, 1)
-
-                  return (
-                    <g key={index} opacity={strength} filter="url(#mossBlur)">
-                      <circle
-                        cx={dot.cx}
-                        cy={dot.cy}
-                        r={dot.r + strength * 1.2}
-                        fill={dot.shade}
-                      />
-                      <circle
-                        cx={dot.cx - 1}
-                        cy={dot.cy - 1}
-                        r={Math.max(dot.r * 0.45, 1.4)}
-                        fill="rgba(198, 255, 173, 0.34)"
-                      />
-                    </g>
-                  )
-                })}
-
-                {crackPaths.map((path, index) => {
-                  const strength = clamp((crack - path.start) / 18, 0, 1)
-
-                  return (
-                    <g key={index} opacity={strength}>
-                      <path
-                        d={path.d}
-                        fill="none"
-                        stroke="rgba(18, 18, 18, 0.62)"
-                        strokeWidth={path.width + 1}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d={path.d}
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.36)"
-                        strokeWidth={Math.max(path.width - 0.6, 0.8)}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                  )
-                })}
-              </g>
-            </svg>
-          </div>
-
-          {/* 하이라이트 */}
-          <div style={{
-            position: "absolute",
-            top: "14%", left: "20%",
-            width: "35%", height: "22%",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.28)",
-            filter: "blur(6px)",
-            pointerEvents: "none",
-          }} />
-
-          {comboBursts.map(burst => (
-            <div key={burst.id} style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
+      {/* 크리스탈 */}
+      <Crystal
+        crystalStyle={crystal.style}
+        crystalName={crystal.name}
+        moss={moss}
+        crack={crack}
+        pressing={pressing}
+        onClick={handleCrystalClick}
+        onPressStart={() => setPressing(true)}
+        onPressEnd={() => setPressing(false)}
+      >
+        {comboBursts.map(burst => (
+          <Fragment key={burst.id}>
+            <div style={{
+              position: "absolute", left: burst.comboX, top: burst.comboY,
               pointerEvents: "none",
-              animation: "comboPop 0.65s cubic-bezier(0.2, 0.9, 0.25, 1) forwards",
-              whiteSpace: "nowrap",
-              textAlign: "center",
-              lineHeight: 1,
-              transform: "translate(-50%, 0)",
-              textShadow: "0 0 28px rgba(255,255,255,0.2), 0 8px 24px rgba(0, 0, 0, 0.45)",
+              animation: "comboPop 0.68s cubic-bezier(0.2,0.9,0.25,1) forwards",
+              whiteSpace: "nowrap", textAlign: "center", lineHeight: 1,
+              transform: "translate(-50%,-50%)",
+              textShadow: "0 0 26px rgba(255,255,255,0.16), 0 10px 24px rgba(0,0,0,0.42)",
+              "--drift-x": `${burst.comboDriftX}px`,
+              "--drift-y": `${burst.comboDriftY}px`,
+              "--spin": `${burst.comboSpin}deg`,
             }}>
-              <div style={{
-                fontSize: 12,
-                fontWeight: 800,
-                letterSpacing: "0.32em",
-                color: "rgba(255,255,255,0.72)",
-                marginBottom: 6,
-                paddingLeft: "0.32em",
-              }}>
-                COMBO
-              </div>
-              <div style={{
-                fontSize: burst.size,
-                fontWeight: 900,
-                letterSpacing: "-0.06em",
-                color: burst.accent,
-              }}>
-                {burst.combo}
-              </div>
-              <div style={{
-                marginTop: 4,
-                fontSize: 18,
-                fontWeight: 800,
-                color: "rgba(255,255,255,0.92)",
-                letterSpacing: "-0.03em",
-              }}>
-                +{burst.earned}원
+              <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.28em", color: burst.labelColor, marginBottom: 4, paddingLeft: "0.28em" }}>COMBO</div>
+              <div style={{ fontSize: `clamp(22px,${burst.comboSize/200*100}vw,${burst.comboSize}px)`, fontWeight: 900, letterSpacing: "-0.08em", color: burst.accent, lineHeight: 0.92 }}>
+                x{burst.combo}
               </div>
             </div>
-          ))}
-        </div>
+            <div style={{
+              position: "absolute", left: burst.moneyX, top: burst.moneyY,
+              pointerEvents: "none",
+              animation: "moneyPop 0.56s ease-out forwards",
+              whiteSpace: "nowrap", textAlign: "center",
+              transform: "translate(-50%,-50%)",
+              textShadow: "0 6px 18px rgba(0,0,0,0.32)",
+              "--money-drift-x": `${burst.moneyDriftX}px`,
+              "--money-drift-y": `${burst.moneyDriftY}px`,
+              fontSize: `clamp(13px,${burst.moneySize/200*100}vw,${burst.moneySize}px)`,
+              fontWeight: 800, color: burst.moneyColor, letterSpacing: "-0.03em",
+            }}>
+              +{burst.earned}원
+            </div>
+          </Fragment>
+        ))}
+      </Crystal>
 
-        
-      </div>
+      <Moss
+        moss={moss} setMoss={setMoss}
+        setGameOver={setGameOver} setMessage={setMessage}
+        lastClickAt={lastClickAt} gameOver={gameOver}
+        mossSpeedMult={crystal.mossSpeedMult ?? 1}
+      />
 
-      {/* 이끼 */}
-      <Moss moss={moss} setMoss={setMoss} setGameOver={setGameOver} setMessage={setMessage} lastClickTime={lastClickTime} gameOver={gameOver}/>
+      <Crack
+        crack={crack} setCrack={setCrack}
+        setGameOver={setGameOver} setMessage={setMessage}
+        setPendingMoney={setPendingMoney}
+        clickCount={clickCount} gameOver={gameOver}
+        crackMin={crystal.crackMin ?? 1.5}
+        crackMax={crystal.crackMax ?? 2.5}
+      />
 
-      {/* 깨짐 */}
-      <Crack  crack={crack} setCrack={setCrack} setGameOver={setGameOver} setMessage={setMessage} clicked = {clicked} gameOver = {gameOver}/>
+      {/* 수거 UI */}
+      {(() => {
+        const crackInfo = getCrackMultiplier(clickCount);
+        const nextEarned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
+        const finalPreview = Math.floor(pendingMoney * crackInfo.mult);
+        return (
+          <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
 
-      {/* 돈 표시 */}
-      <div style={{
-        background: "rgba(255,249,160,0.12)",
-        border: "1px solid rgba(255,249,160,0.3)",
-        color: "#fffaaa",
-        fontSize: 26,
-        fontWeight: 700,
-        padding: "12px 36px",
-        borderRadius: 14,
-        minWidth: 200,
-        textAlign: "center",
-      }}>
-        {money.toLocaleString()}원
-      </div>
+            {/* 다음 클릭 예고 */}
+            <div style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
+              borderRadius: 10, padding: "7px 14px", boxSizing: "border-box",
+            }}>
+              <span style={{ fontSize: "clamp(11px,2.6vw,12px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em" }}>
+                다음 클릭 시
+              </span>
+              <span style={{ fontSize: "clamp(15px,4vw,18px)", fontWeight: 800, color: "#ffd700", textShadow: "0 0 12px rgba(255,215,0,0.4)" }}>
+                +{nextEarned.toLocaleString()}원
+              </span>
+            </div>
 
-    
+            {/* 누적 돈 + 배율 */}
+            <div style={{
+              background: "rgba(255,249,160,0.10)", border: `1px solid ${crackInfo.color}44`,
+              color: "#fffaaa", borderRadius: 14, textAlign: "center",
+              boxSizing: "border-box", lineHeight: 1.2, overflow: "hidden",
+            }}>
+              <div style={{ padding: "clamp(10px,2.8vw,12px) clamp(18px,6vw,28px)" }}>
+                <div style={{ fontSize: "clamp(10px,2.4vw,12px)", opacity: 0.6, marginBottom: 2, letterSpacing: "0.1em" }}>
+                  누적 중 (수거 전)
+                </div>
+                <div style={{ fontSize: "clamp(18px,5vw,22px)", fontWeight: 700 }}>
+                  {pendingMoney.toLocaleString()}원
+                </div>
+              </div>
+              {/* 수거 배율 바 */}
+              <div style={{
+                background: `${crackInfo.color}18`,
+                borderTop: `0.5px solid ${crackInfo.color}33`,
+                padding: "6px 14px",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <span style={{ fontSize: "clamp(10px,2.4vw,11px)", color: crackInfo.color, fontWeight: 600 }}>
+                  {crackInfo.label} · {crackInfo.desc}
+                </span>
+                <span style={{ fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 800, color: crackInfo.color }}>
+                  → {finalPreview.toLocaleString()}원
+                </span>
+              </div>
+            </div>
+
+            {/* 수거 버튼 */}
+            <button
+              onClick={handleCollect}
+              disabled={pendingMoney <= 0 || gameOver}
+              style={{
+                padding: "clamp(11px,3vw,14px)", borderRadius: 14, border: "none",
+                background: pendingMoney > 0 && !gameOver ? "linear-gradient(135deg,#2d6a4f,#52b788)" : "rgba(255,255,255,0.06)",
+                color: pendingMoney > 0 && !gameOver ? "#fff" : "rgba(255,255,255,0.25)",
+                fontSize: "clamp(15px,4vw,17px)", fontWeight: 700,
+                cursor: pendingMoney > 0 && !gameOver ? "pointer" : "not-allowed",
+                letterSpacing: "0.04em",
+                transition: "background 0.2s, transform 0.1s",
+                animation: collectFlash ? "collectFlash 0.6s ease" : "none",
+                boxSizing: "border-box", width: "100%",
+              }}
+            >
+              💰 수거하기
+            </button>
+
+            {/* 총 보유 */}
+            <div style={{
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
+              padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
+            }}>
+              총 보유: {totalMoney.toLocaleString()}원
+            </div>
+          </div>
+        );
+      })()}
+
     </div>
-  )
+    </>
+  );
 }

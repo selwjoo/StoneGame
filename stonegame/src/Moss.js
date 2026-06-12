@@ -1,96 +1,119 @@
 import { useEffect } from "react";
 
+const mossStains = [
+  { cx: 98,  cy: 42,  rx: 60, ry: 18, start: 6,  rotate: -2,  shade: "rgba(78,101,67,0.18)"  },
+  { cx: 62,  cy: 68,  rx: 42, ry: 18, start: 18, rotate: -18, shade: "rgba(88,113,76,0.18)"  },
+  { cx: 142, cy: 74,  rx: 40, ry: 18, start: 28, rotate: 16,  shade: "rgba(92,118,78,0.16)"  },
+  { cx: 102, cy: 102, rx: 58, ry: 24, start: 44, rotate: 4,   shade: "rgba(72,92,62,0.18)"   },
+  { cx: 70,  cy: 136, rx: 44, ry: 20, start: 62, rotate: -14, shade: "rgba(98,124,86,0.14)"  },
+  { cx: 144, cy: 142, rx: 42, ry: 18, start: 74, rotate: 14,  shade: "rgba(86,108,74,0.14)"  },
+];
+
+function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
+
 function getMossIncrease(moss) {
-  if (moss < 15) return 1.2;
-  if (moss < 35) return 2.1;
+  if (moss < 15) return 2;
+  if (moss < 35) return 2.5;
   if (moss < 55) return 3.4;
   if (moss < 75) return 5.2;
   if (moss < 90) return 7.4;
   return 10;
 }
 
-function Moss({
-  moss,
-  setMoss,
-  setGameOver,
-  setMessage,
-  lastClickTime,
-  gameOver,
-}) {
+export function reduceMossOnClick(setMoss) {
+  setMoss(prev => Math.max(0, prev - 3));
+}
 
-  useEffect(() => {
-
-    const timer = setInterval(() => {
-
-      if (gameOver) return;
-
-      const now = Date.now();
-
-      if (now - lastClickTime.current <= 1200) return;
-
-      setMoss((prev) => {
-
-        const next = prev + getMossIncrease(prev);
-
-        if (next >= 100) {
-          setGameOver(true);
-          setMessage("이끼가 돌을 완전히 덮었습니다");
-          return 100;
-        }
-
-        return next;
-      });
-
-    }, 700);
-
-    return () => clearInterval(timer);
-
-  }, [
-    gameOver,
-    lastClickTime,
-    setGameOver,
-    setMessage,
-    setMoss,
-  ]);
+export function MossOverlay({ moss }) {
+  const mossLevel       = clamp(moss / 100, 0, 1);
+  const veilOpacity     = 0.06 + mossLevel * 0.34;
+  const topWashOpacity  = 0.08 + mossLevel * 0.28;
+  const fullCoverOpacity = Math.max(0, (mossLevel - 0.68) / 0.32) * 0.42;
 
   return (
-    <div style={{ width: "300px" }}>
-
-      <h2
-        style={{
-          color: "white",
-          marginBottom: "10px",
-        }}
-      >
-        🌿 이끼 : {Math.floor(moss)}%
-      </h2>
-
-      <div
-        style={{
-          width: "100%",
-          height: "20px",
-          background: "#333",
-          borderRadius: "999px",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            width: `${moss}%`,
-            height: "100%",
-            background:
-              moss > 70
-                ? "#14532d"
-                : moss > 40
-                ? "#22c55e"
-                : "#86efac",
-            transition: "0.2s",
-          }}
-        />
-      </div>
-
-    </div>
+    <svg viewBox="0 0 200 200" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
+      <defs>
+        <filter id="mossWash"><feGaussianBlur stdDeviation="3.8" /></filter>
+        <linearGradient id="mossTopFlow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor={`rgba(95,122,80,${topWashOpacity})`} />
+          <stop offset="45%"  stopColor={`rgba(82,105,70,${topWashOpacity * 0.72})`} />
+          <stop offset="100%" stopColor="rgba(55,72,48,0)" />
+        </linearGradient>
+        <radialGradient id="mossFullCover" cx="50%" cy="46%" r="68%">
+          <stop offset="0%"   stopColor={`rgba(90,118,76,${fullCoverOpacity * 0.72})`} />
+          <stop offset="100%" stopColor={`rgba(66,86,56,${fullCoverOpacity})`} />
+        </radialGradient>
+      </defs>
+      <circle cx="100" cy="100" r="100" fill="url(#mossTopFlow)" />
+      <circle cx="100" cy="100" r="100" fill="url(#mossFullCover)" />
+      {mossStains.map((stain, i) => {
+        const strength = clamp((moss - stain.start) / 20, 0, 1);
+        const rx = stain.rx + strength * 10;
+        const ry = stain.ry + strength * 5;
+        return (
+          <g key={i} opacity={strength * 0.9} filter="url(#mossWash)">
+            <ellipse cx={stain.cx} cy={stain.cy} rx={rx} ry={ry} fill={stain.shade} transform={`rotate(${stain.rotate} ${stain.cx} ${stain.cy})`} />
+            <ellipse cx={stain.cx - rx*0.18} cy={stain.cy - ry*0.12} rx={rx*0.58} ry={ry*0.34} fill="rgba(162,182,150,0.07)" transform={`rotate(${stain.rotate} ${stain.cx} ${stain.cy})`} />
+            <ellipse cx={stain.cx + rx*0.1}  cy={stain.cy + ry*0.04} rx={rx*0.86} ry={ry*0.56} fill="rgba(46,60,42,0.08)"   transform={`rotate(${stain.rotate} ${stain.cx} ${stain.cy})`} />
+          </g>
+        );
+      })}
+      <circle cx="100" cy="100" r="100" fill={`rgba(78,102,66,${veilOpacity})`} opacity={mossLevel} />
+    </svg>
   );
 }
 
-export default Moss;
+export default function Moss({
+  moss, setMoss,
+  setGameOver, setMessage,
+  lastClickAt, gameOver,
+  mossSpeedMult = 1,
+}) {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (gameOver) return;
+      if (Date.now() - lastClickAt <= 1200) return;
+
+      setMoss(prev => {
+        const next = prev + getMossIncrease(prev) * mossSpeedMult;
+        if (next >= 100) {
+          setGameOver(true);
+          setMessage("🌿 이끼가 돌을 완전히 덮었습니다...");
+          return 100;
+        }
+        return next;
+      });
+    }, 700);
+    return () => clearInterval(timer);
+  }, [gameOver, lastClickAt, mossSpeedMult, setGameOver, setMessage, setMoss]);
+
+  const mossColor = moss > 70 ? "#14532d" : moss > 40 ? "#22c55e" : "#86efac";
+
+  return (
+    <div style={{ width: "min(100%,360px)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+        <h2 style={{ color: "white", margin: 0, fontSize: "clamp(14px,3.8vw,17px)", lineHeight: 1.2 }}>
+          🌿 이끼
+        </h2>
+        <span style={{ color: mossColor, fontWeight: 700, fontSize: "clamp(13px,3.4vw,15px)" }}>
+          {Math.floor(moss)}%
+        </span>
+      </div>
+      <div style={{
+        width: "100%", height: "clamp(14px,3.5vw,18px)",
+        background: "rgba(255,255,255,0.07)", borderRadius: "999px",
+        overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.06)",
+      }}>
+        <div style={{
+          width: `${moss}%`, height: "100%",
+          background: moss > 70
+            ? "linear-gradient(90deg,#14532d,#166534)"
+            : moss > 40
+              ? "linear-gradient(90deg,#15803d,#22c55e)"
+              : "linear-gradient(90deg,#4ade80,#86efac)",
+          transition: "0.2s", borderRadius: "999px",
+        }} />
+      </div>
+    </div>
+  );
+}
