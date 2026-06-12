@@ -35,7 +35,7 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         padding: "clamp(9px,2.3vw,10px) clamp(18px,6vw,32px)",
         borderRadius: 14, maxWidth: "100%", textAlign: "center",
       }}>
-        💰 {money.toLocaleString()}원
+        {money.toLocaleString()}원
       </div>
 
       <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: 0, textAlign: "center" }}>
@@ -69,8 +69,8 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         </p>
         {crystal.benefit && (
           <p style={{
-            color: "#6bcb77", fontSize: "clamp(12px,3vw,13px)", fontWeight: 600, margin: 0,
-            background: "rgba(107,203,119,0.08)", border: "0.5px solid rgba(107,203,119,0.2)",
+            color: "#60a5fa", fontSize: "clamp(12px,3vw,13px)", fontWeight: 600, margin: 0,
+            background: "rgba(96,165,250,0.08)", border: "0.5px solid rgba(96,165,250,0.2)",
             borderRadius: 8, padding: "4px 12px", display: "inline-block",
           }}>
             ✦ {crystal.benefit}
@@ -85,7 +85,6 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         textAlign: "center", maxWidth: "min(100%,320px)", lineHeight: 1.4,
       }}>
         {crystal.price === 0 ? "무료" : `${crystal.price.toLocaleString()}원`}
-        {!canBuy && "  (돈이 부족해요)"}
       </p>
 
       {/* 구매 버튼 */}
