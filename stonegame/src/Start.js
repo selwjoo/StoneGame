@@ -35,6 +35,7 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
           크리스탈을 선택하세요
         </p>
 
+
       {/* 슬라이더 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px,4vw,32px)", width: "100%", marginBottom: "clamp(12px,3vw,16px)" }}>
         <button type="button" onClick={prev} style={arrowBtn} aria-label="이전 크리스탈">
