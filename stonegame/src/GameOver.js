@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { formatPieces } from "./formatPieces";
 import Potion from "./Potion";
 
 export default function GameOver({
@@ -56,7 +57,7 @@ export default function GameOver({
           fontSize: "clamp(13px, 3.4vw, 14px)",
           color: "#fffaaa",
         }}>
-          현재 보유: {totalMoney.toLocaleString()}원
+          현재 보유: {formatPieces(totalMoney)}
         </div>
 
         <Potion

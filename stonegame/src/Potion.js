@@ -1,3 +1,5 @@
+import { formatPieces } from "./formatPieces";
+
 export default function Potion({
   money,
   setMoney,
@@ -39,13 +41,13 @@ export default function Potion({
       }}>
         <span style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "rgba(255,255,255,0.5)" }}>회복 물약</span>
         <span style={{ fontSize: "clamp(14px, 3.8vw, 16px)", fontWeight: 700, color: "#6bcb77" }}>
-          {potionPrice.toLocaleString()}원
+          {formatPieces(potionPrice)}
         </span>
       </div>
 
       {!canBuy && (
         <p style={{ margin: 0, color: "#ff6b6b", fontSize: "clamp(12px, 3.2vw, 13px)", fontWeight: 600 }}>
-          보유 금액이 부족합니다
+          보유 조각이 부족합니다
         </p>
       )}
 

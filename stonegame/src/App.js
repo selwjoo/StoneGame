@@ -23,8 +23,6 @@ function App() {
   const [reviveCount, setReviveCount] = useState(0);
 
   const [selectedCrystal, setSelectedCrystal] = useState(0);
-  const [unlockedCrystals, setUnlockedCrystals] = useState([0]); // 잠금해제된 돌 인덱스
-
   return (
     <div style={{ background: "#0a0a0f", minHeight: "100vh" }}>
       <BrowserRouter>
