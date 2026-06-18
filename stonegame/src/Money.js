@@ -34,6 +34,10 @@ function getCrackMultiplier(clickCount) {
 export default function Money({
   totalMoney,
   setTotalMoney,
+  unlockedCrystals,
+  setUnlockedCrystals,
+  pendingPurchaseCrystal,
+  setPendingPurchaseCrystal,
   pendingMoney,
   setPendingMoney,
   combo,
@@ -80,6 +84,32 @@ export default function Money({
       setCombo(1);
     }
   }, [gameOver, setCombo]);
+
+  useEffect(() => {
+    if (pendingPurchaseCrystal !== selectedCrystal) return;
+    if (unlockedCrystals.includes(selectedCrystal)) {
+      setPendingPurchaseCrystal(null);
+      return;
+    }
+
+    const price = crystal.price ?? 0;
+    if (price > 0) {
+      setTotalMoney(prev => prev - price);
+    }
+    setUnlockedCrystals(prev => {
+      if (prev.includes(selectedCrystal)) return prev;
+      return [...prev, selectedCrystal];
+    });
+    setPendingPurchaseCrystal(null);
+  }, [
+    crystal.price,
+    pendingPurchaseCrystal,
+    selectedCrystal,
+    setPendingPurchaseCrystal,
+    setTotalMoney,
+    setUnlockedCrystals,
+    unlockedCrystals,
+  ]);
 
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
@@ -168,29 +198,34 @@ export default function Money({
       margin: "0 auto",
       zIndex: 1,
     }}>
-      <MoneyHeader money={totalMoney} titleOffset={8} moneyOffset={20} />
-
-      {/* 나가기 버튼 */}
-      <button
-        onClick={() => setShowExit(true)}
-        onMouseEnter={() => setExitHover(true)}
-        onMouseLeave={() => setExitHover(false)}
-        style={{
-          position: "absolute",
-          top: "calc(env(safe-area-inset-top,0px) + 25px)",
-          left: "clamp(30px,8vw,42px)",
-          width: "clamp(40px,11vw,44px)",
-          height: "clamp(40px,11vw,44px)",
-          padding: 0, border: "none",
-          background: "transparent",
-          borderRadius: "50%", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "transform 0.15s ease",
-          transform: exitHover ? "scale(1.1)" : "scale(1)",
-        }}
-      >
-        <img src="exit.png" alt="나가기" style={{ width: 20, height: 20, objectFit: "contain", opacity: exitHover ? 1 : 0.82, transition: "opacity 0.18s ease" }} />
-      </button>
+      <MoneyHeader
+        money={totalMoney}
+        titleOffset={8}
+        moneyOffset={20}
+        leftSlot={
+          <button
+            onClick={() => setShowExit(true)}
+            onMouseEnter={() => setExitHover(true)}
+            onMouseLeave={() => setExitHover(false)}
+            style={{
+              width: "clamp(40px,11vw,44px)",
+              height: "clamp(40px,11vw,44px)",
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              borderRadius: "50%",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform 0.15s ease",
+              transform: exitHover ? "translateY(10px) scale(1.1)" : "translateY(10px) scale(1)",
+            }}
+          >
+            <img src="exit.png" alt="나가기" style={{ width: 20, height: 20, objectFit: "contain", opacity: exitHover ? 1 : 0.82, transition: "opacity 0.18s ease" }} />
+          </button>
+        }
+      />
 
       <Exit showExit={showExit} setShowExit={setShowExit} onResetGame={resetRoundState} />
 

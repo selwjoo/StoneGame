@@ -7,9 +7,8 @@ import BenefitRecord from './BenefitRecord';
 
 export default function Start({
   money,
-  setMoney,
   unlockedCrystals,
-  setUnlockedCrystals,
+  setPendingPurchaseCrystal,
   selectedCrystal,
   setSelectedCrystal,
 }) {
@@ -25,12 +24,7 @@ export default function Start({
 
   function handleBuy() {
     if (!canBuy) return;
-
-    if (!isOwned && crystal.price > 0) {
-      setMoney(prev => prev - crystal.price);
-      setUnlockedCrystals(prev => [...prev, selectedCrystal]);
-    }
-
+    setPendingPurchaseCrystal(isOwned ? null : selectedCrystal);
     navigate('/money');
   }
 
@@ -194,10 +188,10 @@ const priceStyle = {
 
 const arrowBtn = {
   width: "clamp(42px,11vw,48px)", height: "clamp(42px,11vw,48px)", borderRadius: "50%",
-  background: "rgba(255,255,255,0.06)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  boxShadow: "0 10px 24px rgba(0,0,0,0.22)",
-  backdropFilter: "blur(6px)",
+  background: "transparent",
+  border: "none",
+  boxShadow: "none",
+  backdropFilter: "none",
   cursor: "pointer",
   display: "flex", alignItems: "center", justifyContent: "center",
 };

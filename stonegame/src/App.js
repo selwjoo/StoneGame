@@ -14,6 +14,7 @@ function App() {
   const [pendingMoney, setPendingMoney] = useState(0);
   const [combo, setCombo] = useState(1);
   const [unlockedCrystals, setUnlockedCrystals] = useState([0]);
+  const [pendingPurchaseCrystal, setPendingPurchaseCrystal] = useState(null);
   const [progressReady, setProgressReady] = useState(false);
 
   const [moss, setMoss] = useState(0);
@@ -92,9 +93,8 @@ function App() {
         <PrivateRoute>
         <Start
       money={totalMoney}
-      setMoney={setTotalMoney}
       unlockedCrystals={unlockedCrystals}
-      setUnlockedCrystals={setUnlockedCrystals}
+      setPendingPurchaseCrystal={setPendingPurchaseCrystal}
       selectedCrystal={selectedCrystal}
       setSelectedCrystal={setSelectedCrystal}
     />
@@ -106,6 +106,10 @@ function App() {
               <Money
                 totalMoney={totalMoney}
                 setTotalMoney={setTotalMoney}
+                unlockedCrystals={unlockedCrystals}
+                setUnlockedCrystals={setUnlockedCrystals}
+                pendingPurchaseCrystal={pendingPurchaseCrystal}
+                setPendingPurchaseCrystal={setPendingPurchaseCrystal}
                 pendingMoney={pendingMoney}
                 setPendingMoney={setPendingMoney}
                 combo={combo}
