@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import Money from './Money';
 import GameOver from './GameOver';
 import Start from './Start';
@@ -27,42 +27,41 @@ function App() {
     <div style={{ background: "#0a0a0f", minHeight: "100vh" }}>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={
-            <PrivateRoute>
-              <Start
-              money={totalMoney}
-              setMoney={setTotalMoney}
-              selectedCrystal={selectedCrystal}
-              setSelectedCrystal={setSelectedCrystal}
-              />
-            </PrivateRoute>}
-            
-          />
+          {/* 맨 처음 들어오면 회원가입으로 */}
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          <Route path="/start" element={
+        <PrivateRoute>
+        <Start
+      money={totalMoney}
+      setMoney={setTotalMoney}
+      selectedCrystal={selectedCrystal}
+      setSelectedCrystal={setSelectedCrystal}
+    />
+  </PrivateRoute>}
+/>
+
           <Route path="/money" element={
             <PrivateRoute>
               <Money
-              totalMoney={totalMoney}
-              setTotalMoney={setTotalMoney}
-              pendingMoney={pendingMoney}
-              setPendingMoney={setPendingMoney}
-              combo={combo}
-              setCombo={setCombo}
-              selectedCrystal={selectedCrystal}
-              moss={moss}
-              setMoss={setMoss}
-              gameOver={gameOver}
-              setGameOver={setGameOver}
-              setMessage={setMessage}
-              crack={crack}
-              setCrack={setCrack}
-            />
+                totalMoney={totalMoney}
+                setTotalMoney={setTotalMoney}
+                pendingMoney={pendingMoney}
+                setPendingMoney={setPendingMoney}
+                combo={combo}
+                setCombo={setCombo}
+                selectedCrystal={selectedCrystal}
+                moss={moss}
+                setMoss={setMoss}
+                gameOver={gameOver}
+                setGameOver={setGameOver}
+                setMessage={setMessage}
+                crack={crack}
+                setCrack={setCrack}
+              />
             </PrivateRoute>}
-            
           />
-
-          <Route path="/signup" element={<Signup />} />
-          
         </Routes>
         <GameOver
           totalMoney={totalMoney}
