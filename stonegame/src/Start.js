@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { crystals } from './crystalList';
 import BackgroundEffect from './BackgroundEffect';
+import { formatPieces } from './formatPieces';
 import MoneyHeader from './MoneyHeader';
 
 export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal }) {
@@ -28,15 +29,16 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
       boxSizing: "border-box",
       position: "relative", zIndex: 1, width: "100%", maxWidth: 520, margin: "0 auto",
     }}>
-      <MoneyHeader money={money} />
+      <MoneyHeader money={money} titleOffset={4} moneyOffset={24} />
 
       <div style={contentColumnStyle}>
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: 0, textAlign: "center" }}>
-          크리스탈을 선택하세요
+        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: "0 0 clamp(20px,5vw,28px)", textAlign: "center" }}>
+          돌멩이를 선택하세요
         </p>
 
+
       {/* 슬라이더 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px,4vw,32px)", width: "100%", marginBottom: "clamp(12px,3vw,16px)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px,4vw,32px)", width: "100%", marginBottom: "clamp(22px,5vw,28px)" }}>
         <button type="button" onClick={prev} style={arrowBtn} aria-label="이전 크리스탈">
           <img src="/left.png" alt="" style={arrowImageStyle} />
         </button>
@@ -66,9 +68,16 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         </p>
         {crystal.benefit && (
           <p style={{
-            color: "#60a5fa", fontSize: "clamp(12px,3vw,13px)", fontWeight: 600, margin: 0,
-            background: "rgba(96,165,250,0.08)", border: "0.5px solid rgba(96,165,250,0.2)",
-            borderRadius: 8, padding: "4px 12px", display: "inline-block",
+            color: "rgba(214, 205, 190, 0.86)",
+            fontSize: "clamp(12px,3vw,13px)",
+            fontWeight: 600,
+            margin: 0,
+            background: "rgba(214, 205, 190, 0.08)",
+            border: "0.5px solid rgba(214, 205, 190, 0.14)",
+            borderRadius: 999,
+            padding: "5px 14px",
+            display: "inline-block",
+            letterSpacing: "0.02em",
           }}>
             ✦ {crystal.benefit}
           </p>
@@ -77,12 +86,11 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
 
       {/* 가격 */}
       <p style={{
-        color: canBuy ? "#6bcb77" : "#ff6b6b",
+        color: canBuy ? "#7FD88A" : "#FF5C5C",
         fontSize: "clamp(14px,3.8vw,16px)", fontWeight: 600, margin: "8px 0 0",
         textAlign: "center", maxWidth: "min(100%,320px)", lineHeight: 1.4,
       }}>
-        {crystal.price === 0 ? "보유 중" : `${crystal.price.toLocaleString()}원`}
-        {!canBuy && "  (돈이 부족해요)"}
+        {crystal.price === 0 ? "보유 중" : formatPieces(crystal.price)}
       </p>
 
       {/* 구매 버튼 */}
@@ -112,7 +120,7 @@ const contentColumnStyle = {
   flexDirection: "column",
   alignItems: "center",
   gap: 0,
-  marginTop: "clamp(112px,27vw,136px)",
+  marginTop: "clamp(128px,31vw,152px)",
 };
 
 const arrowBtn = {
