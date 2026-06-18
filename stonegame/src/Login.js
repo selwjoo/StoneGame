@@ -28,7 +28,7 @@ function Login() {
       localStorage.setItem('refresh', data.refresh);
       localStorage.setItem('username', username);
 
-      navigate('/');
+      navigate('/start'); // ⚠️ '/' 대신 '/start'로! ('/'는 이제 로그인 화면이라 루프됨)
     } catch (err) {
       setError('서버에 연결할 수 없습니다.');
     }
@@ -37,9 +37,11 @@ function Login() {
   return (
     <div style={{
       display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
+      gap: '16px',
     }}>
       <form onSubmit={handleSubmit} style={{
         background: '#16161f',
@@ -51,12 +53,7 @@ function Login() {
         flexDirection: 'column',
         gap: '16px',
       }}>
-        <h2 style={{
-          color: '#fff',
-          textAlign: 'center',
-          marginBottom: '10px',
-          letterSpacing: '2px',
-        }}>
+        <h2 style={{ color: '#fff', textAlign: 'center', marginBottom: '10px', letterSpacing: '2px' }}>
           로그인
         </h2>
 
@@ -66,15 +63,7 @@ function Login() {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{
-              padding: '10px 12px',
-              borderRadius: '8px',
-              border: '1px solid #333',
-              background: '#0a0a0f',
-              color: '#fff',
-              outline: 'none',
-              fontSize: '14px',
-            }}
+            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #333', background: '#0a0a0f', color: '#fff', outline: 'none', fontSize: '14px' }}
           />
         </div>
 
@@ -84,15 +73,7 @@ function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{
-              padding: '10px 12px',
-              borderRadius: '8px',
-              border: '1px solid #333',
-              background: '#0a0a0f',
-              color: '#fff',
-              outline: 'none',
-              fontSize: '14px',
-            }}
+            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #333', background: '#0a0a0f', color: '#fff', outline: 'none', fontSize: '14px' }}
           />
         </div>
 
@@ -116,12 +97,12 @@ function Login() {
           로그인
         </button>
       </form>
+
+      <p style={{ color: '#888', fontSize: '13px', textAlign: 'center', margin: 0 }}>
+        계정이 없나요? <Link to="/signup" style={{ color: '#9b8cff' }}>회원가입</Link>
+      </p>
     </div>
   );
 }
 
 export default Login;
-
-<p style={{ color: '#888', fontSize: '13px', textAlign: 'center', margin: 0 }}>
-          계정이 없나요? <Link to="/signup" style={{ color: '#9b8cff' }}>회원가입</Link>
-        </p>

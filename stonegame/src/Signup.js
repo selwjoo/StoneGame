@@ -25,7 +25,7 @@ function Signup() {
       }
 
       alert('회원가입 성공! 로그인 해주세요.');
-      navigate('/login');
+      navigate('/'); // ⚠️ '/login' → '/' (이제 로그인이 '/' 임)
     } catch (err) {
       setError('서버에 연결할 수 없습니다.');
     }
@@ -70,9 +70,7 @@ function Signup() {
           가입하기
         </button>
 
-        <p style={{ color: '#888', fontSize: '13px', textAlign: 'center', margin: 0 }}>
-          이미 계정이 있나요? <Link to="/login" style={{ color: '#9b8cff' }}>로그인</Link>
-        </p>
+       
       </form>
     </div>
   );
