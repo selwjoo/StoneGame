@@ -6,9 +6,7 @@ export default function GameOver({
   totalMoney,
   setTotalMoney,
   setPendingMoney,
-  moss,
   setMoss,
-  crack,
   setCrack,
   gameOver,
   setGameOver,
@@ -19,23 +17,20 @@ export default function GameOver({
   reviveCount,
   setReviveCount,
   setCombo,
-  setSelectedCrystal,
 }) {
   const navigate = useNavigate();
 
   function handleExitGame() {
-    // 완전 초기화
+    // 이번 판 상태만 정리하고 메인으로 복귀
     setGameOver(false);
     setMessage("");
     setMoss(0);
     setCrack(0);
     setPendingMoney(0);
-    setTotalMoney(0);
     setPotionPrice(50000);
     setReviveCount(0);
     if (setCombo) setCombo(1);
-    if (setSelectedCrystal) setSelectedCrystal(0);
-    navigate("/");
+    navigate("/start");
   }
 
   if (!gameOver) return null;

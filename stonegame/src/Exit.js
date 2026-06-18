@@ -7,7 +7,7 @@ export default function Exit({ showExit, setShowExit, onResetGame }) {
   function handleExitGame() {
     if (onResetGame) onResetGame();
     setShowExit(false);
-    navigate("/");
+    navigate("/start");
   }
 
   function handleCancel() {

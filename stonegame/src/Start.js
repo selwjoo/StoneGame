@@ -3,19 +3,34 @@ import { crystals } from './crystalList';
 import BackgroundEffect from './BackgroundEffect';
 import { formatPieces } from './formatPieces';
 import MoneyHeader from './MoneyHeader';
+import BenefitRecord from './BenefitRecord';
 
-export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal }) {
+export default function Start({
+  money,
+  setMoney,
+  unlockedCrystals,
+  setUnlockedCrystals,
+  selectedCrystal,
+  setSelectedCrystal,
+}) {
   const navigate = useNavigate();
 
   function prev() { setSelectedCrystal(i => (i - 1 + crystals.length) % crystals.length); }
   function next() { setSelectedCrystal(i => (i + 1) % crystals.length); }
 
   const crystal = crystals[selectedCrystal];
-  const canBuy  = money >= crystal.price;
+  const isOwned = unlockedCrystals.includes(selectedCrystal);
+  const canBuy  = isOwned || money >= crystal.price;
+  const hasBenefit = Boolean(crystal.benefit);
 
   function handleBuy() {
     if (!canBuy) return;
-    if (crystal.price > 0) setMoney(prev => prev - crystal.price);
+
+    if (!isOwned && crystal.price > 0) {
+      setMoney(prev => prev - crystal.price);
+      setUnlockedCrystals(prev => [...prev, selectedCrystal]);
+    }
+
     navigate('/money');
   }
 
@@ -56,58 +71,36 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         </button>
       </div>
 
-      {/* 이름 */}
-      <p style={{ color: "#fff", fontSize: "clamp(18px,4.8vw,22px)", fontWeight: 700, margin: "0 0 clamp(8px,2.2vw,14px)", textAlign: "center" }}>
-        {crystal.name} 돌멩이
-      </p>
-
-      {/* 설명 + 베네핏 */}
-      <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 4 }}>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(12px,3vw,14px)", margin: 0 }}>
+      <div style={isOwned ? infoStackOwnedStyle : hasBenefit ? infoStackStyle : infoStackNoBenefitStyle}>
+        <p style={nameStyle}>
+          {crystal.name} 돌멩이
+        </p>
+        <p style={isOwned ? descriptionOwnedStyle : hasBenefit ? descriptionStyle : descriptionNoBenefitStyle}>
           {crystal.description}
         </p>
-        {crystal.benefit && (
-          <p style={{
-            color: "rgba(214, 205, 190, 0.86)",
-            fontSize: "clamp(12px,3vw,13px)",
-            fontWeight: 600,
-            margin: 0,
-            background: "rgba(214, 205, 190, 0.08)",
-            border: "0.5px solid rgba(214, 205, 190, 0.14)",
-            borderRadius: 999,
-            padding: "5px 14px",
-            display: "inline-block",
-            letterSpacing: "0.02em",
-          }}>
-            ✦ {crystal.benefit}
-          </p>
-        )}
+        <BenefitRecord benefit={crystal.benefit} />
       </div>
 
-      {/* 가격 */}
-      <p style={{
-        color: canBuy ? "#7FD88A" : "#FF5C5C",
-        fontSize: "clamp(14px,3.8vw,16px)", fontWeight: 600, margin: "8px 0 0",
-        textAlign: "center", maxWidth: "min(100%,320px)", lineHeight: 1.4,
-      }}>
-        {crystal.price === 0 ? "보유 중" : formatPieces(crystal.price)}
-      </p>
+      <div style={isOwned ? actionStackOwnedStyle : hasBenefit ? actionStackStyle : actionStackNoBenefitStyle}>
+        <p style={{ ...priceStyle, color: canBuy ? "#7FD88A" : "#FF5C5C" }}>
+          {isOwned ? "보유 중" : formatPieces(crystal.price)}
+        </p>
 
-      {/* 구매 버튼 */}
-      <button
-        onClick={handleBuy} disabled={!canBuy}
-        style={{
-          padding: "14px 24px", borderRadius: 40,
-          background: "transparent",
-          border: "none",
-          color: canBuy ? "#fff" : "rgba(255,255,255,0.3)",
-          fontSize: "clamp(16px,4.2vw,18px)", fontWeight: 700,
-          cursor: canBuy ? "pointer" : "not-allowed",
-          letterSpacing: "0.05em", marginTop: 8, width: "min(100%,320px)",
-        }}
-      >
-        {crystal.price === 0 ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
-      </button>
+        <button
+          onClick={handleBuy} disabled={!canBuy}
+          style={{
+            padding: "14px 24px", borderRadius: 40,
+            background: "transparent",
+            border: "none",
+            color: canBuy ? "#fff" : "rgba(255,255,255,0.3)",
+            fontSize: "clamp(16px,4.2vw,18px)", fontWeight: 700,
+            cursor: canBuy ? "pointer" : "not-allowed",
+            letterSpacing: "0.05em", width: "min(100%,320px)",
+          }}
+        >
+          {isOwned ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
+        </button>
+      </div>
       </div>
     </div>
     </>
@@ -123,17 +116,97 @@ const contentColumnStyle = {
   marginTop: "clamp(128px,31vw,152px)",
 };
 
+const infoStackStyle = {
+  width: "min(100%, 320px)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 11,
+  textAlign: "center",
+  marginBottom: 14,
+};
+
+const infoStackNoBenefitStyle = {
+  ...infoStackStyle,
+  gap: 10,
+  marginBottom: 18,
+};
+
+const infoStackOwnedStyle = {
+  ...infoStackStyle,
+  gap: 9,
+  marginBottom: 12,
+};
+
+const nameStyle = {
+  color: "#fff",
+  fontSize: "clamp(18px,4.8vw,22px)",
+  fontWeight: 700,
+  margin: 0,
+  lineHeight: 1.08,
+  letterSpacing: "-0.02em",
+};
+
+const descriptionStyle = {
+  color: "rgba(255,255,255,0.42)",
+  fontSize: "clamp(12px,3vw,14px)",
+  margin: 0,
+  lineHeight: 1.52,
+  maxWidth: "min(100%, 264px)",
+};
+
+const descriptionNoBenefitStyle = {
+  ...descriptionStyle,
+  lineHeight: 1.56,
+  maxWidth: "min(100%, 240px)",
+};
+
+const descriptionOwnedStyle = {
+  ...descriptionNoBenefitStyle,
+  maxWidth: "min(100%, 220px)",
+};
+
+const actionStackStyle = {
+  width: "min(100%, 320px)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 3,
+};
+
+const actionStackNoBenefitStyle = {
+  ...actionStackStyle,
+  gap: 5,
+};
+
+const actionStackOwnedStyle = {
+  ...actionStackStyle,
+  gap: 2,
+};
+
+const priceStyle = {
+  fontSize: "clamp(14px,3.8vw,16px)",
+  fontWeight: 600,
+  margin: 0,
+  textAlign: "center",
+  lineHeight: 1.35,
+};
+
 const arrowBtn = {
   width: "clamp(42px,11vw,48px)", height: "clamp(42px,11vw,48px)", borderRadius: "50%",
-  background: "transparent", border: "none",
+  background: "rgba(255,255,255,0.06)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  boxShadow: "0 10px 24px rgba(0,0,0,0.22)",
+  backdropFilter: "blur(6px)",
   cursor: "pointer",
   display: "flex", alignItems: "center", justifyContent: "center",
 };
 
 const arrowImageStyle = {
-  width: 28,
-  height: 28,
+  width: 24,
+  height: 24,
   objectFit: "contain",
   display: "block",
-  opacity: 0.8,
+  opacity: 0.98,
+  filter: "brightness(1.25)",
 };
