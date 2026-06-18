@@ -1,47 +1,81 @@
-export default function MoneyHeader({ money }) {
+export default function MoneyHeader({
+  money,
+  topOffset = "calc(env(safe-area-inset-top, 0px) + 32px)",
+  titleOffset = 0,
+  moneyOffset = 28,
+}) {
   return (
-    <div style={moneyReadoutStyle}>
-      <div style={moneyLabelStyle}>Tap & Crack</div>
-      <div style={moneyValueStyle}>{money.toLocaleString()}원</div>
-      <div style={moneyRuleStyle} />
+    <div style={{ ...headerWrapStyle, top: topOffset }}>
+      <div style={{ ...titleStyle, transform: `translateY(${titleOffset}px)` }}>Tap & Crack</div>
+      <div style={{ ...moneyAreaStyle, marginTop: moneyOffset }}>
+        <div style={moneyValueRowStyle}>
+          <span style={moneyValueStyle}>{money.toLocaleString()}</span>
+          <span style={moneyUnitStyle}>조각</span>
+        </div>
+        <div style={moneyRuleStyle} />
+      </div>
     </div>
   );
 }
 
-const moneyReadoutStyle = {
+const headerWrapStyle = {
   position: "absolute",
-  top: "calc(env(safe-area-inset-top, 0px) + 34px)",
   left: "50%",
   transform: "translateX(-50%)",
+  width: "min(88vw, 320px)",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
-  gap: 8,
+  alignItems: "stretch",
+  gap: 10,
   pointerEvents: "none",
   zIndex: 2,
 };
 
-const moneyLabelStyle = {
-  color: "rgba(255,255,255,0.28)",
-  fontSize: "clamp(12px, 3.1vw, 13px)",
-  fontWeight: 700,
-  letterSpacing: "0.22em",
-  paddingLeft: "0.22em",
+const titleStyle = {
+  textAlign: "center",
+  pointerEvents: "none",
+  color: "rgba(241, 235, 221, 0.92)",
+  fontSize: "clamp(18px, 4.9vw, 24px)",
+  fontWeight: 800,
+  letterSpacing: "0.12em",
+  paddingLeft: "0.12em",
+  whiteSpace: "nowrap",
+  textShadow: "0 10px 30px rgba(0, 0, 0, 0.22)",
+};
+
+const moneyAreaStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-end",
+  gap: 5,
+};
+
+const moneyValueRowStyle = {
+  display: "flex",
+  alignItems: "baseline",
+  justifyContent: "flex-end",
+  gap: "clamp(4px, 1.1vw, 6px)",
   whiteSpace: "nowrap",
 };
 
 const moneyValueStyle = {
-  color: "#ebe6dc",
-  fontSize: "clamp(24px, 6.4vw, 36px)",
+  color: "rgba(183, 181, 177, 0.92)",
+  fontSize: "clamp(14px, 3.8vw, 17px)",
   fontWeight: 700,
   lineHeight: 1,
-  letterSpacing: "-0.05em",
+  letterSpacing: "-0.03em",
   fontVariantNumeric: "tabular-nums",
-  whiteSpace: "nowrap",
+};
+
+const moneyUnitStyle = {
+  color: "rgba(168, 166, 162, 0.84)",
+  fontSize: "clamp(12px, 3vw, 14px)",
+  fontWeight: 700,
+  letterSpacing: "0.04em",
 };
 
 const moneyRuleStyle = {
-  width: "min(42vw, 172px)",
-  height: 1,
-  background: "rgba(255,255,255,0.14)",
+  width: "min(46vw, 148px)",
+  height: 2,
+  background: "rgba(168, 166, 162, 0.16)",
 };

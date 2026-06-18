@@ -5,6 +5,7 @@ import Crystal from "./Crystal";
 import Exit from "./Exit";
 import { crystals } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
+import { formatPieces } from "./formatPieces";
 import MoneyHeader from "./MoneyHeader";
 
 const comboAnchors = [
@@ -63,7 +64,7 @@ export default function Money({
       setClickCount(0);
       setCombo(1);
     }
-  }, [gameOver]);
+  }, [gameOver, setCombo]);
 
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
@@ -152,7 +153,7 @@ export default function Money({
       margin: "0 auto",
       zIndex: 1,
     }}>
-      <MoneyHeader money={totalMoney} />
+      <MoneyHeader money={totalMoney} titleOffset={8} moneyOffset={20} />
 
       {/* 나가기 버튼 */}
       <button
@@ -162,7 +163,7 @@ export default function Money({
         style={{
           position: "absolute",
           top: "calc(env(safe-area-inset-top,0px) + 25px)",
-          right: "clamp(14px,4vw,25px)",
+          left: "clamp(30px,8vw,42px)",
           width: "clamp(40px,11vw,44px)",
           height: "clamp(40px,11vw,44px)",
           padding: 0, border: "none",
@@ -199,12 +200,17 @@ export default function Money({
 
       <div style={playContentStyle}>
       {/* 돌멩이 이름 + 베네핏 */}
-      <div style={{ textAlign: "center" }}>
+      <div style={{ textAlign: "center", marginBottom: "clamp(16px,4vw,22px)" }}>
         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
           {crystal.name} 돌멩이
         </p>
         {crystal.benefit && (
-          <p style={{ color: "#60a5fa", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
+          <p style={{
+            color: "rgba(214, 205, 190, 0.72)",
+            fontSize: "clamp(10px,2.4vw,11px)",
+            margin: "5px 0 0",
+            letterSpacing: "0.04em",
+          }}>
             {crystal.benefit}
           </p>
         )}
@@ -251,7 +257,7 @@ export default function Money({
               fontSize: `clamp(13px,${burst.moneySize/200*100}vw,${burst.moneySize}px)`,
               fontWeight: 800, color: burst.moneyColor, letterSpacing: "-0.03em",
             }}>
-              +{burst.earned}원
+              +{formatPieces(burst.earned)}
             </div>
           </Fragment>
         ))}
@@ -292,14 +298,14 @@ export default function Money({
                 다음 클릭 시
               </span>
               <span style={{ fontSize: "clamp(15px,4vw,18px)", fontWeight: 800, color: "#ffd700", textShadow: "0 0 12px rgba(255,215,0,0.4)" }}>
-                +{nextEarned.toLocaleString()}원
+                +{formatPieces(nextEarned)}
               </span>
             </div>
 
             {/* 누적 돈 + 배율 */}
             <div style={{
-              background: "rgba(255,249,160,0.10)", border: `1px solid ${crackInfo.color}44`,
-              color: "#fffaaa", borderRadius: 14, textAlign: "center",
+              background: "rgba(236,228,212,0.08)", border: `1px solid ${crackInfo.color}33`,
+              color: "#f1ebdd", borderRadius: 14, textAlign: "center",
               boxSizing: "border-box", lineHeight: 1.2, overflow: "hidden",
             }}>
               <div style={{ padding: "clamp(10px,2.8vw,12px) clamp(18px,6vw,28px)" }}>
@@ -307,7 +313,7 @@ export default function Money({
                   누적 중 (수거 전)
                 </div>
                 <div style={{ fontSize: "clamp(18px,5vw,22px)", fontWeight: 700 }}>
-                  {pendingMoney.toLocaleString()}원
+                  {formatPieces(pendingMoney)}
                 </div>
               </div>
               {/* 수거 배율 바 */}
@@ -321,7 +327,7 @@ export default function Money({
                   {crackInfo.label} · {crackInfo.desc}
                 </span>
                 <span style={{ fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 800, color: crackInfo.color }}>
-                  → {finalPreview.toLocaleString()}원
+                  → {formatPieces(finalPreview)}
                 </span>
               </div>
               {/* 이끼 수익률 */}
@@ -367,7 +373,7 @@ export default function Money({
               color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
               padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
             }}>
-              총 보유  {totalMoney.toLocaleString()}원
+              총 보유  {formatPieces(totalMoney)}
             </div>
           </div>
         );
@@ -385,5 +391,5 @@ const playContentStyle = {
   flexDirection: "column",
   alignItems: "center",
   gap: "clamp(14px, 3.5vw, 24px)",
-  marginTop: "clamp(112px,27vw,136px)",
+  marginTop: "clamp(128px,31vw,152px)",
 };
