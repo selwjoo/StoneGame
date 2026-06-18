@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef, useState, useEffect } from "react";
 import Moss, { reduceMossOnClick } from "./Moss";
 import Crack from "./Crack";
 import Crystal from "./Crystal";
@@ -18,10 +18,9 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-// 클릭 횟수 구간별 수거 배율
 function getCrackMultiplier(clickCount) {
-  if (clickCount <= 10) return { mult: 0.5, label: "×0.5", color: "#888",    desc: "너무 이른 수거" };
-  if (clickCount <= 18) return { mult: 1,   label: "×1",   color: "#aaa",    desc: "기본" };
+  if (clickCount <= 10) return { mult: 0.5, label: "×0.5", color: "#888", desc: "너무 이른 수거" };
+  if (clickCount <= 18) return { mult: 1,   label: "×1",   color: "#aaa", desc: "기본" };
   if (clickCount <= 24) return { mult: 2,   label: "×2",   color: "#ffd93d", desc: "스윗스팟" };
   if (clickCount <= 29) return { mult: 4,   label: "×4",   color: "#ff9f43", desc: "고위험" };
   return                       { mult: 8,   label: "×8",   color: "#ff4444", desc: "초고위험" };
@@ -45,6 +44,7 @@ export default function Money({
 }) {
   const crystalIdx = selectedCrystal ?? 0;
   const crystal = crystals[crystalIdx];
+  const rewardMult = crystal.rewardMult ?? 1;
 
   const [comboBursts, setComboBursts] = useState([]);
   const [pressing, setPressing] = useState(false);
@@ -56,11 +56,19 @@ export default function Money({
   const [exitHover, setExitHover] = useState(false);
   const [showExit, setShowExit] = useState(false);
 
+  useEffect(() => {
+    if (!gameOver) {
+      setClickCount(0);
+      setCombo(1);
+    }
+  }, [gameOver, setCombo]);
+
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
     const { mult } = getCrackMultiplier(clickCount);
-    const finalAmount = Math.floor(pendingMoney * mult);
-    setTotalMoney(prev => prev + finalAmount);
+    // 이끼 비율 계산 반영
+    const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10);
+    setTotalMoney(prev => prev + Math.floor(pendingMoney * mult * mossRatio));
     setPendingMoney(0);
     setMoss(0);
     setCrack(0);
@@ -78,8 +86,8 @@ export default function Money({
     setCombo(newCombo);
     setLastClickAt(now);
 
-    // 돌멩이 수익 배율 적용
-    const earned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
+    // 거듭제곱(Math.pow) 방식의 향상된 수익 배율 공식 적용
+    const earned = Math.floor(Math.pow(clickCount + 1, 2.5) * rewardMult * 0.3);
     setPendingMoney(prev => prev + earned);
     reduceMossOnClick(setMoss);
 
@@ -87,13 +95,12 @@ export default function Money({
     const accent =
       newCombo >= 15 ? "#d9c27a" :
       newCombo >= 10 ? "#c9d1db" :
-      newCombo >= 5  ? "#b8c4b0" :
-                       "#e8e3d6";
-    const labelColor  = newCombo >= 10 ? "rgba(214,205,184,0.58)" : "rgba(196,192,180,0.48)";
-    const moneyColor  = newCombo >= 10 ? "rgba(228,221,196,0.92)" : "rgba(214,210,198,0.86)";
-    const comboSize   = Math.min(28 + newCombo * 2.1, 60);
-    const moneySize   = Math.min(16 + newCombo * 0.5, 24);
-    const anchor      = comboAnchors[comboAnchorIndex.current % comboAnchors.length];
+      newCombo >= 5  ? "#b8c4b0" : "#e8e3d6";
+    const labelColor = newCombo >= 10 ? "rgba(214,205,184,0.58)" : "rgba(196,192,180,0.48)";
+    const moneyColor = newCombo >= 10 ? "rgba(228,221,196,0.92)" : "rgba(214,210,198,0.86)";
+    const comboSize  = Math.min(28 + newCombo * 2.1, 60);
+    const moneySize  = Math.min(16 + newCombo * 0.5, 24);
+    const anchor     = comboAnchors[comboAnchorIndex.current % comboAnchors.length];
     comboAnchorIndex.current += 1;
 
     const comboX      = anchor.x + (-6 + Math.random() * 12);
@@ -102,7 +109,7 @@ export default function Money({
     const comboDriftY = -30 - Math.random() * 18;
     const comboSpin   = -10 + Math.random() * 20;
     const moneyX      = clamp(clientX + (-10 + Math.random() * 20), 52, 148);
-    const moneyY      = clamp(clientY + (-8  + Math.random() * 16), 58, 150);
+    const moneyY      = clamp(clientY + (-8 + Math.random() * 16), 58, 150);
     const moneyDriftX = -10 + Math.random() * 20;
     const moneyDriftY = -44 - Math.random() * 18;
 
@@ -145,7 +152,6 @@ export default function Money({
       zIndex: 1,
     }}>
 
-      {/* 나가기 버튼 */}
       <button
         onClick={() => setShowExit(true)}
         onMouseEnter={() => setExitHover(true)}
@@ -188,165 +194,183 @@ export default function Money({
         }
       `}</style>
 
-      {/* 돌멩이 이름 + 베네핏 */}
-      <div style={{ textAlign: "center" }}>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
-          {crystal.name} 돌멩이
-        </p>
-        {crystal.benefit && (
-          <p style={{ color: "rgba(255,255,255,0.28)", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
-            {crystal.benefit}
+      <div style={playContentStyle}>
+        {/* 돌멩이 이름 + 베네핏 */}
+        <div style={{ textAlign: "center" }}>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
+            {crystal.name} 돌멩이
           </p>
-        )}
-      </div>
+          {crystal.benefit && (
+            <p style={{ color: "#60a5fa", fontSize: "clamp(10px,2.4vw,11px)", margin: "3px 0 0", letterSpacing: "0.06em" }}>
+              {crystal.benefit}
+            </p>
+          )}
+        </div>
 
-      {/* 크리스탈 */}
-      <Crystal
-        crystalStyle={crystal.style}
-        crystalName={crystal.name}
-        moss={moss}
-        crack={crack}
-        pressing={pressing}
-        onClick={handleCrystalClick}
-        onPressStart={() => setPressing(true)}
-        onPressEnd={() => setPressing(false)}
-      >
-        {comboBursts.map(burst => (
-          <Fragment key={burst.id}>
-            <div style={{
-              position: "absolute", left: burst.comboX, top: burst.comboY,
-              pointerEvents: "none",
-              animation: "comboPop 0.68s cubic-bezier(0.2,0.9,0.25,1) forwards",
-              whiteSpace: "nowrap", textAlign: "center", lineHeight: 1,
-              transform: "translate(-50%,-50%)",
-              textShadow: "0 0 26px rgba(255,255,255,0.16), 0 10px 24px rgba(0,0,0,0.42)",
-              "--drift-x": `${burst.comboDriftX}px`,
-              "--drift-y": `${burst.comboDriftY}px`,
-              "--spin": `${burst.comboSpin}deg`,
-            }}>
-              <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.28em", color: burst.labelColor, marginBottom: 4, paddingLeft: "0.28em" }}>COMBO</div>
-              <div style={{ fontSize: `clamp(22px,${burst.comboSize/200*100}vw,${burst.comboSize}px)`, fontWeight: 900, letterSpacing: "-0.08em", color: burst.accent, lineHeight: 0.92 }}>
-                x{burst.combo}
-              </div>
-            </div>
-            <div style={{
-              position: "absolute", left: burst.moneyX, top: burst.moneyY,
-              pointerEvents: "none",
-              animation: "moneyPop 0.56s ease-out forwards",
-              whiteSpace: "nowrap", textAlign: "center",
-              transform: "translate(-50%,-50%)",
-              textShadow: "0 6px 18px rgba(0,0,0,0.32)",
-              "--money-drift-x": `${burst.moneyDriftX}px`,
-              "--money-drift-y": `${burst.moneyDriftY}px`,
-              fontSize: `clamp(13px,${burst.moneySize/200*100}vw,${burst.moneySize}px)`,
-              fontWeight: 800, color: burst.moneyColor, letterSpacing: "-0.03em",
-            }}>
-              +{burst.earned}원
-            </div>
-          </Fragment>
-        ))}
-      </Crystal>
-
-      <Moss
-        moss={moss} setMoss={setMoss}
-        setGameOver={setGameOver} setMessage={setMessage}
-        lastClickAt={lastClickAt} gameOver={gameOver}
-        mossSpeedMult={crystal.mossSpeedMult ?? 1}
-      />
-
-      <Crack
-        crack={crack} setCrack={setCrack}
-        setGameOver={setGameOver} setMessage={setMessage}
-        setPendingMoney={setPendingMoney}
-        clickCount={clickCount} gameOver={gameOver}
-        crackMin={crystal.crackMin ?? 1.5}
-        crackMax={crystal.crackMax ?? 2.5}
-      />
-
-      {/* 수거 UI */}
-      {(() => {
-        const crackInfo = getCrackMultiplier(clickCount);
-        const nextEarned = Math.floor((clickCount + 1) * (clickCount + 1) * (crystal.rewardMult ?? 1) * 0.3);
-        const finalPreview = Math.floor(pendingMoney * crackInfo.mult);
-        return (
-          <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
-
-            {/* 다음 클릭 예고 */}
-            <div style={{
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
-              borderRadius: 10, padding: "7px 14px", boxSizing: "border-box",
-            }}>
-              <span style={{ fontSize: "clamp(11px,2.6vw,12px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em" }}>
-                다음 클릭 시
-              </span>
-              <span style={{ fontSize: "clamp(15px,4vw,18px)", fontWeight: 800, color: "#ffd700", textShadow: "0 0 12px rgba(255,215,0,0.4)" }}>
-                +{nextEarned.toLocaleString()}원
-              </span>
-            </div>
-
-            {/* 누적 돈 + 배율 */}
-            <div style={{
-              background: "rgba(255,249,160,0.10)", border: `1px solid ${crackInfo.color}44`,
-              color: "#fffaaa", borderRadius: 14, textAlign: "center",
-              boxSizing: "border-box", lineHeight: 1.2, overflow: "hidden",
-            }}>
-              <div style={{ padding: "clamp(10px,2.8vw,12px) clamp(18px,6vw,28px)" }}>
-                <div style={{ fontSize: "clamp(10px,2.4vw,12px)", opacity: 0.6, marginBottom: 2, letterSpacing: "0.1em" }}>
-                  누적 중 (수거 전)
-                </div>
-                <div style={{ fontSize: "clamp(18px,5vw,22px)", fontWeight: 700 }}>
-                  {pendingMoney.toLocaleString()}원
-                </div>
-              </div>
-              {/* 수거 배율 바 */}
+        {/* 크리스탈 인터랙션 컴포넌트 */}
+        <Crystal
+          crystalStyle={crystal.style}
+          crystalName={crystal.name}
+          moss={moss}
+          crack={crack}
+          pressing={pressing}
+          onClick={handleCrystalClick}
+          onPressStart={() => setPressing(true)}
+          onPressEnd={() => setPressing(false)}
+        >
+          {comboBursts.map(burst => (
+            <Fragment key={burst.id}>
               <div style={{
-                background: `${crackInfo.color}18`,
-                borderTop: `0.5px solid ${crackInfo.color}33`,
-                padding: "6px 14px",
-                display: "flex", justifyContent: "space-between", alignItems: "center",
+                position: "absolute", left: burst.comboX, top: burst.comboY,
+                pointerEvents: "none",
+                animation: "comboPop 0.68s cubic-bezier(0.2,0.9,0.25,1) forwards",
+                whiteSpace: "nowrap", textAlign: "center", lineHeight: 1,
+                transform: "translate(-50%,-50%)",
+                textShadow: "0 0 26px rgba(255,255,255,0.16), 0 10px 24px rgba(0,0,0,0.42)",
+                "--drift-x": `${burst.comboDriftX}px`,
+                "--drift-y": `${burst.comboDriftY}px`,
+                "--spin": `${burst.comboSpin}deg`,
               }}>
-                <span style={{ fontSize: "clamp(10px,2.4vw,11px)", color: crackInfo.color, fontWeight: 600 }}>
-                  {crackInfo.label} · {crackInfo.desc}
+                <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.28em", color: burst.labelColor, marginBottom: 4, paddingLeft: "0.28em" }}>COMBO</div>
+                <div style={{ fontSize: `clamp(22px,${burst.comboSize/200*100}vw,${burst.comboSize}px)`, fontWeight: 900, letterSpacing: "-0.08em", color: burst.accent, lineHeight: 0.92 }}>
+                  x{burst.combo}
+                </div>
+              </div>
+              <div style={{
+                position: "absolute", left: burst.moneyX, top: burst.moneyY,
+                pointerEvents: "none",
+                animation: "moneyPop 0.56s ease-out forwards",
+                whiteSpace: "nowrap", textAlign: "center",
+                transform: "translate(-50%,-50%)",
+                textShadow: "0 6px 18px rgba(0,0,0,0.32)",
+                "--money-drift-x": `${burst.moneyDriftX}px`,
+                "--money-drift-y": `${burst.moneyDriftY}px`,
+                fontSize: `clamp(13px,${burst.moneySize/200*100}vw,${burst.moneySize}px)`,
+                fontWeight: 800, color: burst.moneyColor, letterSpacing: "-0.03em",
+              }}>
+                +{burst.earned}원
+              </div>
+            </Fragment>
+          ))}
+        </Crystal>
+
+        <Moss
+          moss={moss} setMoss={setMoss}
+          setGameOver={setGameOver} setMessage={setMessage}
+          lastClickAt={lastClickAt} gameOver={gameOver}
+          mossSpeedMult={crystal.mossSpeedMult ?? 1}
+        />
+
+        <Crack
+          crack={crack} setCrack={setCrack}
+          setGameOver={setGameOver} setMessage={setMessage}
+          setPendingMoney={setPendingMoney}
+          clickCount={clickCount} gameOver={gameOver}
+          crackMin={crystal.crackMin ?? 1.5}
+          crackMax={crystal.crackMax ?? 2.5}
+        />
+
+        {/* 수거 UI */}
+        {(() => {
+          const crackInfo = getCrackMultiplier(clickCount);
+          const nextEarned = Math.floor(Math.pow(clickCount + 1, 2.5) * rewardMult * 0.3);
+          const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10);
+          const mossPercent = Math.round(mossRatio * 100);
+          const finalPreview = Math.floor(pendingMoney * crackInfo.mult * mossRatio);
+          const mossColor = moss > 70 ? "#ff6b6b" : moss > 40 ? "#ff9f43" : "#86efac";
+          return (
+            <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
+
+              {/* 다음 클릭 예고 */}
+              <div style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
+                borderRadius: 10, padding: "7px 14px", boxSizing: "border-box",
+              }}>
+                <span style={{ fontSize: "clamp(11px,2.6vw,12px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em" }}>
+                  다음 클릭 시
                 </span>
-                <span style={{ fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 800, color: crackInfo.color }}>
-                  → {finalPreview.toLocaleString()}원
+                <span style={{ fontSize: "clamp(15px,4vw,18px)", fontWeight: 800, color: "#ffd700", textShadow: "0 0 12px rgba(255,215,0,0.4)" }}>
+                  +{nextEarned.toLocaleString()}원
                 </span>
               </div>
-            </div>
 
-            {/* 수거 버튼 */}
-            <button
-              onClick={handleCollect}
-              disabled={pendingMoney <= 0 || gameOver}
-              style={{
-                padding: "clamp(11px,3vw,14px)", borderRadius: 14, border: "none",
-                background: pendingMoney > 0 && !gameOver ? "linear-gradient(135deg,#2d6a4f,#52b788)" : "rgba(255,255,255,0.06)",
-                color: pendingMoney > 0 && !gameOver ? "#fff" : "rgba(255,255,255,0.25)",
-                fontSize: "clamp(15px,4vw,17px)", fontWeight: 700,
-                cursor: pendingMoney > 0 && !gameOver ? "pointer" : "not-allowed",
-                letterSpacing: "0.04em",
-                transition: "background 0.2s, transform 0.1s",
-                animation: collectFlash ? "collectFlash 0.6s ease" : "none",
-                boxSizing: "border-box", width: "100%",
-              }}
-            >
-              💰 수거하기
-            </button>
+              {/* 누적 돈 + 배율 (이끼 % 수치 및 색상 연동) */}
+              <div style={{
+                background: "rgba(255,249,160,0.10)", border: `1px solid ${crackInfo.color}44`,
+                color: "#fffaaa", borderRadius: 14, textAlign: "center",
+                boxSizing: "border-box", lineHeight: 1.2, overflow: "hidden",
+              }}>
+                <div style={{ padding: "clamp(10px,2.8vw,12px) clamp(18px,6vw,28px)" }}>
+                  <div style={{ fontSize: "clamp(10px,2.4vw,12px)", opacity: 0.6, marginBottom: 2, letterSpacing: "0.1em" }}>
+                    누적 중 (수거 전)
+                  </div>
+                  <div style={{ fontSize: "clamp(18px,5vw,22px)", fontWeight: 700 }}>
+                    {pendingMoney.toLocaleString()}원
+                  </div>
+                </div>
 
-            {/* 총 보유 */}
-            <div style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
-              color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
-              padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
-            }}>
-              총 보유: {totalMoney.toLocaleString()}원
+                {/* 수거 배율 + 이끼 배율 한 줄 레이아웃 */}
+                <div style={{
+                  background: `${crackInfo.color}18`,
+                  borderTop: `0.5px solid ${crackInfo.color}33`,
+                  padding: "6px 14px",
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                }}>
+                  <span style={{ fontSize: "clamp(10px,2.4vw,11px)", color: crackInfo.color, fontWeight: 600 }}>
+                    {crackInfo.label} · {crackInfo.desc}
+                    <span style={{ color: mossColor, marginLeft: 6 }}>
+                      · 이끼 {mossPercent}%
+                    </span>
+                  </span>
+                  <span style={{ fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 800, color: crackInfo.color }}>
+                    → {finalPreview.toLocaleString()}원
+                  </span>
+                </div>
+              </div>
+
+              {/* 수거 버튼 */}
+              <button
+                onClick={handleCollect}
+                disabled={pendingMoney <= 0 || gameOver}
+                style={{
+                  padding: "clamp(11px,3vw,14px)", borderRadius: 14, border: "none",
+                  background: pendingMoney > 0 && !gameOver ? "linear-gradient(135deg,#2d6a4f,#52b788)" : "rgba(255,255,255,0.06)",
+                  color: pendingMoney > 0 && !gameOver ? "#fff" : "rgba(255,255,255,0.25)",
+                  fontSize: "clamp(15px,4vw,17px)", fontWeight: 700,
+                  cursor: pendingMoney > 0 && !gameOver ? "pointer" : "not-allowed",
+                  letterSpacing: "0.04em",
+                  transition: "background 0.2s, transform 0.1s",
+                  animation: collectFlash ? "collectFlash 0.6s ease" : "none",
+                  boxSizing: "border-box", width: "100%",
+                }}
+              >
+                💰 수거하기
+              </button>
+
+              {/* 총 보유 금액 */}
+              <div style={{
+                background: "transparent", border: "none",
+                color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
+                padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
+              }}>
+                총 보유  {totalMoney.toLocaleString()}원
+              </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
+      </div>
 
     </div>
     </>
   );
 }
+
+const playContentStyle = {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "clamp(14px, 3.5vw, 24px)",
+  marginTop: "clamp(112px,27vw,136px)",
+};

@@ -3,10 +3,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Money from './Money';
 import GameOver from './GameOver';
 import Start from './Start';
+import Login from './Login';
+import PrivateRoute from './PrivateRoute';
+import Signup from './Signup';
+
 
 function App() {
-  const [totalMoney, setTotalMoney] = useState(0);   // 수거로 확정된 돈
-  const [pendingMoney, setPendingMoney] = useState(0); // 수거 전 누적 돈 (깨지면 날아감)
+  const [totalMoney, setTotalMoney] = useState(0);
+  const [pendingMoney, setPendingMoney] = useState(0);
   const [combo, setCombo] = useState(1);
 
   const [moss, setMoss] = useState(0);
@@ -15,7 +19,7 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [message, setMessage] = useState('');
 
-  const [potionPrice, setPotionPrice] = useState(50);
+  const [potionPrice, setPotionPrice] = useState(30000);
   const [reviveCount, setReviveCount] = useState(0);
 
   const [selectedCrystal, setSelectedCrystal] = useState(0);
@@ -24,16 +28,20 @@ function App() {
     <div style={{ background: "#0a0a0f", minHeight: "100vh" }}>
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={
-            <Start
+            <PrivateRoute>
+              <Start
               money={totalMoney}
               setMoney={setTotalMoney}
               selectedCrystal={selectedCrystal}
               setSelectedCrystal={setSelectedCrystal}
-            />}
+              />
+            </PrivateRoute>}
           />
           <Route path="/money" element={
-            <Money
+            <PrivateRoute>
+              <Money
               totalMoney={totalMoney}
               setTotalMoney={setTotalMoney}
               pendingMoney={pendingMoney}
@@ -48,8 +56,10 @@ function App() {
               setMessage={setMessage}
               crack={crack}
               setCrack={setCrack}
-            />}
+            />
+            </PrivateRoute>}
           />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
         <GameOver
           totalMoney={totalMoney}
@@ -68,6 +78,7 @@ function App() {
           reviveCount={reviveCount}
           setReviveCount={setReviveCount}
           setCombo={setCombo}
+          setSelectedCrystal={setSelectedCrystal}
         />
       </BrowserRouter>
     </div>

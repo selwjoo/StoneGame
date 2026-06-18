@@ -27,6 +27,12 @@ export default function GameOver({
     setMoss(0);
     setCrack(0);
     setPendingMoney(0);
+<<<<<<< Updated upstream
+=======
+    setTotalMoney(0);
+    setPotionPrice(30000);
+    setReviveCount(0);
+>>>>>>> Stashed changes
     if (setCombo) setCombo(1);
     navigate("/");
   }
