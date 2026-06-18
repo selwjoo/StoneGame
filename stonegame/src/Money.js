@@ -88,7 +88,7 @@ export default function Money({
     setLastClickAt(now);
 
     // 돌멩이 수익 배율 적용
-    const earned = Math.floor(Math.pow(clickCount + 1, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
+    const earned = Math.floor(Math.pow(newCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
     setPendingMoney(prev => prev + earned);
     reduceMossOnClick(setMoss);
 
@@ -275,10 +275,15 @@ export default function Money({
 
       {/* 수거 UI */}
       {(() => {
-        const crackInfo = getCrackMultiplier(clickCount);
-        const nextEarned = Math.floor(Math.pow(clickCount + 1, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
-        const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10);
-        const finalPreview = Math.floor(pendingMoney * crackInfo.mult * mossRatio);
+          const crackInfo = getCrackMultiplier(clickCount);
+
+          const now = Date.now();
+          const willContinueCombo = now - lastClickAt < (crystal.comboWindowMs ?? 500);
+          const nextCombo = willContinueCombo ? combo + 1 : 1;
+          const nextEarned = Math.floor(Math.pow(nextCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
+        
+          const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10);
+          const finalPreview = Math.floor(pendingMoney * crackInfo.mult * mossRatio);
         return (
           <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
 
