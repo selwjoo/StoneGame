@@ -7,6 +7,7 @@ import { crystals } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
 import { formatPieces } from "./formatPieces";
 import MoneyHeader from "./MoneyHeader";
+import BenefitRecord from "./BenefitRecord";
 
 const comboAnchors = [
   { x: 100, y: 44 },
@@ -200,20 +201,11 @@ export default function Money({
 
       <div style={playContentStyle}>
       {/* 돌멩이 이름 + 베네핏 */}
-      <div style={{ textAlign: "center", marginBottom: "clamp(16px,4vw,22px)" }}>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
+      <div style={playInfoStyle}>
+        <p style={playNameStyle}>
           {crystal.name} 돌멩이
         </p>
-        {crystal.benefit && (
-          <p style={{
-            color: "rgba(214, 205, 190, 0.72)",
-            fontSize: "clamp(10px,2.4vw,11px)",
-            margin: "5px 0 0",
-            letterSpacing: "0.04em",
-          }}>
-            {crystal.benefit}
-          </p>
-        )}
+        <BenefitRecord benefit={crystal.benefit} compact />
       </div>
 
       {/* 크리스탈 */}
@@ -397,4 +389,21 @@ const playContentStyle = {
   alignItems: "center",
   gap: "clamp(14px, 3.5vw, 24px)",
   marginTop: "clamp(128px,31vw,152px)",
+};
+
+const playInfoStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 6,
+  textAlign: "center",
+  marginBottom: "clamp(20px,4.8vw,26px)",
+};
+
+const playNameStyle = {
+  color: "rgba(255,255,255,0.7)",
+  fontSize: "clamp(12px,3.1vw,14px)",
+  letterSpacing: "0.1em",
+  margin: 0,
+  lineHeight: 1.08,
 };

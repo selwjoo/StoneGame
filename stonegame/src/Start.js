@@ -3,6 +3,7 @@ import { crystals } from './crystalList';
 import BackgroundEffect from './BackgroundEffect';
 import { formatPieces } from './formatPieces';
 import MoneyHeader from './MoneyHeader';
+import BenefitRecord from './BenefitRecord';
 
 export default function Start({ money, setMoney, selectedCrystal, setSelectedCrystal }) {
   const navigate = useNavigate();
@@ -56,58 +57,38 @@ export default function Start({ money, setMoney, selectedCrystal, setSelectedCry
         </button>
       </div>
 
-      {/* 이름 */}
-      <p style={{ color: "#fff", fontSize: "clamp(18px,4.8vw,22px)", fontWeight: 700, margin: "0 0 clamp(8px,2.2vw,14px)", textAlign: "center" }}>
-        {crystal.name} 돌멩이
-      </p>
-
-      {/* 설명 + 베네핏 */}
-      <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 4 }}>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(12px,3vw,14px)", margin: 0 }}>
+      <div style={infoStackStyle}>
+        <p style={nameStyle}>
+          {crystal.name} 돌멩이
+        </p>
+        <p style={descriptionStyle}>
           {crystal.description}
         </p>
-        {crystal.benefit && (
-          <p style={{
-            color: "rgba(214, 205, 190, 0.86)",
-            fontSize: "clamp(12px,3vw,13px)",
-            fontWeight: 600,
-            margin: 0,
-            background: "rgba(214, 205, 190, 0.08)",
-            border: "0.5px solid rgba(214, 205, 190, 0.14)",
-            borderRadius: 999,
-            padding: "5px 14px",
-            display: "inline-block",
-            letterSpacing: "0.02em",
-          }}>
-            ✦ {crystal.benefit}
-          </p>
-        )}
+        <BenefitRecord benefit={crystal.benefit} />
       </div>
 
-      {/* 가격 */}
-      <p style={{
-        color: canBuy ? "#7FD88A" : "#FF5C5C",
-        fontSize: "clamp(14px,3.8vw,16px)", fontWeight: 600, margin: "8px 0 0",
-        textAlign: "center", maxWidth: "min(100%,320px)", lineHeight: 1.4,
-      }}>
-        {crystal.price === 0 ? "보유 중" : formatPieces(crystal.price)}
-      </p>
+      <div style={actionStackStyle}>
+        {/* 가격 */}
+        <p style={{ ...priceStyle, color: canBuy ? "#7FD88A" : "#FF5C5C" }}>
+          {crystal.price === 0 ? "보유 중" : formatPieces(crystal.price)}
+        </p>
 
-      {/* 구매 버튼 */}
-      <button
-        onClick={handleBuy} disabled={!canBuy}
-        style={{
-          padding: "14px 24px", borderRadius: 40,
-          background: "transparent",
-          border: "none",
-          color: canBuy ? "#fff" : "rgba(255,255,255,0.3)",
-          fontSize: "clamp(16px,4.2vw,18px)", fontWeight: 700,
-          cursor: canBuy ? "pointer" : "not-allowed",
-          letterSpacing: "0.05em", marginTop: 8, width: "min(100%,320px)",
-        }}
-      >
-        {crystal.price === 0 ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
-      </button>
+        {/* 구매 버튼 */}
+        <button
+          onClick={handleBuy} disabled={!canBuy}
+          style={{
+            padding: "14px 24px", borderRadius: 40,
+            background: "transparent",
+            border: "none",
+            color: canBuy ? "#fff" : "rgba(255,255,255,0.3)",
+            fontSize: "clamp(16px,4.2vw,18px)", fontWeight: 700,
+            cursor: canBuy ? "pointer" : "not-allowed",
+            letterSpacing: "0.05em", width: "min(100%,320px)",
+          }}
+        >
+          {crystal.price === 0 ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
+        </button>
+      </div>
       </div>
     </div>
     </>
@@ -121,6 +102,51 @@ const contentColumnStyle = {
   alignItems: "center",
   gap: 0,
   marginTop: "clamp(128px,31vw,152px)",
+};
+
+const infoStackStyle = {
+  width: "min(100%, 320px)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 11,
+  textAlign: "center",
+  marginBottom: 10,
+};
+
+const nameStyle = {
+  color: "#fff",
+  fontSize: "clamp(18px,4.8vw,22px)",
+  fontWeight: 700,
+  margin: 0,
+  letterSpacing: "-0.02em",
+  lineHeight: 1.08,
+};
+
+const descriptionStyle = {
+  color: "rgba(255,255,255,0.42)",
+  fontSize: "clamp(12px,3vw,14px)",
+  margin: 0,
+  lineHeight: 1.52,
+  maxWidth: "min(100%, 260px)",
+};
+
+const actionStackStyle = {
+  width: "min(100%, 320px)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 4,
+};
+
+const priceStyle = {
+  color: "#7FD88A",
+  fontSize: "clamp(14px,3.8vw,16px)",
+  fontWeight: 600,
+  margin: 0,
+  textAlign: "center",
+  maxWidth: "min(100%,320px)",
+  lineHeight: 1.4,
 };
 
 const arrowBtn = {
