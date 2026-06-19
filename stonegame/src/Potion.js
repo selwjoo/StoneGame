@@ -31,16 +31,16 @@ export default function Potion({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
       <div style={{
-        background: "rgba(107,203,119,0.08)",
-        border: "0.5px solid rgba(107,203,119,0.2)",
+        background: "rgba(214,205,190,0.05)",
+        border: "0.5px solid rgba(214,205,190,0.14)",
         borderRadius: 12,
         padding: "10px 14px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
       }}>
-        <span style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "rgba(255,255,255,0.5)" }}>회복 물약</span>
-        <span style={{ fontSize: "clamp(14px, 3.8vw, 16px)", fontWeight: 700, color: "#6bcb77" }}>
+        <span style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "rgba(255,255,255,0.54)" }}>회복 물약</span>
+        <span style={{ fontSize: "clamp(14px, 3.8vw, 16px)", fontWeight: 700, color: "rgba(226, 214, 184, 0.92)" }}>
           {formatPieces(potionPrice)}
         </span>
       </div>
@@ -56,10 +56,10 @@ export default function Potion({
         disabled={!canBuy}
         style={{
           padding: "12px",
-          border: `0.5px solid ${canBuy ? "rgba(107,203,119,0.3)" : "rgba(255,255,255,0.08)"}`,
+          border: `0.5px solid ${canBuy ? "rgba(214,205,190,0.18)" : "rgba(255,255,255,0.08)"}`,
           borderRadius: "12px",
-          background: canBuy ? "rgba(107,203,119,0.12)" : "rgba(255,255,255,0.04)",
-          color: canBuy ? "#6bcb77" : "rgba(255,255,255,0.25)",
+          background: canBuy ? "rgba(214,205,190,0.08)" : "rgba(255,255,255,0.04)",
+          color: canBuy ? "rgba(226, 214, 184, 0.92)" : "rgba(255,255,255,0.25)",
           cursor: canBuy ? "pointer" : "not-allowed",
           fontSize: "clamp(14px, 3.8vw, 15px)",
           fontWeight: 600,

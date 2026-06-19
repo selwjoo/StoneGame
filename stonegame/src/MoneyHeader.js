@@ -3,10 +3,15 @@ export default function MoneyHeader({
   topOffset = "calc(env(safe-area-inset-top, 0px) + 32px)",
   titleOffset = 0,
   moneyOffset = 28,
+  leftSlot = null,
 }) {
   return (
     <div style={{ ...headerWrapStyle, top: topOffset }}>
-      <div style={{ ...titleStyle, transform: `translateY(${titleOffset}px)` }}>Tap & Crack</div>
+      <div style={topRowStyle}>
+        <div style={slotStyle}>{leftSlot}</div>
+        <div style={{ ...titleStyle, transform: `translateY(${titleOffset}px)` }}>Tap & Crack</div>
+        <div style={slotStyle} />
+      </div>
       <div style={{ ...moneyAreaStyle, marginTop: moneyOffset }}>
         <div style={moneyValueRowStyle}>
           <span style={moneyValueStyle}>{money.toLocaleString()}</span>
@@ -26,14 +31,28 @@ const headerWrapStyle = {
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
-  gap: 10,
+  gap: 8,
   pointerEvents: "none",
   zIndex: 2,
 };
 
+const topRowStyle = {
+  display: "grid",
+  gridTemplateColumns: "44px 1fr 44px",
+  alignItems: "center",
+};
+
+const slotStyle = {
+  width: 44,
+  height: 44,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  pointerEvents: "auto",
+};
+
 const titleStyle = {
   textAlign: "center",
-  pointerEvents: "none",
   color: "rgba(241, 235, 221, 0.92)",
   fontSize: "clamp(18px, 4.9vw, 24px)",
   fontWeight: 800,

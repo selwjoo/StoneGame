@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Moss, { reduceMossOnClick } from "./Moss";
 import Crack from "./Crack";
 import Crystal from "./Crystal";
@@ -7,6 +8,7 @@ import { crystals } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
 import { formatPieces } from "./formatPieces";
 import MoneyHeader from "./MoneyHeader";
+import BenefitRecord from "./BenefitRecord";
 
 const comboAnchors = [
   { x: 100, y: 44 },
@@ -32,6 +34,10 @@ function getCrackMultiplier(clickCount) {
 export default function Money({
   totalMoney,
   setTotalMoney,
+  unlockedCrystals,
+  setUnlockedCrystals,
+  pendingPurchaseCrystal,
+  setPendingPurchaseCrystal,
   pendingMoney,
   setPendingMoney,
   combo,
@@ -45,8 +51,10 @@ export default function Money({
   crack,
   setCrack,
 }) {
+  const navigate = useNavigate();
   const crystalIdx = selectedCrystal ?? 0;
   const crystal = crystals[crystalIdx];
+  const hasBenefit = Boolean(crystal.benefit);
 
   const [comboBursts, setComboBursts] = useState([]);
   const [pressing, setPressing] = useState(false);
@@ -58,6 +66,17 @@ export default function Money({
   const [exitHover, setExitHover] = useState(false);
   const [showExit, setShowExit] = useState(false);
 
+  function resetRoundState() {
+    setPendingMoney(0);
+    setMoss(0);
+    setCrack(0);
+    setCombo(1);
+    setClickCount(0);
+    setLastClickAt(0);
+    setGameOver(false);
+    setMessage("");
+  }
+
   // 물약 구매 후 게임 재개 시 clickCount 리셋
   useEffect(() => {
     if (!gameOver) {
@@ -65,6 +84,32 @@ export default function Money({
       setCombo(1);
     }
   }, [gameOver, setCombo]);
+
+  useEffect(() => {
+    if (pendingPurchaseCrystal !== selectedCrystal) return;
+    if (unlockedCrystals.includes(selectedCrystal)) {
+      setPendingPurchaseCrystal(null);
+      return;
+    }
+
+    const price = crystal.price ?? 0;
+    if (price > 0) {
+      setTotalMoney(prev => prev - price);
+    }
+    setUnlockedCrystals(prev => {
+      if (prev.includes(selectedCrystal)) return prev;
+      return [...prev, selectedCrystal];
+    });
+    setPendingPurchaseCrystal(null);
+  }, [
+    crystal.price,
+    pendingPurchaseCrystal,
+    selectedCrystal,
+    setPendingPurchaseCrystal,
+    setTotalMoney,
+    setUnlockedCrystals,
+    unlockedCrystals,
+  ]);
 
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
@@ -76,8 +121,8 @@ export default function Money({
     setCrack(0);
     setCombo(1);
     setClickCount(0);
-    setCollectFlash(true);
-    setTimeout(() => setCollectFlash(false), 600);
+    setLastClickAt(0);
+    navigate("/start");
   }
 
   function handleClick(clientX, clientY) {
@@ -153,31 +198,36 @@ export default function Money({
       margin: "0 auto",
       zIndex: 1,
     }}>
-      <MoneyHeader money={totalMoney} titleOffset={8} moneyOffset={20} />
+      <MoneyHeader
+        money={totalMoney}
+        titleOffset={8}
+        moneyOffset={20}
+        leftSlot={
+          <button
+            onClick={() => setShowExit(true)}
+            onMouseEnter={() => setExitHover(true)}
+            onMouseLeave={() => setExitHover(false)}
+            style={{
+              width: "clamp(40px,11vw,44px)",
+              height: "clamp(40px,11vw,44px)",
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              borderRadius: "50%",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform 0.15s ease",
+              transform: exitHover ? "translateY(10px) scale(1.1)" : "translateY(10px) scale(1)",
+            }}
+          >
+            <img src="exit.png" alt="나가기" style={{ width: 20, height: 20, objectFit: "contain", opacity: exitHover ? 1 : 0.82, transition: "opacity 0.18s ease" }} />
+          </button>
+        }
+      />
 
-      {/* 나가기 버튼 */}
-      <button
-        onClick={() => setShowExit(true)}
-        onMouseEnter={() => setExitHover(true)}
-        onMouseLeave={() => setExitHover(false)}
-        style={{
-          position: "absolute",
-          top: "calc(env(safe-area-inset-top,0px) + 25px)",
-          left: "clamp(30px,8vw,42px)",
-          width: "clamp(40px,11vw,44px)",
-          height: "clamp(40px,11vw,44px)",
-          padding: 0, border: "none",
-          background: "transparent",
-          borderRadius: "50%", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "transform 0.15s ease",
-          transform: exitHover ? "scale(1.1)" : "scale(1)",
-        }}
-      >
-        <img src="exit.png" alt="나가기" style={{ width: 20, height: 20, objectFit: "contain", opacity: exitHover ? 1 : 0.82, transition: "opacity 0.18s ease" }} />
-      </button>
-
-      <Exit showExit={showExit} setShowExit={setShowExit} />
+      <Exit showExit={showExit} setShowExit={setShowExit} onResetGame={resetRoundState} />
 
       <style>{`
         @keyframes comboPop {
@@ -200,20 +250,11 @@ export default function Money({
 
       <div style={playContentStyle}>
       {/* 돌멩이 이름 + 베네핏 */}
-      <div style={{ textAlign: "center", marginBottom: "clamp(16px,4vw,22px)" }}>
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
+      <div style={hasBenefit ? playInfoStyle : playInfoNoBenefitStyle}>
+        <p style={playNameStyle}>
           {crystal.name} 돌멩이
         </p>
-        {crystal.benefit && (
-          <p style={{
-            color: "rgba(214, 205, 190, 0.72)",
-            fontSize: "clamp(10px,2.4vw,11px)",
-            margin: "5px 0 0",
-            letterSpacing: "0.04em",
-          }}>
-            {crystal.benefit}
-          </p>
-        )}
+        <BenefitRecord benefit={crystal.benefit} compact />
       </div>
 
       {/* 크리스탈 */}
@@ -397,4 +438,27 @@ const playContentStyle = {
   alignItems: "center",
   gap: "clamp(14px, 3.5vw, 24px)",
   marginTop: "clamp(128px,31vw,152px)",
+};
+
+const playInfoStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 8,
+  textAlign: "center",
+  marginBottom: "clamp(18px,4.5vw,24px)",
+};
+
+const playInfoNoBenefitStyle = {
+  ...playInfoStyle,
+  gap: 4,
+  marginBottom: "clamp(16px,4vw,20px)",
+};
+
+const playNameStyle = {
+  color: "rgba(255,255,255,0.7)",
+  fontSize: "clamp(12px,3.1vw,14px)",
+  letterSpacing: "0.1em",
+  margin: 0,
+  lineHeight: 1.08,
 };

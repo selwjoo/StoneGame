@@ -1,14 +1,27 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatPieces } from "./formatPieces";
+import {
+  modalAccentStyle,
+  modalBodyStyle,
+  modalEyebrowStyle,
+  modalHeaderStyle,
+  modalButtonRowStyle,
+  modalStyle,
+  modalTopGlowStyle,
+  modalTitleStyle,
+  overlayStyle,
+  primaryDangerButtonStyle,
+  secondaryButtonStyle,
+} from "./modalStyles";
 import Potion from "./Potion";
 
 export default function GameOver({
   totalMoney,
   setTotalMoney,
+  pendingMoney,
   setPendingMoney,
-  moss,
   setMoss,
-  crack,
   setCrack,
   gameOver,
   setGameOver,
@@ -19,23 +32,28 @@ export default function GameOver({
   reviveCount,
   setReviveCount,
   setCombo,
-  setSelectedCrystal,
 }) {
   const navigate = useNavigate();
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
-  function handleExitGame() {
-    // 완전 초기화
+  useEffect(() => {
+    if (!gameOver) {
+      setShowExitConfirm(false);
+    }
+  }, [gameOver]);
+
+  function confirmExitGame() {
+    // 이번 판 상태만 정리하고 메인으로 복귀
     setGameOver(false);
     setMessage("");
     setMoss(0);
     setCrack(0);
     setPendingMoney(0);
-    setTotalMoney(0);
     setPotionPrice(50000);
     setReviveCount(0);
     if (setCombo) setCombo(1);
-    if (setSelectedCrystal) setSelectedCrystal(0);
-    navigate("/");
+    setShowExitConfirm(false);
+    navigate("/start");
   }
 
   if (!gameOver) return null;
@@ -43,20 +61,14 @@ export default function GameOver({
   return (
     <div style={overlayStyle}>
       <div style={modalStyle}>
-        <div style={iconStyle}></div>
-        <h2 style={{ margin: 0, fontSize: "clamp(18px, 4.8vw, 22px)" }}>게임 오버</h2>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.55)", fontSize: "clamp(13px, 3.4vw, 15px)", lineHeight: 1.5 }}>
-          {message}
-        </p>
+        <div style={modalTopGlowStyle} />
+        <div style={modalHeaderStyle}>
+          <p style={modalEyebrowStyle}>ROUND RESULT</p>
+          <h2 style={modalTitleStyle}>GAME OVER</h2>
+        </div>
+        <p style={{ ...modalBodyStyle, whiteSpace: "pre-line" }}>{message}</p>
 
-        <div style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "0.5px solid rgba(255,255,255,0.1)",
-          borderRadius: 12,
-          padding: "10px 16px",
-          fontSize: "clamp(13px, 3.4vw, 14px)",
-          color: "#fffaaa",
-        }}>
+        <div style={modalAccentStyle}>
           현재 보유: {formatPieces(totalMoney)}
         </div>
 
@@ -75,58 +87,33 @@ export default function GameOver({
           setCombo={setCombo}
         />
 
-        <button onClick={handleExitGame} style={exitBtnStyle}>
+        <button onClick={() => setShowExitConfirm(true)} style={secondaryButtonStyle}>
           게임 종료하기
         </button>
       </div>
+
+      {showExitConfirm && (
+        <div style={overlayStyle}>
+          <div style={{ ...modalStyle, width: "min(100%, 340px)" }}>
+            <div style={modalTopGlowStyle} />
+            <div style={modalHeaderStyle}>
+              <p style={modalEyebrowStyle}>FORFEIT REWARD</p>
+              <h2 style={modalTitleStyle}>정말 종료할까요?</h2>
+            </div>
+            <p style={modalBodyStyle}>
+              정말로 {formatPieces(pendingMoney)}을 포기하시겠습니까?
+            </p>
+            <div style={modalButtonRowStyle}>
+              <button onClick={confirmExitGame} style={primaryDangerButtonStyle}>
+                포기하고 종료
+              </button>
+              <button onClick={() => setShowExitConfirm(false)} style={secondaryButtonStyle}>
+                돌아가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-const overlayStyle = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.75)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 999,
-  padding: "clamp(16px, 5vw, 24px)",
-  boxSizing: "border-box",
-};
-
-const modalStyle = {
-  width: "min(100%, 360px)",
-  background: "rgba(18,18,24,0.98)",
-  border: "0.5px solid rgba(255,255,255,0.1)",
-  color: "#fff",
-  padding: "clamp(20px, 5vw, 28px)",
-  borderRadius: "20px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  textAlign: "center",
-  boxSizing: "border-box",
-};
-
-const iconStyle = {
-  width: 52, height: 52,
-  borderRadius: "50%",
-  background: "rgba(231,76,60,0.15)",
-  border: "0.5px solid rgba(231,76,60,0.3)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  margin: "0 auto",
-  fontSize: 24,
-};
-
-const exitBtnStyle = {
-  padding: "12px",
-  border: "0.5px solid rgba(255,255,255,0.1)",
-  borderRadius: "12px",
-  background: "rgba(255,255,255,0.05)",
-  color: "rgba(255,255,255,0.6)",
-  cursor: "pointer",
-  fontSize: "clamp(14px, 3.8vw, 15px)",
-};
