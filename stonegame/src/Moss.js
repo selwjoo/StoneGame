@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const mossStains = [
   { cx: 98,  cy: 42,  rx: 60, ry: 18, start: 6,  rotate: -2,  shade: "rgba(78,101,67,0.18)"  },
@@ -65,10 +65,12 @@ export function MossOverlay({ moss }) {
 
 export default function Moss({
   moss, setMoss,
-  setGameOver, setMessage,
+  onRoundLost,
   lastClickAt, gameOver,
   mossSpeedMult = 1,
 }) {
+  const lossTriggeredRef = useRef(false);
+
   useEffect(() => {
     const timer = setInterval(() => {
       if (gameOver) return;
@@ -76,16 +78,22 @@ export default function Moss({
 
       setMoss(prev => {
         const next = prev + getMossIncrease(prev) * mossSpeedMult;
-        if (next >= 100) {
-          setGameOver(true);
-          setMessage("이끼가 돌을 완전히 덮었습니다...");
-          return 100;
-        }
-        return next;
+        return Math.min(next, 100);
       });
     }, 700);
     return () => clearInterval(timer);
-  }, [gameOver, lastClickAt, mossSpeedMult, setGameOver, setMessage, setMoss]);
+  }, [gameOver, lastClickAt, mossSpeedMult, setMoss]);
+
+  useEffect(() => {
+    if (moss < 100) {
+      lossTriggeredRef.current = false;
+      return;
+    }
+    if (gameOver || lossTriggeredRef.current) return;
+
+    lossTriggeredRef.current = true;
+    onRoundLost("이끼가 돌을 완전히 덮었습니다...");
+  }, [moss, gameOver, onRoundLost]);
 
   const mossColor = moss > 70 ? "#14532d" : moss > 40 ? "#22c55e" : "#86efac";
 

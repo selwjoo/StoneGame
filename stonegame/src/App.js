@@ -12,9 +12,9 @@ import { authFetch } from './auth';
 function App() {
   const [totalMoney, setTotalMoney] = useState(0);
   const [pendingMoney, setPendingMoney] = useState(0);
+  const [forfeitedReward, setForfeitedReward] = useState(0);
   const [combo, setCombo] = useState(1);
   const [unlockedCrystals, setUnlockedCrystals] = useState([0]);
-  const [pendingPurchaseCrystal, setPendingPurchaseCrystal] = useState(null);
   const [progressReady, setProgressReady] = useState(false);
 
   const [moss, setMoss] = useState(0);
@@ -23,7 +23,7 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [message, setMessage] = useState('');
 
-  const [potionPrice, setPotionPrice] = useState(50000);
+  const [potionPrice, setPotionPrice] = useState(30000);
   const [reviveCount, setReviveCount] = useState(0);
 
   const [selectedCrystal, setSelectedCrystal] = useState(0);
@@ -93,8 +93,9 @@ function App() {
         <PrivateRoute>
         <Start
       money={totalMoney}
+      setTotalMoney={setTotalMoney}
       unlockedCrystals={unlockedCrystals}
-      setPendingPurchaseCrystal={setPendingPurchaseCrystal}
+      setUnlockedCrystals={setUnlockedCrystals}
       selectedCrystal={selectedCrystal}
       setSelectedCrystal={setSelectedCrystal}
     />
@@ -106,12 +107,9 @@ function App() {
               <Money
                 totalMoney={totalMoney}
                 setTotalMoney={setTotalMoney}
-                unlockedCrystals={unlockedCrystals}
-                setUnlockedCrystals={setUnlockedCrystals}
-                pendingPurchaseCrystal={pendingPurchaseCrystal}
-                setPendingPurchaseCrystal={setPendingPurchaseCrystal}
                 pendingMoney={pendingMoney}
                 setPendingMoney={setPendingMoney}
+                setForfeitedReward={setForfeitedReward}
                 combo={combo}
                 setCombo={setCombo}
                 selectedCrystal={selectedCrystal}
@@ -128,8 +126,11 @@ function App() {
         </Routes>
         <GameOver
           totalMoney={totalMoney}
+          setTotalMoney={setTotalMoney}
           pendingMoney={pendingMoney}
+          forfeitedReward={forfeitedReward}
           setPendingMoney={setPendingMoney}
+          setForfeitedReward={setForfeitedReward}
           setMoss={setMoss}
           setCrack={setCrack}
           gameOver={gameOver}
