@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -28,7 +26,7 @@ function Login() {
       localStorage.setItem('refresh', data.refresh);
       localStorage.setItem('username', username);
 
-      navigate('/start'); // ⚠️ '/' 대신 '/start'로! ('/'는 이제 로그인 화면이라 루프됨)
+      window.location.href = '/start';
     } catch (err) {
       setError('서버에 연결할 수 없습니다.');
     }

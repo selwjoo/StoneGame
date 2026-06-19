@@ -5,7 +5,7 @@ export function logout() {
   localStorage.removeItem('access');
   localStorage.removeItem('refresh');
   localStorage.removeItem('username');
-  window.location.href = '/login';
+  window.location.href = '/';
 }
 
 // access 토큰 만료 시 refresh로 재발급
