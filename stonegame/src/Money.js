@@ -8,7 +8,6 @@ import { crystals } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
 import { formatPieces } from "./formatPieces";
 import MoneyHeader from "./MoneyHeader";
-import BenefitRecord from "./BenefitRecord";
 
 const comboAnchors = [
   { x: 100, y: 44 },
@@ -47,13 +46,11 @@ export default function Money({
   const navigate = useNavigate();
   const crystalIdx = selectedCrystal ?? 0;
   const crystal = crystals[crystalIdx];
-  const hasBenefit = Boolean(crystal.benefit);
 
   const [comboBursts, setComboBursts] = useState([]);
   const [pressing, setPressing] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const [lastClickAt, setLastClickAt] = useState(0);
-  const [collectFlash, setCollectFlash] = useState(false);
   const particleId = useRef(0);
   const comboAnchorIndex = useRef(0);
   const [exitHover, setExitHover] = useState(false);
@@ -168,6 +165,8 @@ export default function Money({
     handleClick(event.clientX - rect.left, event.clientY - rect.top);
   }
 
+  const canCollect = pendingMoney > 0 && !gameOver;
+
   return (
     <>
     <BackgroundEffect crystalName={crystal.name} />
@@ -232,19 +231,13 @@ export default function Money({
           20%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
           100% { opacity:0; transform:translate(calc(-50% + var(--money-drift-x)),calc(-50% + var(--money-drift-y))) scale(0.9); }
         }
-        @keyframes collectFlash {
-          0%   { transform:scale(1); }
-          30%  { transform:scale(1.06); }
-          100% { transform:scale(1); }
-        }
       `}</style>
 
       <div style={playContentStyle}>
-        <div style={hasBenefit ? playInfoStyle : playInfoNoBenefitStyle}>
+        <div style={playInfoStyle}>
           <p style={playNameStyle}>
             {crystal.name} 돌멩이
           </p>
-          <BenefitRecord benefit={crystal.benefit} compact />
         </div>
 
         <Crystal
@@ -317,13 +310,20 @@ export default function Money({
             return (
               <div style={{
                 display: "flex", justifyContent: "space-between", alignItems: "center",
-                background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)",
+                background: "linear-gradient(180deg, rgba(236,228,212,0.08), rgba(236,228,212,0.04))",
+                border: "0.5px solid rgba(214,205,190,0.14)",
                 borderRadius: 10, padding: "7px 14px", boxSizing: "border-box",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.03)",
               }}>
                 <span style={{ fontSize: "clamp(11px,2.6vw,12px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em" }}>
                   다음 클릭 시
                 </span>
-                <span style={{ fontSize: "clamp(15px,4vw,18px)", fontWeight: 800, color: "#ffd700", textShadow: "0 0 12px rgba(255,215,0,0.4)" }}>
+                <span style={{
+                  fontSize: "clamp(15px,4vw,18px)",
+                  fontWeight: 800,
+                  color: "rgba(241,235,221,0.92)",
+                  textShadow: "0 0 14px rgba(214,205,190,0.18)",
+                }}>
                   +{formatPieces(nextEarned)}
                 </span>
               </div>
@@ -347,16 +347,22 @@ export default function Money({
 
           <button
             onClick={handleCollect}
-            disabled={pendingMoney <= 0 || gameOver}
+            disabled={!canCollect}
             style={{
-              padding: "clamp(11px,3vw,14px)", borderRadius: 14, border: "none",
-              background: pendingMoney > 0 && !gameOver ? "linear-gradient(135deg,#2d6a4f,#52b788)" : "rgba(255,255,255,0.06)",
-              color: pendingMoney > 0 && !gameOver ? "#fff" : "rgba(255,255,255,0.25)",
+              padding: "clamp(11px,3vw,14px)",
+              borderRadius: 14,
+              border: canCollect ? "1px solid rgba(214,205,190,0.22)" : "1px solid rgba(255,255,255,0.06)",
+              background: canCollect
+                ? "linear-gradient(180deg, rgba(236,228,212,0.18), rgba(182,174,160,0.12))"
+                : "rgba(255,255,255,0.05)",
+              color: canCollect ? "rgba(241,235,221,0.96)" : "rgba(255,255,255,0.25)",
               fontSize: "clamp(15px,4vw,17px)", fontWeight: 700,
-              cursor: pendingMoney > 0 && !gameOver ? "pointer" : "not-allowed",
+              cursor: canCollect ? "pointer" : "not-allowed",
               letterSpacing: "0.04em",
-              transition: "background 0.2s, transform 0.1s",
-              animation: collectFlash ? "collectFlash 0.6s ease" : "none",
+              transition: "background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease",
+              boxShadow: canCollect
+                ? "0 10px 24px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08)"
+                : "none",
               boxSizing: "border-box", width: "100%",
             }}
           >
@@ -385,12 +391,8 @@ const playInfoStyle = {
   gap: 8,
   textAlign: "center",
   marginBottom: "clamp(18px,4.5vw,24px)",
-};
-
-const playInfoNoBenefitStyle = {
-  ...playInfoStyle,
-  gap: 4,
-  marginBottom: "clamp(16px,4vw,20px)",
+  minHeight: "clamp(34px, 8.5vw, 42px)",
+  justifyContent: "flex-start",
 };
 
 const playNameStyle = {

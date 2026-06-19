@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatPieces } from "./formatPieces";
 import {
@@ -10,11 +11,13 @@ import {
   modalTitleStyle,
   overlayStyle,
   primaryDangerButtonStyle,
+  primaryDangerButtonHoverStyle,
   secondaryButtonStyle,
 } from "./modalStyles";
 
 export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount = 0 }) {
   const navigate = useNavigate();
+  const [isExitHovered, setIsExitHovered] = useState(false);
 
   function handleExitGame() {
     if (onResetGame) onResetGame();
@@ -40,7 +43,17 @@ export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount
           정말로 {formatPieces(forfeitAmount)}을 포기하시겠습니까?
         </p>
         <div style={modalButtonRowStyle}>
-          <button onClick={handleExitGame} style={primaryDangerButtonStyle}>나가기</button>
+          <button
+            onClick={handleExitGame}
+            onMouseEnter={() => setIsExitHovered(true)}
+            onMouseLeave={() => setIsExitHovered(false)}
+            style={{
+              ...primaryDangerButtonStyle,
+              ...(isExitHovered ? primaryDangerButtonHoverStyle : null),
+            }}
+          >
+            나가기
+          </button>
           <button onClick={handleCancel} style={secondaryButtonStyle}>취소</button>
         </div>
       </div>
