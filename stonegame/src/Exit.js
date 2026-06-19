@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { formatPieces } from "./formatPieces";
 import {
   modalEyebrowStyle,
   modalBodyStyle,
@@ -12,7 +13,7 @@ import {
   secondaryButtonStyle,
 } from "./modalStyles";
 
-export default function Exit({ showExit, setShowExit, onResetGame }) {
+export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount = 0 }) {
   const navigate = useNavigate();
 
   function handleExitGame() {
@@ -35,7 +36,9 @@ export default function Exit({ showExit, setShowExit, onResetGame }) {
           <p style={modalEyebrowStyle}>ROUND EXIT</p>
           <h2 style={modalTitleStyle}>정말 나가시겠습니까?</h2>
         </div>
-        <p style={modalBodyStyle}>현재 진행 중인 이번 판 기록은 사라지고 메인 화면으로 돌아갑니다.</p>
+        <p style={modalBodyStyle}>
+          정말로 {formatPieces(forfeitAmount)}을 포기하시겠습니까?
+        </p>
         <div style={modalButtonRowStyle}>
           <button onClick={handleExitGame} style={primaryDangerButtonStyle}>나가기</button>
           <button onClick={handleCancel} style={secondaryButtonStyle}>취소</button>

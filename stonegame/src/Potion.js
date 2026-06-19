@@ -8,10 +8,9 @@ export default function Potion({
   setReviveCount,
   setMoss,
   setCrack,
-  setPendingMoney,
+  setForfeitedReward,
   setGameOver,
   setMessage,
-  setCombo,
 }) {
   const canBuy = money >= potionPrice;
 
@@ -20,10 +19,9 @@ export default function Potion({
     setMoney(prev => prev - potionPrice);
     setMoss(0);
     setCrack(0);
-    setPendingMoney(0);
-    if (setCombo) setCombo(1);
+    setForfeitedReward(0);
     setReviveCount(prev => prev + 1);
-    setPotionPrice(prev => prev * 3);
+    setPotionPrice(prev => prev * 2);
     setGameOver(false);
     setMessage("");
   }

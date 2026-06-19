@@ -7,8 +7,9 @@ import BenefitRecord from './BenefitRecord';
 
 export default function Start({
   money,
+  setTotalMoney,
   unlockedCrystals,
-  setPendingPurchaseCrystal,
+  setUnlockedCrystals,
   selectedCrystal,
   setSelectedCrystal,
 }) {
@@ -24,7 +25,12 @@ export default function Start({
 
   function handleBuy() {
     if (!canBuy) return;
-    setPendingPurchaseCrystal(isOwned ? null : selectedCrystal);
+    if (!isOwned) {
+      setTotalMoney(prev => Math.max(0, prev - (crystal.price ?? 0)));
+      setUnlockedCrystals(prev => (
+        prev.includes(selectedCrystal) ? prev : [...prev, selectedCrystal]
+      ));
+    }
     navigate('/money');
   }
 

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Moss, { reduceMossOnClick } from "./Moss";
 import Crack from "./Crack";
@@ -31,15 +31,18 @@ function getCrackMultiplier(clickCount) {
   return                       { mult: 8,   label: "×8",   color: "#ff4444", desc: "초고위험" };
 }
 
+function getCollectAmountValue(sourcePendingMoney, sourceClickCount, sourceMoss) {
+  const { mult } = getCrackMultiplier(sourceClickCount);
+  const mossRatio = (1 - sourceMoss / 100) * (9 / 10) + (1 / 10);
+  return Math.floor(sourcePendingMoney * mult * mossRatio);
+}
+
 export default function Money({
   totalMoney,
   setTotalMoney,
-  unlockedCrystals,
-  setUnlockedCrystals,
-  pendingPurchaseCrystal,
-  setPendingPurchaseCrystal,
   pendingMoney,
   setPendingMoney,
+  setForfeitedReward,
   combo,
   setCombo,
   selectedCrystal,
@@ -66,8 +69,29 @@ export default function Money({
   const [exitHover, setExitHover] = useState(false);
   const [showExit, setShowExit] = useState(false);
 
+  useEffect(() => {
+    setPendingMoney(0);
+    setForfeitedReward(0);
+    setMoss(0);
+    setCrack(0);
+    setCombo(1);
+    setClickCount(0);
+    setLastClickAt(0);
+    setGameOver(false);
+    setMessage("");
+  }, [
+    setCombo,
+    setCrack,
+    setForfeitedReward,
+    setGameOver,
+    setMessage,
+    setMoss,
+    setPendingMoney,
+  ]);
+
   function resetRoundState() {
     setPendingMoney(0);
+    setForfeitedReward(0);
     setMoss(0);
     setCrack(0);
     setCombo(1);
@@ -77,45 +101,17 @@ export default function Money({
     setMessage("");
   }
 
-  // 물약 구매 후 게임 재개 시 clickCount 리셋
-  useEffect(() => {
-    if (!gameOver) {
-      setClickCount(0);
-      setCombo(1);
-    }
-  }, [gameOver, setCombo]);
-
-  useEffect(() => {
-    if (pendingPurchaseCrystal !== selectedCrystal) return;
-    if (unlockedCrystals.includes(selectedCrystal)) {
-      setPendingPurchaseCrystal(null);
-      return;
-    }
-
-    const price = crystal.price ?? 0;
-    if (price > 0) {
-      setTotalMoney(prev => prev - price);
-    }
-    setUnlockedCrystals(prev => {
-      if (prev.includes(selectedCrystal)) return prev;
-      return [...prev, selectedCrystal];
-    });
-    setPendingPurchaseCrystal(null);
-  }, [
-    crystal.price,
-    pendingPurchaseCrystal,
-    selectedCrystal,
-    setPendingPurchaseCrystal,
-    setTotalMoney,
-    setUnlockedCrystals,
-    unlockedCrystals,
-  ]);
+  const handleRoundLoss = useCallback((nextMessage) => {
+    setForfeitedReward(getCollectAmountValue(pendingMoney, clickCount, moss));
+    setGameOver(true);
+    setMessage(nextMessage);
+  }, [clickCount, moss, pendingMoney, setForfeitedReward, setGameOver, setMessage]);
 
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
-    const { mult } = getCrackMultiplier(clickCount);
-    const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10); // 이끼 0%=1.0, 이끼 100%=0.1
-    setTotalMoney(prev => prev + Math.floor(pendingMoney * mult * mossRatio));
+    const collectedAmount = getCollectAmountValue(pendingMoney, clickCount, moss);
+    setTotalMoney(prev => prev + collectedAmount);
+    setForfeitedReward(0);
     setPendingMoney(0);
     setMoss(0);
     setCrack(0);
@@ -134,7 +130,7 @@ export default function Money({
     setLastClickAt(now);
 
     // 돌멩이 수익 배율 적용
-    const earned = Math.floor(Math.pow(newCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
+    const earned = Math.max(1, Math.floor(Math.pow(newCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3));
     setPendingMoney(prev => prev + earned);
     reduceMossOnClick(setMoss);
 
@@ -211,6 +207,7 @@ export default function Money({
               width: "clamp(40px,11vw,44px)",
               height: "clamp(40px,11vw,44px)",
               padding: 0,
+              marginLeft: "calc((min(88vw, 320px) - min(62vw, 260px)) / 2 - 44px)",
               border: "none",
               background: "transparent",
               borderRadius: "50%",
@@ -227,7 +224,12 @@ export default function Money({
         }
       />
 
-      <Exit showExit={showExit} setShowExit={setShowExit} onResetGame={resetRoundState} />
+      <Exit
+        showExit={showExit}
+        setShowExit={setShowExit}
+        onResetGame={resetRoundState}
+        forfeitAmount={getCollectAmountValue(pendingMoney, clickCount, moss)}
+      />
 
       <style>{`
         @keyframes comboPop {
@@ -306,15 +308,14 @@ export default function Money({
 
       <Moss
         moss={moss} setMoss={setMoss}
-        setGameOver={setGameOver} setMessage={setMessage}
+        onRoundLost={handleRoundLoss}
         lastClickAt={lastClickAt} gameOver={gameOver}
         mossSpeedMult={crystal.mossSpeedMult ?? 1}
       />
 
       <Crack
         crack={crack} setCrack={setCrack}
-        setGameOver={setGameOver} setMessage={setMessage}
-        setPendingMoney={setPendingMoney}
+        onRoundLost={handleRoundLoss}
         clickCount={clickCount} gameOver={gameOver}
         crackMin={crystal.crackMin ?? 1.5}
         crackMax={crystal.crackMax ?? 2.5}
@@ -327,10 +328,10 @@ export default function Money({
           const now = Date.now();
           const willContinueCombo = now - lastClickAt < (crystal.comboWindowMs ?? 500);
           const nextCombo = willContinueCombo ? combo + 1 : 1;
-          const nextEarned = Math.floor(Math.pow(nextCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3);
+          const nextEarned = Math.max(1, Math.floor(Math.pow(nextCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3));
         
           const mossRatio = (1 - moss / 100) * (9 / 10) + (1 / 10);
-          const finalPreview = Math.floor(pendingMoney * crackInfo.mult * mossRatio);
+          const finalPreview = getCollectAmountValue(pendingMoney, clickCount, moss);
         return (
           <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
 
@@ -412,15 +413,6 @@ export default function Money({
             >
               수거하기
             </button>
-
-            {/* 총 보유 */}
-            <div style={{
-              background: "transparent", border: "none",
-              color: "rgba(255,255,255,0.5)", fontSize: "clamp(13px,3.4vw,15px)", fontWeight: 600,
-              padding: "8px clamp(18px,6vw,28px)", borderRadius: 10, textAlign: "center", boxSizing: "border-box",
-            }}>
-              총 보유  {formatPieces(totalMoney)}
-            </div>
           </div>
         );
       })()}

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -31,30 +31,37 @@ export function CrackOverlay({ crack }) {
 
 export default function Crack({
   crack, setCrack,
-  setGameOver, setMessage,
-  setPendingMoney,
+  onRoundLost,
   clickCount, gameOver,
   crackMin = 1.5,
   crackMax = 2.5,
 }) {
+  const lossTriggeredRef = useRef(false);
+
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || clickCount <= 0) return;
 
     setCrack(prev => {
-      const stageMult = prev < 40 ? 1 : prev < 70 ? 1.2 : 1.5;
-      const rand = crackMin + Math.random() * (crackMax - crackMin);
-      const increase = rand * stageMult;
-      const next = prev + increase;
-
-      if (next >= 100) {
-        setGameOver(true);
-        setPendingMoney(0);
-        setMessage("돌이 완전히 깨졌습니다... \n 수거하지 못한 돈이 사라졌어요.");
-        return 100;
-      }
-      return next;
+      const stageMult = prev < 40 ? 1 : prev < 70 ? 1.08 : 1.16;
+      const range = Math.max(0, crackMax - crackMin);
+      const randomWeight = 0.2 + Math.random() * 0.28;
+      const baseIncrease = crackMin + range * randomWeight;
+      const increaseCap = crackMin + range * 0.45;
+      const increase = Math.min(baseIncrease * stageMult, increaseCap);
+      return Math.min(prev + increase, 100);
     });
-  }, [clickCount, gameOver, crackMin, crackMax, setCrack, setGameOver, setMessage, setPendingMoney]);
+  }, [clickCount, gameOver, crackMin, crackMax, setCrack]);
+
+  useEffect(() => {
+    if (crack < 100) {
+      lossTriggeredRef.current = false;
+      return;
+    }
+    if (gameOver || lossTriggeredRef.current) return;
+
+    lossTriggeredRef.current = true;
+    onRoundLost("돌이 완전히 깨졌습니다... \n 수거하지 못한 조각이 사라졌어요.");
+  }, [crack, gameOver, onRoundLost]);
 
   const crackColor = crack > 80 ? "#ff2d2d" : crack > 40 ? "#ff9f43" : "#ffd93d";
 
