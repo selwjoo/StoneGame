@@ -95,33 +95,5 @@ export default function Moss({
     onRoundLost("이끼가 돌을 완전히 덮었습니다...");
   }, [moss, gameOver, onRoundLost]);
 
-  const mossColor = moss > 70 ? "#14532d" : moss > 40 ? "#22c55e" : "#86efac";
-
-  return (
-    <div style={{ width: "min(100%,360px)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <h2 style={{ color: "white", margin: 0, fontSize: "clamp(14px,3.8vw,17px)", lineHeight: 1.2 }}>
-          이끼
-        </h2>
-        <span style={{ color: mossColor, fontWeight: 700, fontSize: "clamp(13px,3.4vw,15px)" }}>
-          {Math.floor(moss)}%
-        </span>
-      </div>
-      <div style={{
-        width: "100%", height: "clamp(14px,3.5vw,18px)",
-        background: "rgba(255,255,255,0.07)", borderRadius: "999px",
-        overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.06)",
-      }}>
-        <div style={{
-          width: `${moss}%`, height: "100%",
-          background: moss > 70
-            ? "linear-gradient(90deg,#14532d,#166534)"
-            : moss > 40
-              ? "linear-gradient(90deg,#15803d,#22c55e)"
-              : "linear-gradient(90deg,#4ade80,#86efac)",
-          transition: "0.2s", borderRadius: "999px",
-        }} />
-      </div>
-    </div>
-  );
+  return null;
 }
