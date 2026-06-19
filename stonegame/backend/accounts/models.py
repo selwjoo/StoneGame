@@ -7,6 +7,7 @@ class GameProgress(models.Model):
     total_money = models.BigIntegerField(default=0)
     unlocked_crystals = models.JSONField(default=list)
     selected_crystal = models.PositiveIntegerField(default=0)
+    potion_price = models.BigIntegerField(default=30000)
 
     def save(self, *args, **kwargs):
         unlocked = [int(index) for index in self.unlocked_crystals if isinstance(index, int) or str(index).isdigit()]

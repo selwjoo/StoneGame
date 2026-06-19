@@ -1,4 +1,5 @@
 import { formatPieces } from "./formatPieces";
+import { primaryActionButtonStyle } from "./modalStyles";
 
 export default function Potion({
   money,
@@ -38,13 +39,13 @@ export default function Potion({
         alignItems: "center",
       }}>
         <span style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "rgba(255,255,255,0.54)" }}>회복 물약</span>
-        <span style={{ fontSize: "clamp(14px, 3.8vw, 16px)", fontWeight: 700, color: "rgba(226, 214, 184, 0.92)" }}>
+        <span style={{ fontSize: "clamp(14px, 3.8vw, 16px)", fontWeight: 700, color: "#FF5C5C" }}>
           {formatPieces(potionPrice)}
         </span>
       </div>
 
       {!canBuy && (
-        <p style={{ margin: 0, color: "#ff6b6b", fontSize: "clamp(12px, 3.2vw, 13px)", fontWeight: 600 }}>
+        <p style={{ margin: 0, color: "#FF5C5C", fontSize: "clamp(12px, 3.2vw, 13px)", fontWeight: 600 }}>
           보유 조각이 부족합니다
         </p>
       )}
@@ -53,16 +54,18 @@ export default function Potion({
         onClick={handleBuyPotion}
         disabled={!canBuy}
         style={{
-          padding: "12px",
-          border: `0.5px solid ${canBuy ? "rgba(214,205,190,0.18)" : "rgba(255,255,255,0.08)"}`,
-          borderRadius: "12px",
-          background: canBuy ? "rgba(214,205,190,0.08)" : "rgba(255,255,255,0.04)",
-          color: canBuy ? "rgba(226, 214, 184, 0.92)" : "rgba(255,255,255,0.25)",
+          ...primaryActionButtonStyle,
+          border: `0.5px solid ${canBuy ? "rgba(214,205,190,0.2)" : "rgba(255,255,255,0.08)"}`,
+          background: canBuy
+            ? primaryActionButtonStyle.background
+            : "rgba(255,255,255,0.04)",
+          color: canBuy
+            ? primaryActionButtonStyle.color
+            : "rgba(255,255,255,0.25)",
           cursor: canBuy ? "pointer" : "not-allowed",
-          fontSize: "clamp(14px, 3.8vw, 15px)",
-          fontWeight: 600,
           width: "100%",
-          transition: "background 0.2s",
+          boxShadow: canBuy ? primaryActionButtonStyle.boxShadow : "none",
+          transition: "background 0.2s, border-color 0.2s, box-shadow 0.2s",
         }}
       >
         구매하기

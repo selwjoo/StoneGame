@@ -47,7 +47,9 @@ function App() {
 
         setTotalMoney(Number(data.total_money) || 0);
         setUnlockedCrystals(normalizeUnlockedCrystals(data.unlocked_crystals));
-        setSelectedCrystal(Number(data.selected_crystal) || 0);
+        setPotionPrice(Number(data.potion_price) || 30000);
+        // 로그인 후 시작 화면은 항상 기본 돌멩이부터 보여준다.
+        setSelectedCrystal(0);
       } finally {
         if (!ignore) setProgressReady(true);
       }
@@ -70,12 +72,13 @@ function App() {
           total_money: totalMoney,
           unlocked_crystals: normalizeUnlockedCrystals(unlockedCrystals),
           selected_crystal: selectedCrystal,
+          potion_price: potionPrice,
         }),
       }).catch(() => {});
     }, 250);
 
     return () => clearTimeout(timeoutId);
-  }, [progressReady, totalMoney, unlockedCrystals, selectedCrystal]);
+  }, [progressReady, totalMoney, unlockedCrystals, selectedCrystal, potionPrice]);
 
   if (!progressReady) {
     return <div style={{ background: "#0a0a0f", minHeight: "100vh" }} />;

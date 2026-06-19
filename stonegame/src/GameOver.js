@@ -12,6 +12,7 @@ import {
   modalTitleStyle,
   overlayStyle,
   primaryDangerButtonStyle,
+  primaryDangerButtonHoverStyle,
   secondaryButtonStyle,
 } from "./modalStyles";
 import Potion from "./Potion";
@@ -37,6 +38,7 @@ export default function GameOver({
 }) {
   const navigate = useNavigate();
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [hoveredDangerButton, setHoveredDangerButton] = useState(null);
 
   useEffect(() => {
     if (!gameOver) {
@@ -91,7 +93,15 @@ export default function GameOver({
           setCombo={setCombo}
         />
 
-        <button onClick={() => setShowExitConfirm(true)} style={secondaryButtonStyle}>
+        <button
+          onClick={() => setShowExitConfirm(true)}
+          onMouseEnter={() => setHoveredDangerButton("open-exit")}
+          onMouseLeave={() => setHoveredDangerButton(null)}
+          style={{
+            ...primaryDangerButtonStyle,
+            ...(hoveredDangerButton === "open-exit" ? primaryDangerButtonHoverStyle : null),
+          }}
+        >
           게임 종료하기
         </button>
       </div>
@@ -108,7 +118,15 @@ export default function GameOver({
               정말로 {formatPieces(totalMoney + (forfeitedReward || pendingMoney))}을 잃고 종료하시겠습니까?
             </p>
             <div style={modalButtonRowStyle}>
-              <button onClick={confirmExitGame} style={primaryDangerButtonStyle}>
+              <button
+                onClick={confirmExitGame}
+                onMouseEnter={() => setHoveredDangerButton("confirm-exit")}
+                onMouseLeave={() => setHoveredDangerButton(null)}
+                style={{
+                  ...primaryDangerButtonStyle,
+                  ...(hoveredDangerButton === "confirm-exit" ? primaryDangerButtonHoverStyle : null),
+                }}
+              >
                 포기하고 종료
               </button>
               <button onClick={() => setShowExitConfirm(false)} style={secondaryButtonStyle}>

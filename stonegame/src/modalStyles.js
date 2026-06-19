@@ -79,7 +79,7 @@ export const modalSectionStyle = {
 export const modalAccentStyle = {
   ...modalSectionStyle,
   fontSize: "clamp(13px, 3.4vw, 14px)",
-  color: "#fffaaa",
+  color: "rgba(226, 214, 184, 0.92)",
 };
 
 export const modalIconStyle = {
@@ -108,25 +108,44 @@ export const modalButtonRowStyle = {
   gap: 12,
 };
 
-export const primaryDangerButtonStyle = {
+export const primaryActionButtonStyle = {
   flex: 1,
   padding: "12px",
-  border: "none",
+  border: "0.5px solid rgba(214,205,190,0.2)",
   borderRadius: "12px",
-  background: "linear-gradient(135deg, #b64036, #e74c3c)",
-  color: "#fff",
+  background: "rgba(214,205,190,0.14)",
+  color: "rgba(241,235,221,0.96)",
   cursor: "pointer",
   fontSize: "clamp(14px, 3.8vw, 15px)",
   fontWeight: 700,
 };
 
+export const primaryDangerButtonStyle = {
+  flex: 1,
+  padding: "12px",
+  border: "1px solid rgba(255, 92, 92, 0.1)",
+  borderRadius: "12px",
+  background: "linear-gradient(180deg, #6A4B4E 0%, #573D40 100%)",
+  color: "#E7D2D2",
+  cursor: "pointer",
+  fontSize: "clamp(14px, 3.8vw, 15px)",
+  fontWeight: 700,
+  transition: "background 0.18s ease, border-color 0.18s ease, color 0.18s ease",
+};
+
+export const primaryDangerButtonHoverStyle = {
+  background: "linear-gradient(180deg, #735255 0%, #604346 100%)",
+  borderColor: "rgba(255, 92, 92, 0.14)",
+  color: "#F0DEDE",
+};
+
 export const secondaryButtonStyle = {
   flex: 1,
   padding: "12px",
-  border: "0.5px solid rgba(255,255,255,0.1)",
+  border: "0.5px solid rgba(255,255,255,0.08)",
   borderRadius: "12px",
-  background: "rgba(255,255,255,0.05)",
-  color: "rgba(255,255,255,0.7)",
+  background: "rgba(255,255,255,0.035)",
+  color: "rgba(255,255,255,0.62)",
   cursor: "pointer",
   fontSize: "clamp(14px, 3.8vw, 15px)",
   fontWeight: 600,
