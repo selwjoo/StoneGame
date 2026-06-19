@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import {
+  modalEyebrowStyle,
   modalBodyStyle,
   modalButtonRowStyle,
+  modalHeaderStyle,
   modalStyle,
+  modalTopGlowStyle,
   modalTitleStyle,
   overlayStyle,
   primaryDangerButtonStyle,
@@ -27,8 +30,12 @@ export default function Exit({ showExit, setShowExit, onResetGame }) {
   return (
     <div style={overlayStyle}>
       <div style={modalStyle}>
-        <h2 style={modalTitleStyle}>정말 나가시겠습니까?</h2>
-        <p style={modalBodyStyle}>현재 진행 중인 이번 판 기록은 사라집니다.</p>
+        <div style={modalTopGlowStyle} />
+        <div style={modalHeaderStyle}>
+          <p style={modalEyebrowStyle}>ROUND EXIT</p>
+          <h2 style={modalTitleStyle}>정말 나가시겠습니까?</h2>
+        </div>
+        <p style={modalBodyStyle}>현재 진행 중인 이번 판 기록은 사라지고 메인 화면으로 돌아갑니다.</p>
         <div style={modalButtonRowStyle}>
           <button onClick={handleExitGame} style={primaryDangerButtonStyle}>나가기</button>
           <button onClick={handleCancel} style={secondaryButtonStyle}>취소</button>

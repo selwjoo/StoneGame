@@ -13,17 +13,45 @@ export const overlayStyle = {
 
 export const modalStyle = {
   width: "min(100%, 360px)",
-  background: "linear-gradient(180deg, rgba(20,22,28,0.98), rgba(14,16,22,0.98))",
+  background: "linear-gradient(180deg, rgba(22,24,30,0.98), rgba(14,16,22,0.98))",
   color: "#fff",
   padding: "clamp(20px, 5vw, 28px)",
   borderRadius: "20px",
-  border: "0.5px solid rgba(255,255,255,0.1)",
-  boxShadow: "0 24px 60px rgba(0,0,0,0.38)",
+  border: "0.5px solid rgba(214,205,190,0.12)",
+  boxShadow: "0 24px 60px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.04)",
   display: "flex",
   flexDirection: "column",
   gap: "14px",
   textAlign: "center",
   boxSizing: "border-box",
+  position: "relative",
+  overflow: "hidden",
+};
+
+export const modalTopGlowStyle = {
+  position: "absolute",
+  top: 0,
+  left: "50%",
+  transform: "translateX(-50%)",
+  width: "72%",
+  height: 1,
+  background: "linear-gradient(90deg, rgba(214,205,190,0), rgba(214,205,190,0.42), rgba(214,205,190,0))",
+};
+
+export const modalHeaderStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 10,
+};
+
+export const modalEyebrowStyle = {
+  margin: 0,
+  color: "rgba(214,205,190,0.52)",
+  fontSize: "11px",
+  letterSpacing: "0.22em",
+  textTransform: "uppercase",
+  paddingLeft: "0.22em",
 };
 
 export const modalTitleStyle = {
@@ -40,11 +68,16 @@ export const modalBodyStyle = {
   lineHeight: 1.5,
 };
 
-export const modalAccentStyle = {
+export const modalSectionStyle = {
   background: "rgba(255,255,255,0.04)",
-  border: "0.5px solid rgba(255,255,255,0.1)",
+  border: "0.5px solid rgba(214,205,190,0.12)",
   borderRadius: 12,
   padding: "10px 16px",
+  boxSizing: "border-box",
+};
+
+export const modalAccentStyle = {
+  ...modalSectionStyle,
   fontSize: "clamp(13px, 3.4vw, 14px)",
   color: "#fffaaa",
 };
@@ -53,13 +86,21 @@ export const modalIconStyle = {
   width: 52,
   height: 52,
   borderRadius: "50%",
-  background: "rgba(231,76,60,0.15)",
-  border: "0.5px solid rgba(231,76,60,0.3)",
+  background: "linear-gradient(180deg, rgba(214,205,190,0.12), rgba(214,205,190,0.04))",
+  border: "0.5px solid rgba(214,205,190,0.18)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   margin: "0 auto",
-  fontSize: 24,
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+};
+
+export const modalIconCoreStyle = {
+  width: 12,
+  height: 12,
+  borderRadius: "50%",
+  background: "rgba(214,205,190,0.7)",
+  boxShadow: "0 0 12px rgba(214,205,190,0.22)",
 };
 
 export const modalButtonRowStyle = {

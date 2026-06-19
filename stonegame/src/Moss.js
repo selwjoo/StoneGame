@@ -78,7 +78,7 @@ export default function Moss({
         const next = prev + getMossIncrease(prev) * mossSpeedMult;
         if (next >= 100) {
           setGameOver(true);
-          setMessage("🌿 이끼가 돌을 완전히 덮었습니다...");
+          setMessage("이끼가 돌을 완전히 덮었습니다...");
           return 100;
         }
         return next;
@@ -93,7 +93,7 @@ export default function Moss({
     <div style={{ width: "min(100%,360px)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
         <h2 style={{ color: "white", margin: 0, fontSize: "clamp(14px,3.8vw,17px)", lineHeight: 1.2 }}>
-          🌿 이끼
+          이끼
         </h2>
         <span style={{ color: mossColor, fontWeight: 700, fontSize: "clamp(13px,3.4vw,15px)" }}>
           {Math.floor(moss)}%

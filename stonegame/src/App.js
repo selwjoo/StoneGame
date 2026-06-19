@@ -128,6 +128,7 @@ function App() {
         </Routes>
         <GameOver
           totalMoney={totalMoney}
+          pendingMoney={pendingMoney}
           setPendingMoney={setPendingMoney}
           setMoss={setMoss}
           setCrack={setCrack}
