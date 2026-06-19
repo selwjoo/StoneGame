@@ -63,33 +63,5 @@ export default function Crack({
     onRoundLost("돌이 완전히 깨졌습니다... \n 수거하지 못한 조각이 사라졌어요.");
   }, [crack, gameOver, onRoundLost]);
 
-  const crackColor = crack > 80 ? "#ff2d2d" : crack > 40 ? "#ff9f43" : "#ffd93d";
-
-  return (
-    <div style={{ width: "min(100%,360px)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <h2 style={{ color: "white", margin: 0, fontSize: "clamp(14px,3.8vw,17px)", lineHeight: 1.2 }}>
-          균열
-        </h2>
-        <span style={{ color: crackColor, fontWeight: 700, fontSize: "clamp(13px,3.4vw,15px)" }}>
-          {crack.toFixed(1)}%
-        </span>
-      </div>
-      <div style={{
-        width: "100%", height: "clamp(14px,3.5vw,18px)",
-        background: "rgba(255,255,255,0.07)", borderRadius: "999px",
-        overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.06)",
-      }}>
-        <div style={{
-          width: `${crack}%`, height: "100%",
-          background: crack > 80
-            ? "linear-gradient(90deg,#c0392b,#ff2d2d)"
-            : crack > 40
-              ? "linear-gradient(90deg,#e67e22,#ff9f43)"
-              : "linear-gradient(90deg,#f0c040,#ffd93d)",
-          transition: "0.1s", borderRadius: "999px",
-        }} />
-      </div>
-    </div>
-  );
+  return null;
 }
