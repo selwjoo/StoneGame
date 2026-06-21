@@ -10,7 +10,7 @@ function Login() {
     setError('');
 
     try {
-      const res = await fetch('http://172.30.1.39:8000/api/token/', {
+      const res = await fetch('http://172.20.10.2:8000/api/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
