@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-c95aa!4ets2xeov+ubjbyo8vgrxviqk%4aizs0*@7+ob+er%a(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'gains-curable-grumbling.ngrok-free.dev','172.20.10.2']
 
 
 # Application definition
@@ -131,7 +131,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
-]
+    "http://172.30.1.39:3000",
+    "http://172.30.6.11:3000",
+    "http://172.20.10.2:3000",
+    "https://gains-curable-grumbling.ngrok-free.dev",
+    ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
