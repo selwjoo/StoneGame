@@ -20,5 +20,5 @@ class RegisterSerializer(serializers.ModelSerializer):
 class GameProgressSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameProgress
-        fields = ["total_money", "unlocked_crystals", "selected_crystal"]
+        fields = ["total_money", "unlocked_crystals", "selected_crystal", "potion_price"]
         

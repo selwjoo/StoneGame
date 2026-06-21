@@ -12,9 +12,9 @@ import { authFetch } from './auth';
 function App() {
   const [totalMoney, setTotalMoney] = useState(0);
   const [pendingMoney, setPendingMoney] = useState(0);
+  const [forfeitedReward, setForfeitedReward] = useState(0);
   const [combo, setCombo] = useState(1);
   const [unlockedCrystals, setUnlockedCrystals] = useState([0]);
-  const [pendingPurchaseCrystal, setPendingPurchaseCrystal] = useState(null);
   const [progressReady, setProgressReady] = useState(false);
 
   const [moss, setMoss] = useState(0);
@@ -23,7 +23,7 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [message, setMessage] = useState('');
 
-  const [potionPrice, setPotionPrice] = useState(50000);
+  const [potionPrice, setPotionPrice] = useState(30000);
   const [reviveCount, setReviveCount] = useState(0);
 
   const [selectedCrystal, setSelectedCrystal] = useState(0);
@@ -47,7 +47,9 @@ function App() {
 
         setTotalMoney(Number(data.total_money) || 0);
         setUnlockedCrystals(normalizeUnlockedCrystals(data.unlocked_crystals));
-        setSelectedCrystal(Number(data.selected_crystal) || 0);
+        setPotionPrice(Number(data.potion_price) || 30000);
+        // 로그인 후 시작 화면은 항상 기본 돌멩이부터 보여준다.
+        setSelectedCrystal(0);
       } finally {
         if (!ignore) setProgressReady(true);
       }
@@ -70,12 +72,13 @@ function App() {
           total_money: totalMoney,
           unlocked_crystals: normalizeUnlockedCrystals(unlockedCrystals),
           selected_crystal: selectedCrystal,
+          potion_price: potionPrice,
         }),
       }).catch(() => {});
     }, 250);
 
     return () => clearTimeout(timeoutId);
-  }, [progressReady, totalMoney, unlockedCrystals, selectedCrystal]);
+  }, [progressReady, totalMoney, unlockedCrystals, selectedCrystal, potionPrice]);
 
   if (!progressReady) {
     return <div style={{ background: "#0a0a0f", minHeight: "100vh" }} />;
@@ -93,8 +96,9 @@ function App() {
         <PrivateRoute>
         <Start
       money={totalMoney}
+      setTotalMoney={setTotalMoney}
       unlockedCrystals={unlockedCrystals}
-      setPendingPurchaseCrystal={setPendingPurchaseCrystal}
+      setUnlockedCrystals={setUnlockedCrystals}
       selectedCrystal={selectedCrystal}
       setSelectedCrystal={setSelectedCrystal}
     />
@@ -106,12 +110,9 @@ function App() {
               <Money
                 totalMoney={totalMoney}
                 setTotalMoney={setTotalMoney}
-                unlockedCrystals={unlockedCrystals}
-                setUnlockedCrystals={setUnlockedCrystals}
-                pendingPurchaseCrystal={pendingPurchaseCrystal}
-                setPendingPurchaseCrystal={setPendingPurchaseCrystal}
                 pendingMoney={pendingMoney}
                 setPendingMoney={setPendingMoney}
+                setForfeitedReward={setForfeitedReward}
                 combo={combo}
                 setCombo={setCombo}
                 selectedCrystal={selectedCrystal}
@@ -128,8 +129,11 @@ function App() {
         </Routes>
         <GameOver
           totalMoney={totalMoney}
+          setTotalMoney={setTotalMoney}
           pendingMoney={pendingMoney}
+          forfeitedReward={forfeitedReward}
           setPendingMoney={setPendingMoney}
+          setForfeitedReward={setForfeitedReward}
           setMoss={setMoss}
           setCrack={setCrack}
           gameOver={gameOver}

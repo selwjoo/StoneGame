@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -31,58 +31,37 @@ export function CrackOverlay({ crack }) {
 
 export default function Crack({
   crack, setCrack,
-  setGameOver, setMessage,
-  setPendingMoney,
+  onRoundLost,
   clickCount, gameOver,
   crackMin = 1.5,
   crackMax = 2.5,
 }) {
+  const lossTriggeredRef = useRef(false);
+
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || clickCount <= 0) return;
 
     setCrack(prev => {
-      const stageMult = prev < 40 ? 1 : prev < 70 ? 1.2 : 1.5;
-      const rand = crackMin + Math.random() * (crackMax - crackMin);
-      const increase = rand * stageMult;
-      const next = prev + increase;
-
-      if (next >= 100) {
-        setGameOver(true);
-        setPendingMoney(0);
-        setMessage("돌이 완전히 깨졌습니다... \n 수거하지 못한 돈이 사라졌어요.");
-        return 100;
-      }
-      return next;
+      const stageMult = prev < 40 ? 1 : prev < 70 ? 1.08 : 1.16;
+      const range = Math.max(0, crackMax - crackMin);
+      const randomWeight = 0.2 + Math.random() * 0.28;
+      const baseIncrease = crackMin + range * randomWeight;
+      const increaseCap = crackMin + range * 0.45;
+      const increase = Math.min(baseIncrease * stageMult, increaseCap);
+      return Math.min(prev + increase, 100);
     });
-  }, [clickCount, gameOver, crackMin, crackMax, setCrack, setGameOver, setMessage, setPendingMoney]);
+  }, [clickCount, gameOver, crackMin, crackMax, setCrack]);
 
-  const crackColor = crack > 80 ? "#ff2d2d" : crack > 40 ? "#ff9f43" : "#ffd93d";
+  useEffect(() => {
+    if (crack < 100) {
+      lossTriggeredRef.current = false;
+      return;
+    }
+    if (gameOver || lossTriggeredRef.current) return;
 
-  return (
-    <div style={{ width: "min(100%,360px)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <h2 style={{ color: "white", margin: 0, fontSize: "clamp(14px,3.8vw,17px)", lineHeight: 1.2 }}>
-          균열
-        </h2>
-        <span style={{ color: crackColor, fontWeight: 700, fontSize: "clamp(13px,3.4vw,15px)" }}>
-          {crack.toFixed(1)}%
-        </span>
-      </div>
-      <div style={{
-        width: "100%", height: "clamp(14px,3.5vw,18px)",
-        background: "rgba(255,255,255,0.07)", borderRadius: "999px",
-        overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.06)",
-      }}>
-        <div style={{
-          width: `${crack}%`, height: "100%",
-          background: crack > 80
-            ? "linear-gradient(90deg,#c0392b,#ff2d2d)"
-            : crack > 40
-              ? "linear-gradient(90deg,#e67e22,#ff9f43)"
-              : "linear-gradient(90deg,#f0c040,#ffd93d)",
-          transition: "0.1s", borderRadius: "999px",
-        }} />
-      </div>
-    </div>
-  );
+    lossTriggeredRef.current = true;
+    onRoundLost("돌이 완전히 깨졌습니다... \n 수거하지 못한 조각이 사라졌어요.");
+  }, [crack, gameOver, onRoundLost]);
+
+  return null;
 }
