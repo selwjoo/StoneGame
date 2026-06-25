@@ -52,11 +52,14 @@ export const authLinkStyle = {
 export default function AuthShell({ title, subtitle, footer, leftAction, children }) {
   return (
     <div style={shellStyle}>
-      <div style={contentStyle}>
-        {leftAction ? <div style={leftActionWrapStyle}>{leftAction}</div> : null}
+      <div style={topBrandWrapStyle}>
+        <div style={brandSlotStyle}>{leftAction}</div>
+        <div style={topBrandStyle}>Tap & Crack</div>
+        <div style={brandSlotStyle} />
+      </div>
 
+      <div style={contentStyle}>
         <div style={headingStackStyle}>
-          <div style={eyebrowStyle}>Tap & Crack</div>
           <h1 style={titleStyle}>{title}</h1>
           {subtitle ? <p style={subtitleStyle}>{subtitle}</p> : null}
         </div>
@@ -76,7 +79,7 @@ const shellStyle = {
   alignItems: "flex-start",
   justifyContent: "center",
   padding:
-    "calc(env(safe-area-inset-top, 0px) + 88px) 20px calc(env(safe-area-inset-bottom, 0px) + 24px)",
+    "calc(env(safe-area-inset-top, 0px) + 80px) 20px calc(env(safe-area-inset-bottom, 0px) + 24px)",
   boxSizing: "border-box",
   background: "#0a0a0f",
 };
@@ -84,13 +87,28 @@ const shellStyle = {
 const contentStyle = {
   position: "relative",
   width: "min(100%, 320px)",
+  marginTop: 70,
 };
 
-const leftActionWrapStyle = {
+const topBrandWrapStyle = {
   position: "absolute",
-  top: -2,
-  left: -6,
+  top: "calc(env(safe-area-inset-top, 0px) + 100px)",
+  left: "50%",
+  transform: "translateX(-50%)",
+  width: "min(78vw, 290px)",
+  display: "grid",
+  gridTemplateColumns: "36px 1fr 36px",
+  alignItems: "center",
   zIndex: 1,
+  pointerEvents: "auto",
+};
+
+const brandSlotStyle = {
+  width: 36,
+  height: 36,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
 const headingStackStyle = {
@@ -104,22 +122,25 @@ const headingStackStyle = {
   paddingTop: 0,
 };
 
-const eyebrowStyle = {
-  color: "rgba(216, 211, 199, 0.52)",
-  fontSize: "12px",
-  fontWeight: 700,
-  letterSpacing: "0.14em",
-  paddingLeft: "0.14em",
-  textTransform: "uppercase",
+const topBrandStyle = {
+  textAlign: "center",
+  color: "#D8D3C7",
+  fontSize: "clamp(13px, 3.8vw, 17px)",
+  fontWeight: 800,
+  letterSpacing: "0.12em",
+  paddingLeft: "0.12em",
+  whiteSpace: "nowrap",
+  textShadow: "0 10px 30px rgba(0, 0, 0, 0.22)",
 };
 
 const titleStyle = {
   margin: 0,
-  color: "#f1eee7",
-  fontSize: "clamp(26px, 7vw, 31px)",
-  lineHeight: 1,
-  letterSpacing: "-0.04em",
-  fontWeight: 800,
+  color: "#D8D3C7",
+  fontFamily: '"Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif',
+  fontSize: "clamp(20px, 5vw, 23px)",
+  lineHeight: 1.06,
+  letterSpacing: "-0.02em",
+  fontWeight: 700,
 };
 
 const subtitleStyle = {

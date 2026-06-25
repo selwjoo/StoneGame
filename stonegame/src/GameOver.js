@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatPieces } from "./formatPieces";
 import {
-  modalAccentStyle,
   modalBodyStyle,
-  modalEyebrowStyle,
   modalHeaderStyle,
   modalButtonRowStyle,
+  modalNumberStyle,
   modalStyle,
   modalTopGlowStyle,
   modalTitleStyle,
@@ -68,14 +67,12 @@ export default function GameOver({
       <div style={modalStyle}>
         <div style={modalTopGlowStyle} />
         <div style={modalHeaderStyle}>
-          <p style={modalEyebrowStyle}>ROUND RESULT</p>
           <h2 style={modalTitleStyle}>GAME OVER</h2>
         </div>
+        <p style={holdingStyle}>
+          보유 조각 <strong style={modalNumberStyle}>{formatPieces(totalMoney)}</strong>
+        </p>
         <p style={{ ...modalBodyStyle, whiteSpace: "pre-line" }}>{message}</p>
-
-        <div style={modalAccentStyle}>
-          현재 보유: {formatPieces(totalMoney)}
-        </div>
 
         <Potion
           money={totalMoney}
@@ -91,33 +88,37 @@ export default function GameOver({
           setGameOver={setGameOver}
           setMessage={setMessage}
           setCombo={setCombo}
+          sideAction={
+            <button
+              onClick={() => setShowExitConfirm(true)}
+              onMouseEnter={() => setHoveredDangerButton("open-exit")}
+              onMouseLeave={() => setHoveredDangerButton(null)}
+              style={{
+                ...primaryDangerButtonStyle,
+                ...(hoveredDangerButton === "open-exit" ? primaryDangerButtonHoverStyle : null),
+              }}
+            >
+              포기하기
+            </button>
+          }
         />
-
-        <button
-          onClick={() => setShowExitConfirm(true)}
-          onMouseEnter={() => setHoveredDangerButton("open-exit")}
-          onMouseLeave={() => setHoveredDangerButton(null)}
-          style={{
-            ...primaryDangerButtonStyle,
-            ...(hoveredDangerButton === "open-exit" ? primaryDangerButtonHoverStyle : null),
-          }}
-        >
-          게임 종료하기
-        </button>
       </div>
 
       {showExitConfirm && (
         <div style={overlayStyle}>
-          <div style={{ ...modalStyle, width: "min(100%, 340px)" }}>
+          <div style={{ ...modalStyle, width: "min(100%, 340px)", gap: 0 }}>
             <div style={modalTopGlowStyle} />
-            <div style={modalHeaderStyle}>
-              <p style={modalEyebrowStyle}>FORFEIT REWARD</p>
-              <h2 style={modalTitleStyle}>정말 종료할까요?</h2>
+            <div style={exitConfirmHeaderStyle}>
+              <h2 style={modalTitleStyle}>모든 조각을 포기하고 떠날까요?</h2>
             </div>
-            <p style={modalBodyStyle}>
-              정말로 {formatPieces(totalMoney + (forfeitedReward || pendingMoney))}을 잃고 종료하시겠습니까?
+            <p style={exitConfirmBodyStyle}>
+              챙기지 못한{" "}
+              <strong style={modalNumberStyle}>
+                {formatPieces(totalMoney + (forfeitedReward || pendingMoney))}
+              </strong>
+              을 모두 잃게 됩니다.
             </p>
-            <div style={modalButtonRowStyle}>
+            <div style={exitConfirmButtonRowStyle}>
               <button
                 onClick={confirmExitGame}
                 onMouseEnter={() => setHoveredDangerButton("confirm-exit")}
@@ -127,7 +128,7 @@ export default function GameOver({
                   ...(hoveredDangerButton === "confirm-exit" ? primaryDangerButtonHoverStyle : null),
                 }}
               >
-                포기하고 종료
+                포기하고 떠나기
               </button>
               <button onClick={() => setShowExitConfirm(false)} style={secondaryButtonStyle}>
                 돌아가기
@@ -139,3 +140,26 @@ export default function GameOver({
     </div>
   );
 }
+
+const holdingStyle = {
+  margin: "-4px 0 2px",
+  color: "rgba(186,192,203,0.72)",
+  fontSize: "clamp(12px, 3vw, 13px)",
+  lineHeight: 1.2,
+};
+
+const exitConfirmHeaderStyle = {
+  ...modalHeaderStyle,
+  marginTop: 6,
+  marginBottom: 18,
+};
+
+const exitConfirmBodyStyle = {
+  ...modalBodyStyle,
+  margin: "0 0 20px",
+};
+
+const exitConfirmButtonRowStyle = {
+  ...modalButtonRowStyle,
+  marginTop: 6,
+};

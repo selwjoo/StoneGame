@@ -1,5 +1,5 @@
 import { formatPieces } from "./formatPieces";
-import { primaryActionButtonStyle } from "./modalStyles";
+import { modalButtonRowStyle, modalNumberStyle, primaryActionButtonStyle } from "./modalStyles";
 
 export default function Potion({
   money,
@@ -12,6 +12,7 @@ export default function Potion({
   setForfeitedReward,
   setGameOver,
   setMessage,
+  sideAction = null,
 }) {
   const canBuy = money >= potionPrice;
 
@@ -28,48 +29,89 @@ export default function Potion({
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <div style={{
-        background: "#16181d",
-        border: "0.5px solid #2B2D34",
-        borderRadius: 12,
-        padding: "10px 14px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}>
-        <span style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "rgba(176,182,194,0.54)" }}>회복 물약</span>
-        <span style={{ fontSize: "clamp(14px, 3.8vw, 16px)", fontWeight: 700, color: "rgba(214,219,227,0.92)" }}>
-          {formatPieces(potionPrice)}
-        </span>
+    <div style={wrapStyle}>
+      <div style={hourglassWrapStyle}>
+        <img src="hourglass.png" alt="" style={hourglassImageStyle} />
       </div>
 
+      <p style={priceLineStyle}>
+        <span>역행 시계</span>
+        <span aria-hidden="true"> · </span>
+        <strong style={modalNumberStyle}>{formatPieces(potionPrice)}</strong>
+      </p>
+
       {!canBuy && (
-        <p style={{ margin: 0, color: "rgba(176,182,194,0.62)", fontSize: "clamp(12px, 3.2vw, 13px)", fontWeight: 600 }}>
+        <p style={warningStyle}>
           보유 조각이 부족합니다
         </p>
       )}
 
-      <button
-        onClick={handleBuyPotion}
-        disabled={!canBuy}
+      <div
         style={{
-          ...primaryActionButtonStyle,
-          border: `0.5px solid ${canBuy ? "#343740" : "#2B2D34"}`,
-          background: canBuy
-            ? primaryActionButtonStyle.background
-            : "#16181d",
-          color: canBuy
-            ? primaryActionButtonStyle.color
-            : "rgba(176,182,194,0.25)",
-          cursor: canBuy ? "pointer" : "not-allowed",
+          ...modalButtonRowStyle,
+          alignItems: "stretch",
           width: "100%",
-          boxShadow: "none",
-          transition: "background 0.2s, border-color 0.2s, box-shadow 0.2s",
         }}
       >
-        구매하기
-      </button>
+        <button
+          onClick={handleBuyPotion}
+          disabled={!canBuy}
+          style={{
+            ...primaryActionButtonStyle,
+            border: `0.5px solid ${canBuy ? "#343740" : "#2B2D34"}`,
+            background: canBuy
+              ? primaryActionButtonStyle.background
+              : "#16181d",
+            color: canBuy
+              ? primaryActionButtonStyle.color
+              : "rgba(176,182,194,0.25)",
+            cursor: canBuy ? "pointer" : "not-allowed",
+            boxShadow: "none",
+            transition: "background 0.2s, border-color 0.2s, box-shadow 0.2s",
+          }}
+        >
+          사용하기
+        </button>
+        {sideAction}
+      </div>
     </div>
   );
 }
+
+const wrapStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 10,
+  alignItems: "center",
+};
+
+const hourglassWrapStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: 2,
+};
+
+const hourglassImageStyle = {
+  width: 24,
+  height: 24,
+  objectFit: "contain",
+  opacity: 0.88,
+};
+
+const priceLineStyle = {
+  margin: 0,
+  color: "rgba(214,219,227,0.86)",
+  fontSize: "clamp(13px, 3.5vw, 15px)",
+  fontWeight: 600,
+  lineHeight: 1.2,
+  textAlign: "center",
+};
+
+const warningStyle = {
+  margin: 0,
+  color: "rgba(176,182,194,0.62)",
+  fontSize: "clamp(12px, 3.2vw, 13px)",
+  fontWeight: 600,
+  textAlign: "center",
+};
