@@ -4,7 +4,7 @@ import { crystals } from './crystalList';
 import BackgroundEffect from './BackgroundEffect';
 import { formatPieces } from './formatPieces';
 import MoneyHeader from './MoneyHeader';
-import BenefitRecord from './BenefitRecord';
+import BenefitRecord from './BenefitRecord'; // 기존 방식 컴포넌트 복원
 import { logout } from './auth';
 
 export default function Start({
@@ -46,6 +46,7 @@ export default function Start({
       padding: "calc(env(safe-area-inset-top,0px) + 20px) clamp(16px,5vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px)",
       boxSizing: "border-box",
       position: "relative", zIndex: 1, width: "100%", maxWidth: 520, margin: "0 auto",
+      background: "radial-gradient(circle at center, #0d0f1a 0%, #05060b 100%)",
     }}>
       <MoneyHeader
         money={money}
@@ -91,43 +92,58 @@ export default function Start({
       />
 
       <div style={contentColumnStyle}>
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: "0 0 clamp(20px,5vw,28px)", textAlign: "center" }}>
-          돌멩이를 선택하세요
+        <p style={{ color: "rgba(174,234,255,0.45)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.25em", margin: "0 0 clamp(20px,5vw,28px)", textAlign: "center", fontWeight: 500 }}>
+          탐사할 지역을 선택하세요
         </p>
-
 
       {/* 슬라이더 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px,4vw,32px)", width: "100%", marginBottom: "clamp(22px,5vw,28px)" }}>
-        <button type="button" onClick={prev} style={arrowBtn} aria-label="이전 크리스탈">
+        <button type="button" onClick={prev} style={arrowBtn} aria-label="이전 탐사">
           <img src="/left.png" alt="" style={arrowImageStyle} />
         </button>
 
-        <div style={{ position: "relative", width: "min(62vw,260px)", aspectRatio: "1/1", flex: "0 1 auto" }}>
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", ...crystal.style, transition: "all 0.3s ease" }} />
+        <div style={{ position: "relative", width: "min(62vw,260px)", aspectRatio: "1/1", flex: "0 1 auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", ...crystal.style, transition: "all 0.3s ease", position: "relative", zIndex: 2 }} />
           <div style={{
             position: "absolute", top: "14%", left: "20%", width: "35%", height: "22%",
-            borderRadius: "50%", background: "rgba(255,255,255,0.28)", filter: "blur(6px)", pointerEvents: "none",
+            borderRadius: "50%", background: "rgba(255,255,255,0.24)", filter: "blur(6px)", pointerEvents: "none", zIndex: 3
           }} />
+
+          {/* 목성 고리 */}
+          {crystal.hasRing && (
+            <div style={{
+              position: "absolute",
+              top: "50%", left: "50%",
+              width: "142%", height: "26%",
+              border: "5px solid rgba(224, 185, 141, 0.45)",
+              boxShadow: "0 0 10px rgba(177, 93, 46, 0.25), inset 0 0 6px rgba(224, 185, 141, 0.2)",
+              borderRadius: "50%",
+              transform: "translate(-50%, -50%) rotate(-15deg)",
+              pointerEvents: "none",
+              zIndex: 4,
+            }} />
+          )}
         </div>
 
-        <button type="button" onClick={next} style={arrowBtn} aria-label="다음 크리스탈">
+        <button type="button" onClick={next} style={arrowBtn} aria-label="다음 탐사">
           <img src="/right.png" alt="" style={arrowImageStyle} />
         </button>
       </div>
 
       <div style={isOwned ? infoStackOwnedStyle : hasBenefit ? infoStackStyle : infoStackNoBenefitStyle}>
         <p style={nameStyle}>
-          {crystal.name} 돌멩이
+          {crystal.name}
         </p>
         <p style={isOwned ? descriptionOwnedStyle : hasBenefit ? descriptionStyle : descriptionNoBenefitStyle}>
           {crystal.description}
         </p>
+        {/* 기존에 쓰시던 오리지널 BenefitRecord 배치 구조 원상복구 */}
         <BenefitRecord benefit={crystal.benefit} />
       </div>
 
       <div style={isOwned ? actionStackOwnedStyle : hasBenefit ? actionStackStyle : actionStackNoBenefitStyle}>
         <p style={{ ...priceStyle, color: canBuy ? "#7FD88A" : "#FF5C5C" }}>
-          {isOwned ? "보유 중" : formatPieces(crystal.price)}
+          {isOwned ? "개척 완료" : formatPieces(crystal.price)}
         </p>
 
         <button
@@ -142,7 +158,7 @@ export default function Start({
             letterSpacing: "0.05em", width: "min(100%,320px)",
           }}
         >
-          {isOwned ? "플레이하기 ▶" : "구매 후 플레이 ▶"}
+          {isOwned ? "워프 가동 ▶" : "개척 후 워프 ▶"}
         </button>
       </div>
       </div>
