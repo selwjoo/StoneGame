@@ -384,19 +384,17 @@ export default function Money({
             return (
               <div style={{
                 display: "flex", justifyContent: "space-between", alignItems: "center",
-                background: "linear-gradient(180deg, rgba(236,228,212,0.08), rgba(236,228,212,0.04))",
-                border: "0.5px solid rgba(214,205,190,0.14)",
+                background: "#16181d",
+                border: "0.5px solid #2B2D34",
                 borderRadius: 10, padding: "7px 14px", boxSizing: "border-box",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.03)",
               }}>
-                <span style={{ fontSize: "clamp(11px,2.6vw,12px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.06em" }}>
+                <span style={{ fontSize: "clamp(11px,2.6vw,12px)", color: "rgba(176,182,194,0.35)", letterSpacing: "0.06em" }}>
                   다음 클릭 시
                 </span>
                 <span style={{
                   fontSize: "clamp(15px,4vw,18px)",
                   fontWeight: 800,
-                  color: "rgba(241,235,221,0.92)",
-                  textShadow: "0 0 14px rgba(214,205,190,0.18)",
+                  color: "rgba(214,219,227,0.92)",
                 }}>
                   +{formatPieces(nextEarned)}
                 </span>
@@ -405,8 +403,8 @@ export default function Money({
           })()}
 
           <div style={{
-            background: "rgba(236,228,212,0.08)", border: "1px solid rgba(255,255,255,0.1)",
-            color: "#f1ebdd", borderRadius: 14, textAlign: "center",
+            background: "#16181d", border: "1px solid #2B2D34",
+            color: "#eef1f5", borderRadius: 14, textAlign: "center",
             boxSizing: "border-box", lineHeight: 1.2,
           }}>
             <div style={{ padding: "clamp(10px,2.8vw,12px) clamp(18px,6vw,28px)" }}>
@@ -425,18 +423,16 @@ export default function Money({
             style={{
               padding: "clamp(11px,3vw,14px)",
               borderRadius: 14,
-              border: canCollect ? "1px solid rgba(214,205,190,0.22)" : "1px solid rgba(255,255,255,0.06)",
+              border: canCollect ? "1px solid #343740" : "1px solid #2B2D34",
               background: canCollect
-                ? "linear-gradient(180deg, rgba(236,228,212,0.18), rgba(182,174,160,0.12))"
-                : "rgba(255,255,255,0.05)",
-              color: canCollect ? "rgba(241,235,221,0.96)" : "rgba(255,255,255,0.25)",
+                ? "#1b1e25"
+                : "#16181d",
+              color: canCollect ? "rgba(214,219,227,0.92)" : "rgba(176,182,194,0.25)",
               fontSize: "clamp(15px,4vw,17px)", fontWeight: 700,
               cursor: canCollect ? "pointer" : "not-allowed",
               letterSpacing: "0.04em",
               transition: "background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease",
-              boxShadow: canCollect
-                ? "0 10px 24px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08)"
-                : "none",
+              boxShadow: "none",
               boxSizing: "border-box", width: "100%",
             }}
           >
@@ -455,7 +451,7 @@ const playContentStyle = {
   flexDirection: "column",
   alignItems: "center",
   gap: "clamp(14px, 3.5vw, 24px)",
-  marginTop: "clamp(128px,31vw,152px)",
+  marginTop: "clamp(106px,26vw,128px)",
 };
 
 const playInfoStyle = {
@@ -464,8 +460,8 @@ const playInfoStyle = {
   alignItems: "center",
   gap: 8,
   textAlign: "center",
-  marginBottom: "clamp(18px,4.5vw,24px)",
-  minHeight: "clamp(34px, 8.5vw, 42px)",
+  marginBottom: "clamp(12px,3vw,16px)",
+  minHeight: "clamp(28px, 7vw, 34px)",
   justifyContent: "flex-start",
 };
 
