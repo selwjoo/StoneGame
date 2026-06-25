@@ -59,10 +59,10 @@ export default function Start({
             onMouseLeave={() => setLogoutHover(false)}
             aria-label="로그아웃"
             style={{
-              width: "clamp(40px,11vw,44px)",
-              height: "clamp(40px,11vw,44px)",
+              width: "clamp(44px,12vw,50px)",
+              height: "clamp(44px,12vw,50px)",
               padding: 0,
-              marginLeft: "calc((min(88vw, 320px) - min(62vw, 260px)) / 2 - 44px)",
+              marginLeft: "calc((min(88vw, 320px) - min(62vw, 260px)) / 2 - 46px)",
               border: "none",
               background: "transparent",
               borderRadius: "50%",
@@ -78,10 +78,11 @@ export default function Start({
               src="logout.png"
               alt="로그아웃"
               style={{
-                width: 20,
-                height: 20,
+                width: 28,
+                height: 28,
                 objectFit: "contain",
                 opacity: logoutHover ? 1 : 0.82,
+                transform: "rotate(180deg)",
                 transition: "opacity 0.18s ease",
               }}
             />

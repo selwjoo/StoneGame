@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { apiFetch } from './auth';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ function Login() {
     setError('');
 
     try {
-      const res = await fetch('http://172.20.10.2:8000/api/token/', {
+      const res = await apiFetch('/api/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
