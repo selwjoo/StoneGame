@@ -1,5 +1,3 @@
-import TapCrackBrand from "./TapCrackBrand";
-
 export const PLANET_FRAME_SIZE = "min(56vw, 234px)";
 export const PLANET_STAGE_TOP_MARGIN = "clamp(128px,31vw,152px)";
 export const PLANET_STAGE_LABEL_GAP = "clamp(20px,5vw,28px)";
@@ -28,7 +26,15 @@ export default function MoneyHeader({
     <div style={{ ...headerWrapStyle, top: topOffset }}>
       <div style={topRowStyle}>
         <div style={slotStyle}>{leftSlot}</div>
-        <TapCrackBrand style={{ transform: `translateY(${titleOffset}px)`, color: "rgba(241, 235, 221, 0.92)" }} />
+        <div
+          style={{
+            ...tapCrackBrandStyle,
+            transform: `translateY(${titleOffset}px)`,
+            color: "rgba(241, 235, 221, 0.92)",
+          }}
+        >
+          Tap & Crack
+        </div>
         <div style={slotStyle}>{rightSlot}</div>
       </div>
       <div style={{ ...moneyAreaStyle, marginTop: moneyOffset }}>
@@ -105,4 +111,15 @@ const moneyRuleStyle = {
   width: "min(37vw, 118px)",
   height: 2,
   background: "rgba(168, 166, 162, 0.16)",
+};
+
+const tapCrackBrandStyle = {
+  textAlign: "center",
+  color: "#D8D3C7",
+  fontSize: "clamp(12px, 3.4vw, 15px)",
+  fontWeight: 800,
+  letterSpacing: "0.12em",
+  paddingLeft: "0.12em",
+  whiteSpace: "nowrap",
+  textShadow: "0 10px 30px rgba(0, 0, 0, 0.22)",
 };

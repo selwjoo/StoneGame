@@ -3,8 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Money from './Money';
 import GameOver from './GameOver';
 import Start from './Start';
-import Login from './Login';
-import Signup from './Signup';
+import Login from './auth/Login';
+import Signup from './auth/Signup';
 import { authFetch } from './auth';
 
 const PROGRESS_REQUEST_TIMEOUT_MS = 1500;
@@ -71,10 +71,8 @@ function App() {
         setTotalMoney(Number(data.total_money) || 0);
         setUnlockedCrystals(normalizeUnlockedCrystals(data.unlocked_crystals));
         setPotionPrice(Math.max(Number(data.potion_price) || 0, DEFAULT_POTION_PRICE));
-        // 로그인 후 시작 화면은 항상 기본 돌멩이부터 보여준다.
         setSelectedCrystal(0);
       } catch (error) {
-        // If the backend is unreachable, do not block the whole app behind a blank screen.
       } finally {
         if (!ignore) setProgressReady(true);
       }
@@ -113,7 +111,6 @@ function App() {
     <div style={{ background: "#0a0a0f", minHeight: "100vh" }}>
       <BrowserRouter>
         <Routes>
-          {/* 로그인 진입점 */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

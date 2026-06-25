@@ -46,7 +46,6 @@ export default function GameOver({
   }, [gameOver]);
 
   function confirmExitGame() {
-    // 부활하지 않고 종료하면 총 보유 + 이번 판 누적을 모두 잃는다.
     setTotalMoney(0);
     setGameOver(false);
     setMessage("");
