@@ -101,8 +101,8 @@ export default function BackgroundEffect({ crystalName }) {
             x: gx, y: gy,
             r: isMilkyWay ? 1 + Math.random() * 3 : 2 + Math.random() * 4,
             alpha: 0,
-            maxAlpha: isMilkyWay ? 0.6 + Math.random() * 0.4 : 0.5 + Math.random() * 0.4,
-            hue: isMilkyWay ? 200 + Math.random() * 60 : 260 + Math.random() * 60,
+            maxAlpha: isMilkyWay ? 0.46 + Math.random() * 0.26 : 0.34 + Math.random() * 0.24,
+            hue: isMilkyWay ? 214 + Math.random() * 34 : 244 + Math.random() * 34,
             phase: Math.random() * Math.PI * 2,
             speed: 0.025 + Math.random() * 0.04,
             isMilkyWay,
@@ -219,13 +219,13 @@ export default function BackgroundEffect({ crystalName }) {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             if (p.isMilkyWay) {
-              ctx.fillStyle = `hsla(${p.hue},100%,92%,${p.alpha})`;
-              ctx.shadowColor = `hsla(${p.hue},100%,85%,0.9)`;
-              ctx.shadowBlur = 12;
+              ctx.fillStyle = `hsla(${p.hue},92%,88%,${p.alpha})`;
+              ctx.shadowColor = `hsla(${p.hue},94%,82%,0.4)`;
+              ctx.shadowBlur = 8;
             } else {
-              ctx.fillStyle = `hsla(${p.hue},90%,85%,${p.alpha})`;
-              ctx.shadowColor = `hsla(${p.hue},100%,80%,0.6)`;
-              ctx.shadowBlur = 6;
+              ctx.fillStyle = `hsla(${p.hue},82%,80%,${p.alpha})`;
+              ctx.shadowColor = `hsla(${p.hue},88%,74%,0.22)`;
+              ctx.shadowBlur = 4;
             }
             ctx.fill();
             ctx.shadowBlur = 0;
