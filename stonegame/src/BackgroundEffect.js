@@ -23,7 +23,7 @@ export default function BackgroundEffect({ crystalName }) {
 
     function spawnParticle() {
       switch (crystalName) {
-        case "수성": // 태양풍 스파크 효과
+        case "금성": // 따뜻한 황금빛 입자 효과
           particles.push({
             x: Math.random() * W(),
             y: Math.random() * H(),
@@ -47,7 +47,7 @@ export default function BackgroundEffect({ crystalName }) {
           });
           break;
 
-        case "목성": // 느리게 회전하며 빨려 들어가는 가스 구름 고리 효과
+        case "토성": // 느리게 회전하며 빨려 들어가는 가스 구름 고리 효과
           const angle = Math.random() * Math.PI * 2;
           const dist = (0.2 + Math.random() * 0.5) * Math.max(W(), H());
           particles.push({
@@ -121,7 +121,7 @@ export default function BackgroundEffect({ crystalName }) {
       }
     }
 
-    const initCount = (crystalName === "은하" || crystalName === "목성") ? 140 : 50;
+    const initCount = (crystalName === "은하" || crystalName === "토성") ? 140 : 50;
     for (let i = 0; i < initCount; i++) {
       spawnParticle();
     }
@@ -144,7 +144,7 @@ export default function BackgroundEffect({ crystalName }) {
         let dead = false;
 
         switch (crystalName) {
-          case "수성":
+          case "금성":
             p.x += p.vx;
             p.y += p.vy;
             p.alpha -= 0.005;
@@ -169,7 +169,7 @@ export default function BackgroundEffect({ crystalName }) {
             }
             break;
 
-          case "목성":
+          case "토성":
             p.angle += p.orbitSpeed;
             p.dist -= p.inSpeed;
             p.alpha -= 0.002;

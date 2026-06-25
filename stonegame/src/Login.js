@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { apiFetch } from './auth';
+import AuthShell, {
+  authButtonStyle,
+  authErrorStyle,
+  authFieldGroupStyle,
+  authInputStyle,
+  authLabelStyle,
+  authLinkStyle,
+} from './AuthShell';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -34,74 +42,50 @@ function Login() {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      gap: '16px',
-    }}>
-      <form onSubmit={handleSubmit} style={{
-        background: '#16161f',
-        padding: '40px',
-        borderRadius: '12px',
-        boxShadow: '0 0 30px rgba(120, 80, 255, 0.2)',
-        width: '320px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-      }}>
-        <h2 style={{ color: '#fff', textAlign: 'center', marginBottom: '10px', letterSpacing: '2px' }}>
-          로그인
-        </h2>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ color: '#aaa', fontSize: '14px' }}>아이디</label>
+    <AuthShell
+      subtitle=""
+      footer={(
+        <>
+          계정이 없나요?{" "}
+          <Link to="/signup" style={authLinkStyle}>회원가입</Link>
+        </>
+      )}
+    >
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <div style={authFieldGroupStyle}>
+          <label style={authLabelStyle}>아이디</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #333', background: '#0a0a0f', color: '#fff', outline: 'none', fontSize: '14px' }}
+            style={authInputStyle}
           />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ color: '#aaa', fontSize: '14px' }}>비밀번호</label>
+        <div style={authFieldGroupStyle}>
+          <label style={authLabelStyle}>비밀번호</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #333', background: '#0a0a0f', color: '#fff', outline: 'none', fontSize: '14px' }}
+            style={authInputStyle}
           />
         </div>
 
-        {error && (
-          <p style={{ color: '#ff6b6b', fontSize: '13px', margin: 0, textAlign: 'center' }}>
-            {error}
-          </p>
-        )}
+        {error && <p style={authErrorStyle}>{error}</p>}
 
-        <button type="submit" style={{
-          padding: '12px',
-          borderRadius: '8px',
-          border: 'none',
-          background: 'linear-gradient(135deg, #7b5cff, #5c3fff)',
-          color: '#fff',
-          fontWeight: 'bold',
-          fontSize: '15px',
-          cursor: 'pointer',
-          marginTop: '8px',
-        }}>
+        <button type="submit" style={authButtonStyle}>
           로그인
         </button>
       </form>
-
-      <p style={{ color: '#888', fontSize: '13px', textAlign: 'center', margin: 0 }}>
-        계정이 없나요? <Link to="/signup" style={{ color: '#9b8cff' }}>회원가입</Link>
-      </p>
-    </div>
+    </AuthShell>
   );
 }
+
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '15px',
+};
 
 export default Login;

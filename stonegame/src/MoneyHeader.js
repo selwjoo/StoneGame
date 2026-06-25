@@ -1,16 +1,19 @@
+import TapCrackBrand from "./TapCrackBrand";
+
 export default function MoneyHeader({
   money,
   topOffset = "calc(env(safe-area-inset-top, 0px) + 32px)",
   titleOffset = 0,
-  moneyOffset = 28,
+  moneyOffset = 22,
   leftSlot = null,
+  rightSlot = null,
 }) {
   return (
     <div style={{ ...headerWrapStyle, top: topOffset }}>
       <div style={topRowStyle}>
         <div style={slotStyle}>{leftSlot}</div>
-        <div style={{ ...titleStyle, transform: `translateY(${titleOffset}px)` }}>Tap & Crack</div>
-        <div style={slotStyle} />
+        <TapCrackBrand style={{ transform: `translateY(${titleOffset}px)`, color: "rgba(241, 235, 221, 0.92)" }} />
+        <div style={slotStyle}>{rightSlot}</div>
       </div>
       <div style={{ ...moneyAreaStyle, marginTop: moneyOffset }}>
         <div style={moneyValueRowStyle}>
@@ -27,59 +30,48 @@ const headerWrapStyle = {
   position: "absolute",
   left: "50%",
   transform: "translateX(-50%)",
-  width: "min(88vw, 320px)",
+  width: "min(70vw, 256px)",
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
-  gap: 8,
+  gap: 6,
   pointerEvents: "none",
   zIndex: 2,
 };
 
 const topRowStyle = {
   display: "grid",
-  gridTemplateColumns: "44px 1fr 44px",
+  gridTemplateColumns: "35px 1fr 35px",
   alignItems: "center",
 };
 
 const slotStyle = {
-  width: 44,
-  height: 44,
+  width: 35,
+  height: 35,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   pointerEvents: "auto",
 };
 
-const titleStyle = {
-  textAlign: "center",
-  color: "rgba(241, 235, 221, 0.92)",
-  fontSize: "clamp(18px, 4.9vw, 24px)",
-  fontWeight: 800,
-  letterSpacing: "0.12em",
-  paddingLeft: "0.12em",
-  whiteSpace: "nowrap",
-  textShadow: "0 10px 30px rgba(0, 0, 0, 0.22)",
-};
-
 const moneyAreaStyle = {
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-end",
-  gap: 5,
+  gap: 4,
 };
 
 const moneyValueRowStyle = {
   display: "flex",
   alignItems: "baseline",
   justifyContent: "flex-end",
-  gap: "clamp(4px, 1.1vw, 6px)",
+  gap: "clamp(3px, 0.9vw, 5px)",
   whiteSpace: "nowrap",
 };
 
 const moneyValueStyle = {
   color: "rgba(183, 181, 177, 0.92)",
-  fontSize: "clamp(14px, 3.8vw, 17px)",
+  fontSize: "clamp(11px, 3vw, 14px)",
   fontWeight: 700,
   lineHeight: 1,
   letterSpacing: "-0.03em",
@@ -88,13 +80,13 @@ const moneyValueStyle = {
 
 const moneyUnitStyle = {
   color: "rgba(168, 166, 162, 0.84)",
-  fontSize: "clamp(12px, 3vw, 14px)",
+  fontSize: "clamp(10px, 2.4vw, 11px)",
   fontWeight: 700,
   letterSpacing: "0.04em",
 };
 
 const moneyRuleStyle = {
-  width: "min(46vw, 148px)",
+  width: "min(37vw, 118px)",
   height: 2,
   background: "rgba(168, 166, 162, 0.16)",
 };

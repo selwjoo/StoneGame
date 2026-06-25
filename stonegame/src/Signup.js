@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from './auth';
+import AuthShell, {
+  authButtonStyle,
+  authErrorStyle,
+  authFieldGroupStyle,
+  authInputStyle,
+  authLabelStyle,
+} from './AuthShell';
 
 function Signup() {
   const [username, setUsername] = useState('');
@@ -33,48 +40,75 @@ function Signup() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-      <form onSubmit={handleSubmit} style={{
-        background: '#16161f', padding: '40px', borderRadius: '12px',
-        boxShadow: '0 0 30px rgba(120, 80, 255, 0.2)', width: '320px',
-        display: 'flex', flexDirection: 'column', gap: '16px',
-      }}>
-        <h2 style={{ color: '#fff', textAlign: 'center', letterSpacing: '2px' }}>회원가입</h2>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ color: '#aaa', fontSize: '14px' }}>아이디</label>
+    <AuthShell
+      subtitle=""
+      leftAction={(
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          aria-label="로그인 화면으로 돌아가기"
+          style={exitButtonStyle}
+        >
+          <img src="backTologin.png" alt="" style={exitImageStyle} />
+        </button>
+      )}
+    >
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <div style={authFieldGroupStyle}>
+          <label style={authLabelStyle}>아이디</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #333', background: '#0a0a0f', color: '#fff', outline: 'none', fontSize: '14px' }}
+            style={authInputStyle}
           />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ color: '#aaa', fontSize: '14px' }}>비밀번호</label>
+        <div style={authFieldGroupStyle}>
+          <label style={authLabelStyle}>비밀번호</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #333', background: '#0a0a0f', color: '#fff', outline: 'none', fontSize: '14px' }}
+            style={authInputStyle}
           />
         </div>
 
-        {error && <p style={{ color: '#ff6b6b', fontSize: '13px', margin: 0, textAlign: 'center' }}>{error}</p>}
+        {error && <p style={authErrorStyle}>{error}</p>}
 
-        <button type="submit" style={{
-          padding: '12px', borderRadius: '8px', border: 'none',
-          background: 'linear-gradient(135deg, #7b5cff, #5c3fff)',
-          color: '#fff', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer', marginTop: '8px',
-        }}>
-          가입하기
+        <button type="submit" style={authButtonStyle}>
+          회원가입
         </button>
-
-       
       </form>
-    </div>
+    </AuthShell>
   );
 }
+
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '15px',
+};
+
+const exitButtonStyle = {
+  width: 36,
+  height: 36,
+  padding: 0,
+  border: 'none',
+  background: 'transparent',
+  borderRadius: '50%',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  opacity: 0.82,
+  transform: 'translate(-5px, 3px)',
+};
+
+const exitImageStyle = {
+  width: 22,
+  height: 22,
+  objectFit: 'contain',
+};
 
 export default Signup;

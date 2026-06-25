@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatPieces } from "./formatPieces";
 import {
-  modalEyebrowStyle,
   modalBodyStyle,
   modalButtonRowStyle,
   modalHeaderStyle,
+  modalNumberStyle,
   modalStyle,
   modalTopGlowStyle,
   modalTitleStyle,
@@ -14,7 +14,6 @@ import {
   primaryDangerButtonHoverStyle,
   secondaryButtonStyle,
 } from "./modalStyles";
-import { logout } from "./auth";
 
 export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount = 0 }) {
   const navigate = useNavigate();
@@ -37,11 +36,10 @@ export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount
       <div style={modalStyle}>
         <div style={modalTopGlowStyle} />
         <div style={modalHeaderStyle}>
-          <p style={modalEyebrowStyle}>ROUND EXIT</p>
-          <h2 style={modalTitleStyle}>정말 나가시겠습니까?</h2>
+          <h2 style={modalTitleStyle}>탐사를 중단하시겠습니까?</h2>
         </div>
         <p style={modalBodyStyle}>
-          정말로 {formatPieces(forfeitAmount)}을 포기하시겠습니까?
+          운반 중인 <strong style={modalNumberStyle}>{formatPieces(forfeitAmount)}</strong>을 잃습니다.
         </p>
         <div style={modalButtonRowStyle}>
           <button
@@ -53,9 +51,9 @@ export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount
               ...(isExitHovered ? primaryDangerButtonHoverStyle : null),
             }}
           >
-            나가기
+            중단하기
           </button>
-          <button onClick={handleCancel} style={secondaryButtonStyle}>취소</button>
+          <button onClick={handleCancel} style={secondaryButtonStyle}>계속하기</button>
         </div>
       </div>
     </div>
