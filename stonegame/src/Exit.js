@@ -14,6 +14,7 @@ import {
   primaryDangerButtonHoverStyle,
   secondaryButtonStyle,
 } from "./modalStyles";
+import { logout } from "./auth";
 
 export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount = 0 }) {
   const navigate = useNavigate();

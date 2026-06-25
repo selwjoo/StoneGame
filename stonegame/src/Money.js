@@ -8,6 +8,16 @@ import { crystals } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
 import { formatPieces } from "./formatPieces";
 import MoneyHeader from "./MoneyHeader";
+import {
+  modalStyle,
+  modalTopGlowStyle,
+  modalHeaderStyle,
+  modalEyebrowStyle,
+  modalTitleStyle,
+  modalBodyStyle,
+  modalButtonRowStyle,
+  secondaryButtonStyle,
+} from "./modalStyles";
 
 const comboAnchors = [
   { x: 100, y: 44 },
@@ -55,6 +65,8 @@ export default function Money({
   const comboAnchorIndex = useRef(0);
   const [exitHover, setExitHover] = useState(false);
   const [showExit, setShowExit] = useState(false);
+  const [showCollectPopup, setShowCollectPopup] = useState(false);
+  const [collectedAmount, setCollectedAmount] = useState(0);
 
   useEffect(() => {
     setPendingMoney(0);
@@ -96,16 +108,15 @@ export default function Money({
 
   function handleCollect() {
     if (pendingMoney <= 0 || gameOver) return;
-    const collectedAmount = getCollectAmountValue(pendingMoney, clickCount, moss);
-    setTotalMoney(prev => prev + collectedAmount);
-    setForfeitedReward(0);
-    setPendingMoney(0);
-    setMoss(0);
-    setCrack(0);
-    setCombo(1);
-    setClickCount(0);
-    setLastClickAt(0);
-    navigate("/start");
+  
+    const amount = getCollectAmountValue(
+      pendingMoney,
+      clickCount,
+      moss
+    );
+  
+    setCollectedAmount(amount);
+    setShowCollectPopup(true);
   }
 
   function handleClick(clientX, clientY) {
@@ -231,6 +242,7 @@ export default function Money({
           20%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
           100% { opacity:0; transform:translate(calc(-50% + var(--money-drift-x)),calc(-50% + var(--money-drift-y))) scale(0.9); }
         }
+      }
       `}</style>
 
       <div style={playContentStyle}>
@@ -286,6 +298,68 @@ export default function Money({
           ))}
         </Crystal>
 
+        {showCollectPopup && (
+  <div style={overlayStyle}>
+    <div style={modalStyle}>
+      <div style={modalTopGlowStyle} />
+
+      <div style={modalHeaderStyle}>
+        <p style={modalEyebrowStyle}>
+          ROUND COMPLETE
+        </p>
+
+        <h2 style={modalTitleStyle}>
+          수거를 완료했습니다
+        </h2>
+      </div>
+
+      <p style={modalBodyStyle}>
+        이번 라운드에서{" "}
+        <strong
+          style={{
+            color: "#f1ebdd",
+            fontWeight: 700,
+          }}
+        >
+          {formatPieces(collectedAmount)}
+        </strong>
+        을 획득했습니다.
+      </p>
+
+      <div
+        style={{
+          ...modalButtonRowStyle,
+          justifyContent: "center",
+        }}
+      >
+        <button
+          style={{
+            ...secondaryButtonStyle,
+            width: "100%",
+            maxWidth: 260,
+          }}
+          onClick={() => {
+            setTotalMoney(prev => prev + collectedAmount);
+
+            setForfeitedReward(0);
+            setPendingMoney(0);
+            setMoss(0);
+            setCrack(0);
+            setCombo(1);
+            setClickCount(0);
+            setLastClickAt(0);
+
+            setShowCollectPopup(false);
+
+            navigate("/start");
+          }}
+        >
+          확인
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         <Moss
           moss={moss} setMoss={setMoss}
           onRoundLost={handleRoundLoss}
@@ -401,4 +475,109 @@ const playNameStyle = {
   letterSpacing: "0.1em",
   margin: 0,
   lineHeight: 1.08,
+};
+const overlayStyle = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.65)",
+  backdropFilter: "blur(6px)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 9999,
+};
+
+const collectOverlayStyle = {
+  position: "fixed",
+  inset: 0,
+
+  background: "rgba(0,0,0,0.72)",
+  backdropFilter: "blur(8px)",
+
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+
+  zIndex: 99999,
+};
+
+const collectPopupStyle = {
+  width: "min(88vw, 420px)",
+
+  background:
+    "linear-gradient(180deg, rgba(13,16,24,0.98), rgba(6,8,14,0.98))",
+
+  border: "1px solid rgba(255,255,255,0.08)",
+
+  borderRadius: 28,
+
+  padding: "34px 28px",
+
+  boxShadow: `
+    0 0 60px rgba(255,255,255,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.05)
+  `,
+
+  textAlign: "center",
+};
+
+const collectLabelStyle = {
+  fontSize: 14,
+  letterSpacing: "0.28em",
+  color: "rgba(255,255,255,0.38)",
+  marginBottom: 22,
+};
+
+const collectTitleStyle = {
+  fontSize: "clamp(34px,7vw,48px)",
+  fontWeight: 800,
+  color: "#f5f5f5",
+
+  textShadow:
+    "0 0 20px rgba(255,255,255,0.08)",
+};
+
+const collectAmountStyle = {
+  marginTop: 22,
+
+  fontSize: "clamp(28px,8vw,42px)",
+  fontWeight: 800,
+
+  color: "#ffffff",
+
+  textShadow: `
+    0 0 12px rgba(255,255,255,0.18),
+    0 0 24px rgba(255,255,255,0.08)
+  `,
+};
+
+const collectDescStyle = {
+  marginTop: 12,
+
+  color: "rgba(255,255,255,0.55)",
+
+  fontSize: "clamp(14px,3.5vw,18px)",
+};
+
+const collectButtonStyle = {
+  width: "100%",
+
+  marginTop: 28,
+
+  padding: "16px",
+
+  borderRadius: 18,
+
+  border: "1px solid rgba(255,255,255,0.08)",
+
+  background:
+    "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
+
+  color: "#f5f5f5",
+
+  fontWeight: 700,
+
+  fontSize: 18,
+
+  cursor: "pointer",
 };
