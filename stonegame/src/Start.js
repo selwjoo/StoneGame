@@ -1,9 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { crystals } from './crystalList';
+import { crystals, formatPieces } from './crystalList';
 import BackgroundEffect from './BackgroundEffect';
-import { formatPieces } from './formatPieces';
-import MoneyHeader from './MoneyHeader';
+import MoneyHeader, {
+  HEADER_LEFT_ACTION_OFFSET,
+  HEADER_MONEY_OFFSET,
+  HEADER_TITLE_OFFSET,
+  PLANET_FRAME_SIZE,
+  PLANET_STAGE_LABEL_GAP,
+  PLANET_STAGE_LABEL_STYLE,
+  PLANET_STAGE_LABEL_MIN_HEIGHT,
+  PLANET_STAGE_TOP_MARGIN,
+} from './MoneyHeader';
 import BenefitRecord from './BenefitRecord'; // 기존 방식 컴포넌트 복원
 import Crystal from './Crystal';
 import { logout } from './auth';
@@ -19,16 +27,6 @@ import {
   primaryDangerButtonHoverStyle,
   secondaryButtonStyle,
 } from './modalStyles';
-import {
-  HEADER_LEFT_ACTION_OFFSET,
-  HEADER_MONEY_OFFSET,
-  HEADER_TITLE_OFFSET,
-  PLANET_FRAME_SIZE,
-  PLANET_STAGE_LABEL_GAP,
-  PLANET_STAGE_LABEL_STYLE,
-  PLANET_STAGE_LABEL_MIN_HEIGHT,
-  PLANET_STAGE_TOP_MARGIN,
-} from './planetLayout';
 
 export default function Start({
   money,

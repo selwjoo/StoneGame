@@ -4,11 +4,9 @@ import Moss, { reduceMossOnClick } from "./Moss";
 import Crack from "./Crack";
 import Crystal from "./Crystal";
 import Exit from "./Exit";
-import { crystals } from "./crystalList";
+import { crystals, formatPieces } from "./crystalList";
 import BackgroundEffect from "./BackgroundEffect";
-import { formatPieces } from "./formatPieces";
-import MoneyHeader from "./MoneyHeader";
-import {
+import MoneyHeader, {
   HEADER_LEFT_ACTION_OFFSET,
   HEADER_MONEY_OFFSET,
   HEADER_TITLE_OFFSET,
@@ -17,7 +15,7 @@ import {
   PLANET_STAGE_LABEL_STYLE,
   PLANET_STAGE_LABEL_MIN_HEIGHT,
   PLANET_STAGE_TOP_MARGIN,
-} from "./planetLayout";
+} from "./MoneyHeader";
 import {
   modalStyle,
   modalTopGlowStyle,
@@ -36,6 +34,18 @@ const comboAnchors = [
   { x: 128, y: 126 },
 ];
 
+const COMBO_EXPONENT = 2.2;
+const BASE_REWARD_SCALE = 0.18;
+const comboPlanetPalette = {
+  달: { main: "200, 216, 238", sub: "232, 240, 252" },
+  금성: { main: "224, 202, 150", sub: "244, 228, 190" },
+  화성: { main: "226, 154, 132", sub: "244, 194, 180" },
+  목성: { main: "218, 190, 160", sub: "240, 222, 198" },
+  해왕성: { main: "154, 206, 236", sub: "208, 234, 248" },
+  태양: { main: "246, 192, 118", sub: "255, 224, 168" },
+  은하: { main: "194, 176, 246", sub: "224, 214, 255" },
+};
+
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
@@ -43,6 +53,23 @@ function clamp(value, min, max) {
 function getCollectAmountValue(sourcePendingMoney, sourceClickCount, sourceMoss) {
   const mossRatio = (1 - sourceMoss / 100) * (9 / 10) + (1 / 10);
   return Math.floor(sourcePendingMoney * mossRatio);
+}
+
+function getClickReward(comboValue, rewardMult) {
+  return Math.max(1, Math.floor(Math.pow(comboValue, COMBO_EXPONENT) * rewardMult * BASE_REWARD_SCALE));
+}
+
+function getComboVisual(crystalName, comboValue) {
+  const palette = comboPlanetPalette[crystalName] ?? { main: "198, 210, 226", sub: "232, 238, 246" };
+  const comboBoost = comboValue >= 12 ? 0.08 : comboValue >= 6 ? 0.04 : 0;
+
+  return {
+    accent: `rgba(${palette.main}, ${0.58 + comboBoost})`,
+    labelColor: `rgba(${palette.sub}, ${0.26 + comboBoost * 0.45})`,
+    moneyColor: `rgba(${palette.sub}, ${0.52 + comboBoost * 0.6})`,
+    comboShadow: `0 0 8px rgba(${palette.main}, 0.16), 0 0 18px rgba(${palette.sub}, 0.06), 0 8px 18px rgba(0,0,0,0.24)`,
+    moneyShadow: `0 0 8px rgba(${palette.sub}, 0.12), 0 6px 14px rgba(0,0,0,0.22)`,
+  };
 }
 
 export default function Money({
@@ -149,18 +176,12 @@ export default function Money({
     setCombo(newCombo);
     setLastClickAt(now);
 
-    const earned = Math.max(1, Math.floor(Math.pow(newCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3));
+    const earned = getClickReward(newCombo, crystal.rewardMult ?? 1);
     setPendingMoney(prev => prev + earned);
     reduceMossOnClick(setMoss);
 
     const id = particleId.current++;
-    const accent =
-      newCombo >= 15 ? "#d9c27a" :
-      newCombo >= 10 ? "#c9d1db" :
-      newCombo >= 5  ? "#b8c4b0" :
-                       "#e8e3d6";
-    const labelColor  = newCombo >= 10 ? "rgba(214,205,184,0.58)" : "rgba(196,192,180,0.48)";
-    const moneyColor  = newCombo >= 10 ? "rgba(228,221,196,0.92)" : "rgba(214,210,198,0.86)";
+    const comboVisual = getComboVisual(crystal.name, newCombo);
     const comboSize   = Math.min(28 + newCombo * 2.1, 60);
     const moneySize   = Math.min(16 + newCombo * 0.5, 24);
     const anchor      = comboAnchors[comboAnchorIndex.current % comboAnchors.length];
@@ -179,11 +200,14 @@ export default function Money({
     setComboBursts(prev => [
       ...prev,
       {
-        id, combo: newCombo, earned, accent,
+        id, combo: newCombo, earned, accent: comboVisual.accent,
         comboSize, moneySize,
         comboX, comboY, comboDriftX, comboDriftY, comboSpin,
         moneyX, moneyY, moneyDriftX, moneyDriftY,
-        labelColor, moneyColor,
+        labelColor: comboVisual.labelColor,
+        moneyColor: comboVisual.moneyColor,
+        comboShadow: comboVisual.comboShadow,
+        moneyShadow: comboVisual.moneyShadow,
       },
     ]);
     setTimeout(() => {
@@ -297,13 +321,13 @@ export default function Money({
                 animation: "comboPop 0.68s cubic-bezier(0.2,0.9,0.25,1) forwards",
                 whiteSpace: "nowrap", textAlign: "center", lineHeight: 1,
                 transform: "translate(-50%,-50%)",
-                textShadow: "0 0 26px rgba(255,255,255,0.16), 0 10px 24px rgba(0,0,0,0.42)",
+                textShadow: burst.comboShadow,
+                opacity: 0.8,
                 "--drift-x": `${burst.comboDriftX}px`,
                 "--drift-y": `${burst.comboDriftY}px`,
                 "--spin": `${burst.comboSpin}deg`,
               }}>
-                <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.28em", color: burst.labelColor, marginBottom: 4, paddingLeft: "0.28em" }}>COMBO</div>
-                <div style={{ fontSize: `clamp(22px,${burst.comboSize/200*100}vw,${burst.comboSize}px)`, fontWeight: 900, letterSpacing: "-0.08em", color: burst.accent, lineHeight: 0.92 }}>
+                <div style={{ fontSize: `clamp(22px,${burst.comboSize/200*100}vw,${burst.comboSize}px)`, fontWeight: 800, letterSpacing: "-0.08em", color: burst.accent, lineHeight: 0.92 }}>
                   x{burst.combo}
                 </div>
               </div>
@@ -313,11 +337,12 @@ export default function Money({
                 animation: "moneyPop 0.56s ease-out forwards",
                 whiteSpace: "nowrap", textAlign: "center",
                 transform: "translate(-50%,-50%)",
-                textShadow: "0 6px 18px rgba(0,0,0,0.32)",
+                textShadow: burst.moneyShadow,
+                opacity: 0.72,
                 "--money-drift-x": `${burst.moneyDriftX}px`,
                 "--money-drift-y": `${burst.moneyDriftY}px`,
                 fontSize: `clamp(13px,${burst.moneySize/200*100}vw,${burst.moneySize}px)`,
-                fontWeight: 800, color: burst.moneyColor, letterSpacing: "-0.03em",
+                fontWeight: 760, color: burst.moneyColor, letterSpacing: "-0.03em",
               }}>
                 +{formatPieces(burst.earned)}
               </div>
@@ -403,7 +428,7 @@ export default function Money({
             const now = Date.now();
             const willContinueCombo = now - lastClickAt < (crystal.comboWindowMs ?? 500);
             const nextCombo = willContinueCombo ? combo + 1 : 1;
-            const nextEarned = Math.max(1, Math.floor(Math.pow(nextCombo, 2.5) * (crystal.rewardMult ?? 1) * 0.3));
+            const nextEarned = getClickReward(nextCombo, crystal.rewardMult ?? 1);
             return (
               <div style={{
                 display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -502,99 +527,4 @@ const overlayStyle = {
   justifyContent: "center",
   alignItems: "center",
   zIndex: 9999,
-};
-
-const collectOverlayStyle = {
-  position: "fixed",
-  inset: 0,
-
-  background: "rgba(0,0,0,0.72)",
-  backdropFilter: "blur(8px)",
-
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-
-  zIndex: 99999,
-};
-
-const collectPopupStyle = {
-  width: "min(88vw, 420px)",
-
-  background:
-    "linear-gradient(180deg, rgba(13,16,24,0.98), rgba(6,8,14,0.98))",
-
-  border: "1px solid rgba(255,255,255,0.08)",
-
-  borderRadius: 28,
-
-  padding: "34px 28px",
-
-  boxShadow: `
-    0 0 60px rgba(255,255,255,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.05)
-  `,
-
-  textAlign: "center",
-};
-
-const collectLabelStyle = {
-  fontSize: 14,
-  letterSpacing: "0.28em",
-  color: "rgba(255,255,255,0.38)",
-  marginBottom: 22,
-};
-
-const collectTitleStyle = {
-  fontSize: "clamp(34px,7vw,48px)",
-  fontWeight: 800,
-  color: "#f5f5f5",
-
-  textShadow:
-    "0 0 20px rgba(255,255,255,0.08)",
-};
-
-const collectAmountStyle = {
-  marginTop: 22,
-
-  fontSize: "clamp(28px,8vw,42px)",
-  fontWeight: 800,
-
-  color: "#ffffff",
-
-  textShadow: `
-    0 0 12px rgba(255,255,255,0.18),
-    0 0 24px rgba(255,255,255,0.08)
-  `,
-};
-
-const collectDescStyle = {
-  marginTop: 12,
-
-  color: "rgba(255,255,255,0.55)",
-
-  fontSize: "clamp(14px,3.5vw,18px)",
-};
-
-const collectButtonStyle = {
-  width: "100%",
-
-  marginTop: 28,
-
-  padding: "16px",
-
-  borderRadius: 18,
-
-  border: "1px solid rgba(255,255,255,0.08)",
-
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
-
-  color: "#f5f5f5",
-
-  fontWeight: 700,
-
-  fontSize: 18,
-
-  cursor: "pointer",
 };

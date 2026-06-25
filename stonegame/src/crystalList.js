@@ -1,3 +1,7 @@
+export function formatPieces(value) {
+  return `${value.toLocaleString()} 조각`;
+}
+
 export const crystals = [
   {
     name: "달",
@@ -5,7 +9,7 @@ export const crystals = [
     description: "지구 주위를 도는 유일한 자연 위성",
     benefit: "",
     mossSpeedMult: 1,
-    crackMin: 0.3, crackMax: 5.5,
+    crackMin: 0.34, crackMax: 5.3,
     rewardMult: 1,
     comboWindowMs: 500,
     style: {
@@ -34,34 +38,34 @@ export const crystals = [
   },
   {
     name: "금성",
-    price: 30000,
-    description: "짙은 황산 구름층에 둘러싸인 행성",
-    benefit: "균열 속도 -30%",
-    mossSpeedMult: 0.7,
-    crackMin: 0.2, crackMax: 4.1,
-    rewardMult: 1.0,
+    price: 80000,
+    description: "황산 구름층에 둘러싸인 행성",
+    benefit: "균열 x0.75",
+    mossSpeedMult: 1,
+    crackMin: 0.26, crackMax: 4.0,
+    rewardMult: 1,
     comboWindowMs: 500,
     style: {
       background: `
-        radial-gradient(circle at 22% 20%, rgba(255,236,170,0.54) 0%, rgba(255,222,140,0.2) 18%, transparent 40%),
-        radial-gradient(ellipse at 63% 34%, rgba(103,50,18,0.38) 0%, rgba(103,50,18,0.14) 22%, transparent 42%),
-        radial-gradient(ellipse at 68% 72%, rgba(70,28,8,0.34) 0%, rgba(70,28,8,0.12) 18%, transparent 36%),
-        radial-gradient(ellipse at 36% 58%, rgba(168,100,38,0.2) 0%, transparent 28%),
-        radial-gradient(ellipse at 48% 52%, rgba(132,74,26,0.18) 0%, transparent 32%),
-        radial-gradient(circle at 28% 74%, rgba(86,38,10,0.18) 0%, transparent 24%),
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0 56%, rgba(140,70,24,0.12) 78%, rgba(42,14,4,0.24) 100%),
-        radial-gradient(circle at 30% 24%, #f3d17b 0%, #d19646 24%, #9f5720 52%, #5d280e 76%, #1e0903 100%)
+        radial-gradient(circle at 23% 22%, rgba(250,230,200,0.56) 0%, rgba(235,202,162,0.26) 18%, transparent 39%),
+        radial-gradient(ellipse at 58% 38%, rgba(139,94,60,0.30) 0%, rgba(139,94,60,0.13) 24%, transparent 46%),
+        radial-gradient(ellipse at 72% 70%, rgba(72,39,22,0.34) 0%, rgba(72,39,22,0.13) 20%, transparent 40%),
+        radial-gradient(ellipse at 33% 62%, rgba(190,136,88,0.20) 0%, transparent 30%),
+        radial-gradient(ellipse at 48% 52%, rgba(154,103,66,0.16) 0%, transparent 34%),
+        radial-gradient(circle at 28% 74%, rgba(82,44,24,0.15) 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0 56%, rgba(104,68,43,0.13) 78%, rgba(34,19,12,0.28) 100%),
+        radial-gradient(circle at 30% 24%, #dec09a 0%, #c49362 28%, #8f5b37 56%, #532d1c 78%, #1a0f0a 100%)
       `,
-      boxShadow: "0 0 27px rgba(177,111,42,0.231), inset -20px -20px 40px rgba(36,12,4,0.88), inset 10px 10px 16px rgba(255,216,138,0.18)",
+      boxShadow: "0 0 25px rgba(184,133,82,0.20), inset -20px -20px 40px rgba(30,17,10,0.86), inset 10px 10px 16px rgba(238,210,178,0.17)",
     },
   },
   {
     name: "화성",
-    price: 100000,
+    price: 280000,
     description: "산화철로 붉게 보이는 암석 행성",
     benefit: "수익 x1.4",
     mossSpeedMult: 1,
-    crackMin: 0.22, crackMax: 4.1,
+    crackMin: 0.24, crackMax: 4.2,
     rewardMult: 1.4,
     comboWindowMs: 500,
     style: {
@@ -76,12 +80,12 @@ export const crystals = [
   },
   {
     name: "목성",
-    price: 500000,
-    description: "대적점 폭풍이 지속되는 가스 행성",
-    benefit: "수익 x2, 균열 +20%",
-    mossSpeedMult: 1.2,
-    crackMin: 0.35, crackMax: 6.0,
-    rewardMult: 2.0,
+    price: 1000000,
+    description: "대적점이 지속되는 가스 행성",
+    benefit: "수익 x2 · 블랙홀 속도 x1.15",
+    mossSpeedMult: 1.15,
+    crackMin: 0.34, crackMax: 5.3,
+    rewardMult: 2,
     comboWindowMs: 500,
     style: {
       background: `
@@ -113,12 +117,12 @@ export const crystals = [
   },
   {
     name: "해왕성",
-    price: 2000000,
-    description: "대흑점이 나타나는 푸른 얼음 행성",
-    benefit: "균열 속도 -50%",
-    mossSpeedMult: 0.5,
-    crackMin: 0.18, crackMax: 3.2,
-    rewardMult: 1.0,
+    price: 3500000,
+    description: "대흑점이 나타나는 얼음 행성",
+    benefit: "균열 x0.75 · 블랙홀 속도 x0.75",
+    mossSpeedMult: 0.75,
+    crackMin: 0.26, crackMax: 4.0,
+    rewardMult: 1,
     comboWindowMs: 500,
     style: {
       background: `
@@ -130,33 +134,40 @@ export const crystals = [
   },
   {
     name: "태양",
-    price: 8000000,
-    description: "스스로 빛과 강력한 에너지를 내는 항성",
-    benefit: "수익 x3.5, 균열 +70%",
-    mossSpeedMult: 1.7,
-    crackMin: 0.45, crackMax: 8.0,
-    rewardMult: 3.5,
-    comboWindowMs: 600,
+    price: 12000000,
+    description: "스스로 빛과 에너지를 내는 항성",
+    benefit: "수익 x3.2 · 균열 x1.5",
+    mossSpeedMult: 1,
+    crackMin: 0.51, crackMax: 7.95,
+    rewardMult: 3.2,
+    comboWindowMs: 500,
     style: {
       background: `
-        radial-gradient(ellipse at 34% 28%, rgba(255,205,96,0.2) 0%, rgba(255,205,96,0.1) 24%, transparent 48%),
-        radial-gradient(ellipse at 62% 34%, rgba(255,134,38,0.18) 0%, rgba(255,134,38,0.08) 22%, transparent 42%),
-        radial-gradient(ellipse at 42% 66%, rgba(214,70,18,0.18) 0%, rgba(214,70,18,0.08) 24%, transparent 46%),
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0 68%, rgba(255,138,28,0.08) 86%, rgba(232,72,20,0.07) 96%, rgba(0,0,0,0.02) 100%),
-        radial-gradient(circle at 34% 28%, #ffd77a 0%, #ffb347 22%, #ff842b 48%, #e95c20 72%, #c93f18 88%, #97260d 100%)
+        radial-gradient(circle at 50% 50%, rgba(255,248,198,0.9) 0%, rgba(255,214,102,0.7) 15%, rgba(255,173,58,0.34) 32%, rgba(255,173,58,0) 50%),
+        radial-gradient(ellipse at 38% 30%, rgba(255,214,112,0.26) 0%, rgba(255,214,112,0.12) 12%, transparent 26%),
+        radial-gradient(ellipse at 63% 34%, rgba(255,145,48,0.28) 0%, rgba(255,145,48,0.14) 16%, transparent 32%),
+        radial-gradient(ellipse at 43% 63%, rgba(255,104,30,0.24) 0%, rgba(255,104,30,0.1) 15%, transparent 30%),
+        radial-gradient(ellipse at 58% 58%, rgba(223,74,20,0.22) 0%, rgba(223,74,20,0.09) 13%, transparent 28%),
+        radial-gradient(ellipse at 28% 52%, rgba(255,122,28,0.18) 0%, rgba(255,122,28,0.08) 12%, transparent 25%),
+        radial-gradient(ellipse at 71% 52%, rgba(255,188,88,0.16) 0%, rgba(255,188,88,0.06) 14%, transparent 28%),
+        radial-gradient(ellipse 22% 14% at 34% 26%, rgba(255,236,168,0.2) 0%, rgba(255,236,168,0.08) 44%, transparent 72%),
+        radial-gradient(ellipse 26% 16% at 66% 40%, rgba(255,132,42,0.18) 0%, rgba(255,132,42,0.08) 46%, transparent 74%),
+        radial-gradient(ellipse 18% 12% at 48% 72%, rgba(255,102,24,0.18) 0%, rgba(255,102,24,0.08) 42%, transparent 70%),
+        radial-gradient(circle at 50% 50%, rgba(255,170,72,0) 0 62%, rgba(255,118,28,0.06) 78%, rgba(255,82,18,0.08) 90%, rgba(204,54,12,0.08) 100%),
+        radial-gradient(circle at 50% 50%, #fff0af 0%, #ffc85e 19%, #ff9c34 42%, #f16520 66%, #d04417 84%, #b72e12 100%)
       `,
-      boxShadow: "0 0 38px rgba(255,146,42,0.38), 0 0 12px rgba(214,74,20,0.18), inset -8px -10px 14px rgba(146,34,10,0.1)",
+      boxShadow: "0 0 42px rgba(255,132,28,0.42), 0 0 86px rgba(255,106,24,0.18), inset 0 0 22px rgba(255,226,148,0.22)",
     },
   },
   {
     name: "은하",
-    price: 30000000,
-    description: "수많은 별과 가스, 먼지가 중력으로 묶인 거대한 계",
-    benefit: "수익 x2.2, 균열 -25%",
-    mossSpeedMult: 0.75,
-    crackMin: 0.1, crackMax: 2.0,
-    rewardMult: 2.2,
-    comboWindowMs: 700,
+    price: 75000000,
+    description: "별과 가스, 먼지가 중력으로 묶인 계",
+    benefit: "수익 x5 · 균열 x1.15 · 블랙홀 속도 x1.35",
+    mossSpeedMult: 1.35,
+    crackMin: 0.39, crackMax: 6.1,
+    rewardMult: 5,
+    comboWindowMs: 500,
     style: {
       background: `
         radial-gradient(ellipse at 50% 46%, rgba(208,229,255,0.28) 0%, rgba(208,229,255,0.16) 18%, rgba(208,229,255,0.06) 34%, transparent 58%),

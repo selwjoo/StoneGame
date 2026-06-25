@@ -1,4 +1,4 @@
-import { formatPieces } from "./formatPieces";
+import { formatPieces } from "./crystalList";
 import { modalButtonRowStyle, modalNumberStyle, primaryActionButtonStyle } from "./modalStyles";
 
 export default function Potion({

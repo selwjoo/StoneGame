@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
-import { BrowserRouter, Routes, Route} from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Money from './Money';
 import GameOver from './GameOver';
 import Start from './Start';
 import Login from './Login';
-import PrivateRoute from './PrivateRoute';
 import Signup from './Signup';
 import { authFetch } from './auth';
 
 const PROGRESS_REQUEST_TIMEOUT_MS = 1500;
+const DEFAULT_POTION_PRICE = 120000;
 
 function withTimeout(promise, timeoutMs) {
   return Promise.race([
@@ -17,6 +17,16 @@ function withTimeout(promise, timeoutMs) {
       setTimeout(() => reject(new Error("progress-timeout")), timeoutMs);
     }),
   ]);
+}
+
+function PrivateRoute({ children }) {
+  const token = localStorage.getItem("access");
+
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }
 
 function App() {
@@ -33,7 +43,7 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [message, setMessage] = useState('');
 
-  const [potionPrice, setPotionPrice] = useState(30000);
+  const [potionPrice, setPotionPrice] = useState(DEFAULT_POTION_PRICE);
   const [reviveCount, setReviveCount] = useState(0);
 
   const [selectedCrystal, setSelectedCrystal] = useState(0);
@@ -60,7 +70,7 @@ function App() {
 
         setTotalMoney(Number(data.total_money) || 0);
         setUnlockedCrystals(normalizeUnlockedCrystals(data.unlocked_crystals));
-        setPotionPrice(Number(data.potion_price) || 30000);
+        setPotionPrice(Math.max(Number(data.potion_price) || 0, DEFAULT_POTION_PRICE));
         // 로그인 후 시작 화면은 항상 기본 돌멩이부터 보여준다.
         setSelectedCrystal(0);
       } catch (error) {

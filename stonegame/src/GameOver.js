@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { formatPieces } from "./formatPieces";
+import { formatPieces } from "./crystalList";
 import {
   modalBodyStyle,
   modalHeaderStyle,

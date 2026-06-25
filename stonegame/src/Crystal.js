@@ -1,7 +1,7 @@
 import "./App.css";
 import { MossOverlay } from "./Moss";
 import { CrackOverlay } from "./Crack";
-import { PLANET_FRAME_SIZE } from "./planetLayout";
+import { PLANET_FRAME_SIZE } from "./MoneyHeader";
 
 export default function Crystal({
   crystalStyle,
@@ -19,7 +19,8 @@ export default function Crystal({
   children,
 }) {
   const isMoon = crystalName === "달";
-  const showSurfaceHighlight = crystalName !== "목성";
+  const isSun = crystalName === "태양";
+  const showSurfaceHighlight = crystalName !== "목성" && !isSun;
   return (
     <div
       onClick={onClick}
@@ -60,13 +61,33 @@ export default function Crystal({
             }}
           />
         )}
+        {isSun ? (
+          <div
+            style={{
+              position: "absolute",
+              inset: "-9%",
+              borderRadius: "50%",
+              background: `
+                radial-gradient(circle at 50% 50%, rgba(255,194,88,0) 0 56%, rgba(255,177,58,0.18) 65%, rgba(255,130,28,0.22) 74%, rgba(255,98,24,0.18) 82%, transparent 100%),
+                radial-gradient(ellipse at 16% 48%, rgba(255,132,36,0.3) 0%, rgba(255,132,36,0.12) 20%, transparent 42%),
+                radial-gradient(ellipse at 84% 42%, rgba(255,156,62,0.24) 0%, rgba(255,156,62,0.1) 18%, transparent 40%),
+                radial-gradient(ellipse at 50% 10%, rgba(255,176,72,0.24) 0%, rgba(255,176,72,0.1) 16%, transparent 36%),
+                radial-gradient(ellipse at 48% 90%, rgba(255,108,22,0.22) 0%, rgba(255,108,22,0.08) 16%, transparent 34%)
+              `,
+              filter: "blur(8px)",
+              opacity: 0.95,
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+        ) : null}
         <div
           style={{
             width: "100%",
             height: "100%",
             borderRadius: "50%",
             ...crystalStyle,
-            animation: crystalName === "태양" ? "solarFlare 2.5s infinite ease-in-out" : "none",
+            animation: isSun ? "solarFlare 2.5s infinite ease-in-out" : "none",
           }}
         />
         {showOverlays ? (
