@@ -6,6 +6,7 @@ import { formatPieces } from './formatPieces';
 import MoneyHeader from './MoneyHeader';
 import BenefitRecord from './BenefitRecord'; // 기존 방식 컴포넌트 복원
 import { logout } from './auth';
+import './App.css'; // 🔥 태양 애니메이션(solarFlare)을 쓰기 위해 추가
 
 export default function Start({
   money,
@@ -103,13 +104,25 @@ export default function Start({
         </button>
 
         <div style={{ position: "relative", width: "min(62vw,260px)", aspectRatio: "1/1", flex: "0 1 auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", ...crystal.style, transition: "all 0.3s ease", position: "relative", zIndex: 2 }} />
+          
+          {/* 🌟 원본 스타일 그대로 유지, 오직 태양일 때만 solarFlare 애니메이션을 한 줄 가동합니다 */}
+          <div style={{ 
+            width: "100%", 
+            height: "100%", 
+            borderRadius: "50%", 
+            ...crystal.style, 
+            transition: "all 0.3s ease", 
+            position: "relative", 
+            zIndex: 2,
+            animation: crystal.isSun || crystal.name === "태양" ? "solarFlare 2.5s infinite ease-in-out" : "none"
+          }} />
+          
           <div style={{
             position: "absolute", top: "14%", left: "20%", width: "35%", height: "22%",
             borderRadius: "50%", background: "rgba(255,255,255,0.24)", filter: "blur(6px)", pointerEvents: "none", zIndex: 3
           }} />
 
-          {/* 목성 고리 */}
+          {/* 목성 고기 */}
           {crystal.hasRing && (
             <div style={{
               position: "absolute",
