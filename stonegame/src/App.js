@@ -8,6 +8,16 @@ import PrivateRoute from './PrivateRoute';
 import Signup from './Signup';
 import { authFetch } from './auth';
 
+const PROGRESS_REQUEST_TIMEOUT_MS = 1500;
+
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("progress-timeout")), timeoutMs);
+    }),
+  ]);
+}
 
 function App() {
   const [totalMoney, setTotalMoney] = useState(0);
@@ -39,7 +49,10 @@ function App() {
       }
 
       try {
-        const res = await authFetch("/api/progress/");
+        const res = await withTimeout(
+          authFetch("/api/progress/"),
+          PROGRESS_REQUEST_TIMEOUT_MS
+        );
         if (!res.ok) return;
 
         const data = await res.json();
@@ -50,6 +63,8 @@ function App() {
         setPotionPrice(Number(data.potion_price) || 30000);
         // 로그인 후 시작 화면은 항상 기본 돌멩이부터 보여준다.
         setSelectedCrystal(0);
+      } catch (error) {
+        // If the backend is unreachable, do not block the whole app behind a blank screen.
       } finally {
         if (!ignore) setProgressReady(true);
       }
@@ -88,8 +103,9 @@ function App() {
     <div style={{ background: "#0a0a0f", minHeight: "100vh" }}>
       <BrowserRouter>
         <Routes>
-          {/* 맨 처음 들어오면 회원가입으로 */}
+          {/* 로그인 진입점 */}
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
           <Route path="/start" element={

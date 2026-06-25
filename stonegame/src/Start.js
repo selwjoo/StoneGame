@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { crystals } from './crystalList';
 import BackgroundEffect from './BackgroundEffect';
 import { formatPieces } from './formatPieces';
 import MoneyHeader from './MoneyHeader';
 import BenefitRecord from './BenefitRecord';
+import { logout } from './auth';
 
 export default function Start({
   money,
@@ -14,6 +16,7 @@ export default function Start({
   setSelectedCrystal,
 }) {
   const navigate = useNavigate();
+  const [logoutHover, setLogoutHover] = useState(false);
 
   function prev() { setSelectedCrystal(i => (i - 1 + crystals.length) % crystals.length); }
   function next() { setSelectedCrystal(i => (i + 1) % crystals.length); }
@@ -44,7 +47,48 @@ export default function Start({
       boxSizing: "border-box",
       position: "relative", zIndex: 1, width: "100%", maxWidth: 520, margin: "0 auto",
     }}>
-      <MoneyHeader money={money} titleOffset={4} moneyOffset={24} />
+      <MoneyHeader
+        money={money}
+        titleOffset={4}
+        moneyOffset={24}
+        leftSlot={
+          <button
+            type="button"
+            onClick={logout}
+            onMouseEnter={() => setLogoutHover(true)}
+            onMouseLeave={() => setLogoutHover(false)}
+            aria-label="로그아웃"
+            style={{
+              width: "clamp(44px,12vw,50px)",
+              height: "clamp(44px,12vw,50px)",
+              padding: 0,
+              marginLeft: "calc((min(88vw, 320px) - min(62vw, 260px)) / 2 - 46px)",
+              border: "none",
+              background: "transparent",
+              borderRadius: "50%",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform 0.15s ease",
+              transform: logoutHover ? "translateY(10px) scale(1.1)" : "translateY(10px) scale(1)",
+            }}
+          >
+            <img
+              src="logout.png"
+              alt="로그아웃"
+              style={{
+                width: 28,
+                height: 28,
+                objectFit: "contain",
+                opacity: logoutHover ? 1 : 0.82,
+                transform: "rotate(180deg)",
+                transition: "opacity 0.18s ease",
+              }}
+            />
+          </button>
+        }
+      />
 
       <div style={contentColumnStyle}>
         <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "clamp(11px,2.8vw,13px)", letterSpacing: "0.18em", margin: "0 0 clamp(20px,5vw,28px)", textAlign: "center" }}>
