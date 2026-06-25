@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { crystals } from './crystalList';
+import { crystals, formatPieces } from './crystalList';
 import BackgroundEffect from './BackgroundEffect';
-import { formatPieces } from './formatPieces';
-import MoneyHeader from './MoneyHeader';
-import BenefitRecord from './BenefitRecord'; // 기존 방식 컴포넌트 복원
+import MoneyHeader, {
+  HEADER_LEFT_ACTION_OFFSET,
+  HEADER_MONEY_OFFSET,
+  HEADER_TITLE_OFFSET,
+  PLANET_FRAME_SIZE,
+  PLANET_STAGE_LABEL_GAP,
+  PLANET_STAGE_LABEL_STYLE,
+  PLANET_STAGE_LABEL_MIN_HEIGHT,
+  PLANET_STAGE_TOP_MARGIN,
+} from './MoneyHeader';
 import Crystal from './Crystal';
 import { logout } from './auth';
 import {
@@ -19,16 +26,6 @@ import {
   primaryDangerButtonHoverStyle,
   secondaryButtonStyle,
 } from './modalStyles';
-import {
-  HEADER_LEFT_ACTION_OFFSET,
-  HEADER_MONEY_OFFSET,
-  HEADER_TITLE_OFFSET,
-  PLANET_FRAME_SIZE,
-  PLANET_STAGE_LABEL_GAP,
-  PLANET_STAGE_LABEL_STYLE,
-  PLANET_STAGE_LABEL_MIN_HEIGHT,
-  PLANET_STAGE_TOP_MARGIN,
-} from './planetLayout';
 
 export default function Start({
   money,
@@ -122,7 +119,6 @@ export default function Start({
           </p>
         </div>
 
-      {/* 슬라이더 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(12px,4vw,32px)", width: "100%", marginBottom: "clamp(22px,5vw,28px)" }}>
         <button type="button" onClick={prev} style={arrowBtn} aria-label="이전 탐사">
           <img src="/left.png" alt="" style={arrowImageStyle} />
@@ -152,7 +148,6 @@ export default function Start({
         <p style={isOwned ? descriptionOwnedStyle : hasBenefit ? descriptionStyle : descriptionNoBenefitStyle}>
           {crystal.description}
         </p>
-        {/* 기존에 쓰시던 오리지널 BenefitRecord 배치 구조 원상복구 */}
         <BenefitRecord benefit={crystal.benefit} />
       </div>
 
@@ -327,4 +322,54 @@ const arrowImageStyle = {
   display: "block",
   opacity: 0.98,
   filter: "brightness(1.25)",
+};
+
+function BenefitRecord({ benefit, compact = false }) {
+  if (!benefit) return null;
+
+  return (
+    <div style={{ ...benefitWrapStyle, ...(compact ? benefitCompactWrapStyle : null) }}>
+      <div style={benefitLineStyle} />
+      <p style={{ ...benefitTextStyle, ...(compact ? benefitCompactTextStyle : null) }}>
+        {benefit}
+      </p>
+      <div style={benefitLineStyle} />
+    </div>
+  );
+}
+
+const benefitWrapStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 10,
+  width: "100%",
+  maxWidth: 320,
+};
+
+const benefitCompactWrapStyle = {
+  gap: 8,
+  maxWidth: 280,
+};
+
+const benefitLineStyle = {
+  width: 26,
+  height: 2,
+  borderRadius: 999,
+  background: "linear-gradient(90deg, rgba(214,205,190,0), rgba(214,205,190,0.42), rgba(214,205,190,0))",
+};
+
+const benefitTextStyle = {
+  margin: 0,
+  color: "rgba(226, 220, 208, 0.84)",
+  fontSize: "clamp(13px, 3.2vw, 14px)",
+  fontWeight: 500,
+  lineHeight: 1.35,
+  letterSpacing: "0.02em",
+  textShadow: "0 6px 18px rgba(0, 0, 0, 0.18)",
+  whiteSpace: "nowrap",
+};
+
+const benefitCompactTextStyle = {
+  fontSize: "clamp(12px, 2.9vw, 13px)",
 };

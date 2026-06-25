@@ -23,7 +23,7 @@ export default function BackgroundEffect({ crystalName }) {
 
     function spawnParticle() {
       switch (crystalName) {
-        case "금성": // 따뜻한 황금빛 입자 효과
+        case "금성":
           particles.push({
             x: Math.random() * W(),
             y: Math.random() * H(),
@@ -31,11 +31,11 @@ export default function BackgroundEffect({ crystalName }) {
             alpha: 0.3 + Math.random() * 0.5,
             vx: (Math.random() - 0.5) * 1.5,
             vy: (Math.random() - 0.5) * 1.5,
-            hue: 35 + Math.random() * 15, // 황금빛 노란색
+            hue: 35 + Math.random() * 15,
           });
           break;
 
-        case "화성": // 붉은 모래 폭풍 효과
+        case "화성":
           particles.push({
             x: -10,
             y: Math.random() * H(),
@@ -43,11 +43,11 @@ export default function BackgroundEffect({ crystalName }) {
             alpha: 0.2 + Math.random() * 0.3,
             vx: 1.5 + Math.random() * 2.5,
             vy: (Math.random() - 0.5) * 0.5,
-            hue: 15 + Math.random() * 15, // 붉은 황토색
+            hue: 15 + Math.random() * 15,
           });
           break;
 
-        case "토성": // 느리게 회전하며 빨려 들어가는 가스 구름 고리 효과
+        case "토성":
           const angle = Math.random() * Math.PI * 2;
           const dist = (0.2 + Math.random() * 0.5) * Math.max(W(), H());
           particles.push({
@@ -57,11 +57,11 @@ export default function BackgroundEffect({ crystalName }) {
             inSpeed: 0.1 + Math.random() * 0.15,
             r: 3 + Math.random() * 4,
             alpha: 0.4 + Math.random() * 0.4,
-            hue: 25 + Math.random() * 20, // 오렌지 브라운 계열
+            hue: 25 + Math.random() * 20,
           });
           break;
 
-        case "해왕성": // 차가운 푸른 서리 가스 업스핀 효과
+        case "해왕성":
           particles.push({
             x: Math.random() * W(),
             y: H() + 15,
@@ -69,11 +69,11 @@ export default function BackgroundEffect({ crystalName }) {
             vy: -(0.8 + Math.random() * 1.5),
             r: 3 + Math.random() * 5,
             alpha: 0.2 + Math.random() * 0.3,
-            hue: 190 + Math.random() * 20, // 시원한 시안 파란색
+            hue: 190 + Math.random() * 20,
           });
           break;
 
-        case "태양": // 활활 타오르는 불꽃 파티클
+        case "태양":
           particles.push({
             x: Math.random() * W(),
             y: H() * 0.85 + Math.random() * H() * 0.15,
@@ -86,7 +86,7 @@ export default function BackgroundEffect({ crystalName }) {
           });
           break;
 
-        case "은하": // 몽환적인 성운과 은하수 효과
+        case "은하":
           const isMilkyWay = Math.random() > 0.35;
           let gx, gy;
           if (isMilkyWay) {
@@ -109,7 +109,7 @@ export default function BackgroundEffect({ crystalName }) {
           });
           break;
 
-        default: // 달 - 은은하게 빛나는 기본 우주 성간 물질 효과
+        default:
           particles.push({
             x: Math.random() * W(),
             y: Math.random() * H(),

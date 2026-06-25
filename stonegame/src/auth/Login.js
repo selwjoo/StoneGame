@@ -1,39 +1,41 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { apiFetch } from './auth';
+import { Link } from 'react-router-dom';
+import { apiFetch } from './';
 import AuthShell, {
   authButtonStyle,
   authErrorStyle,
   authFieldGroupStyle,
   authInputStyle,
   authLabelStyle,
+  authLinkStyle,
 } from './AuthShell';
 
-function Signup() {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const res = await apiFetch('/api/register/', {
+      const res = await apiFetch('/api/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.username ? data.username[0] : '회원가입 실패');
+        setError('아이디 또는 비밀번호를 확인하세요.');
         return;
       }
 
-      alert('회원가입 성공! 로그인 해주세요.');
-      navigate('/'); // ⚠️ '/login' → '/' (이제 로그인이 '/' 임)
+      const data = await res.json();
+      localStorage.setItem('access', data.access);
+      localStorage.setItem('refresh', data.refresh);
+      localStorage.setItem('username', username);
+
+      window.location.href = '/start';
     } catch (err) {
       setError('서버에 연결할 수 없습니다.');
     }
@@ -42,15 +44,11 @@ function Signup() {
   return (
     <AuthShell
       subtitle=""
-      leftAction={(
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          aria-label="로그인 화면으로 돌아가기"
-          style={exitButtonStyle}
-        >
-          <img src="backTologin.png" alt="" style={exitImageStyle} />
-        </button>
+      footer={(
+        <>
+          계정이 없나요?{" "}
+          <Link to="/signup" style={authLinkStyle}>회원가입</Link>
+        </>
       )}
     >
       <form onSubmit={handleSubmit} style={formStyle}>
@@ -77,7 +75,7 @@ function Signup() {
         {error && <p style={authErrorStyle}>{error}</p>}
 
         <button type="submit" style={authButtonStyle}>
-          회원가입
+          로그인
         </button>
       </form>
     </AuthShell>
@@ -90,25 +88,4 @@ const formStyle = {
   gap: '15px',
 };
 
-const exitButtonStyle = {
-  width: 36,
-  height: 36,
-  padding: 0,
-  border: 'none',
-  background: 'transparent',
-  borderRadius: '50%',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  opacity: 0.82,
-  transform: 'translate(-5px, 3px)',
-};
-
-const exitImageStyle = {
-  width: 22,
-  height: 22,
-  objectFit: 'contain',
-};
-
-export default Signup;
+export default Login;
