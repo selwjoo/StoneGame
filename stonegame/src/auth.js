@@ -1,4 +1,5 @@
-const BASE_URL = 'http://172.20.10.2:8000';
+const BASE_URL = 'http://172.20.10.2:8000/';
+const API_BASE = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
 
 // 로그아웃
 export function logout() {
@@ -13,7 +14,7 @@ async function refreshAccessToken() {
   const refresh = localStorage.getItem('refresh');
   if (!refresh) return null;
 
-  const res = await fetch(`${BASE_URL}/api/token/refresh/`, {
+  const res = await fetch(`${API_BASE}/api/token/refresh/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh }),
@@ -33,7 +34,7 @@ async function refreshAccessToken() {
 export async function authFetch(url, options = {}) {
   let access = localStorage.getItem('access');
 
-  let res = await fetch(`${BASE_URL}${url}`, {
+  let res = await fetch(`${API_BASE}${url}`, {
     ...options,
     headers: {
       ...options.headers,
@@ -46,7 +47,7 @@ export async function authFetch(url, options = {}) {
     access = await refreshAccessToken();
     if (!access) return res;
 
-    res = await fetch(`${BASE_URL}${url}`, {
+    res = await fetch(`${API_BASE}${url}`, {
       ...options,
       headers: {
         ...options.headers,
