@@ -14,6 +14,7 @@ import {
   primaryDangerButtonHoverStyle,
   secondaryButtonStyle,
 } from "./modalStyles";
+import { logout } from "./auth";
 
 export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount = 0 }) {
   const navigate = useNavigate();
@@ -54,6 +55,7 @@ export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount
           >
             나가기
           </button>
+          <button onClick={logout}> 로그아웃 </button>
           <button onClick={handleCancel} style={secondaryButtonStyle}>취소</button>
         </div>
       </div>
