@@ -337,7 +337,7 @@ export default function Money({
           }}>
             <div style={{ padding: "clamp(10px,2.8vw,12px) clamp(18px,6vw,28px)" }}>
               <div style={{ fontSize: "clamp(10px,2.4vw,12px)", opacity: 0.6, marginBottom: 2, letterSpacing: "0.1em" }}>
-                누적 중 (수거 전)
+                채굴한 조각
               </div>
               <div style={{ fontSize: "clamp(18px,5vw,22px)", fontWeight: 700 }}>
                 {formatPieces(pendingMoney)}
