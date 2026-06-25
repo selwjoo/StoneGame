@@ -55,7 +55,6 @@ export default function Exit({ showExit, setShowExit, onResetGame, forfeitAmount
           >
             나가기
           </button>
-          <button onClick={logout}> 로그아웃 </button>
           <button onClick={handleCancel} style={secondaryButtonStyle}>취소</button>
         </div>
       </div>
