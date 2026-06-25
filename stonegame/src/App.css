@@ -44,16 +44,15 @@
 
 @keyframes solarFlare {
     0% {
-        box-shadow: 0 0 35px rgba(255, 90, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 33px rgba(255, 120, 18, 0.42), 0 0 56px rgba(255, 178, 68, 0.16), inset 0 0 10px rgba(255, 234, 170, 0.32);
         transform: scale(1);
     }
     50% {
-        box-shadow: 0 0 65px rgba(255, 140, 0, 0.85), inset 0 0 25px rgba(255, 255, 255, 0.95);
-        transform: scale(1.015);
-        /* 미세하게 숨 쉬듯 커지며 일렁거리는 느낌 */
+        box-shadow: 0 0 54px rgba(255, 132, 0, 0.6), 0 0 84px rgba(255, 92, 22, 0.22), inset 0 0 14px rgba(255, 239, 188, 0.42);
+        transform: scale(1.012);
     }
     100% {
-        box-shadow: 0 0 35px rgba(255, 90, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 33px rgba(255, 120, 18, 0.42), 0 0 56px rgba(255, 178, 68, 0.16), inset 0 0 10px rgba(255, 234, 170, 0.32);
         transform: scale(1);
     }
 }

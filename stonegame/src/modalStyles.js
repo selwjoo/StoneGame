@@ -68,6 +68,11 @@ export const modalBodyStyle = {
   lineHeight: 1.5,
 };
 
+export const modalNumberStyle = {
+  color: "#f1ebdd",
+  fontWeight: 700,
+};
+
 export const modalSectionStyle = {
   background: "#16181d",
   border: "0.5px solid #2B2D34",

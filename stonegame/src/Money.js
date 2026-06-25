@@ -9,10 +9,19 @@ import BackgroundEffect from "./BackgroundEffect";
 import { formatPieces } from "./formatPieces";
 import MoneyHeader from "./MoneyHeader";
 import {
+  HEADER_LEFT_ACTION_OFFSET,
+  HEADER_MONEY_OFFSET,
+  HEADER_TITLE_OFFSET,
+  PLANET_FRAME_SIZE,
+  PLANET_STAGE_LABEL_GAP,
+  PLANET_STAGE_LABEL_STYLE,
+  PLANET_STAGE_LABEL_MIN_HEIGHT,
+  PLANET_STAGE_TOP_MARGIN,
+} from "./planetLayout";
+import {
   modalStyle,
   modalTopGlowStyle,
   modalHeaderStyle,
-  modalEyebrowStyle,
   modalTitleStyle,
   modalBodyStyle,
   modalButtonRowStyle,
@@ -67,8 +76,12 @@ export default function Money({
   const [showExit, setShowExit] = useState(false);
   const [showCollectPopup, setShowCollectPopup] = useState(false);
   const [collectedAmount, setCollectedAmount] = useState(0);
+  const [roundLocked, setRoundLocked] = useState(false);
+  const roundLockedRef = useRef(false);
 
   useEffect(() => {
+    roundLockedRef.current = false;
+    setRoundLocked(false);
     setPendingMoney(0);
     setForfeitedReward(0);
     setMoss(0);
@@ -89,6 +102,9 @@ export default function Money({
   ]);
 
   function resetRoundState() {
+    roundLockedRef.current = false;
+    setRoundLocked(false);
+    setShowCollectPopup(false);
     setPendingMoney(0);
     setForfeitedReward(0);
     setMoss(0);
@@ -101,25 +117,31 @@ export default function Money({
   }
 
   const handleRoundLoss = useCallback((nextMessage) => {
+    if (roundLockedRef.current) return;
     setForfeitedReward(getCollectAmountValue(pendingMoney, clickCount, moss));
     setGameOver(true);
     setMessage(nextMessage);
   }, [clickCount, moss, pendingMoney, setForfeitedReward, setGameOver, setMessage]);
 
   function handleCollect() {
-    if (pendingMoney <= 0 || gameOver) return;
+    if (pendingMoney <= 0 || gameOver || roundLockedRef.current) return;
   
     const amount = getCollectAmountValue(
       pendingMoney,
       clickCount,
       moss
     );
-  
+
+    roundLockedRef.current = true;
+    setRoundLocked(true);
+    setPressing(false);
     setCollectedAmount(amount);
     setShowCollectPopup(true);
   }
 
   function handleClick(clientX, clientY) {
+    if (roundLockedRef.current || gameOver) return;
+
     const now = Date.now();
     const diff = now - lastClickAt;
     const comboWindow = crystal.comboWindowMs ?? 500;
@@ -172,11 +194,14 @@ export default function Money({
   }
 
   function handleCrystalClick(event) {
+    if (roundLockedRef.current || gameOver) return;
     const rect = event.currentTarget.getBoundingClientRect();
     handleClick(event.clientX - rect.left, event.clientY - rect.top);
   }
 
-  const canCollect = pendingMoney > 0 && !gameOver;
+  const collectAmount = getCollectAmountValue(pendingMoney, clickCount, moss);
+  const roundClosed = gameOver || roundLocked;
+  const canCollect = pendingMoney > 0 && !roundClosed;
 
   return (
     <>
@@ -185,7 +210,9 @@ export default function Money({
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      padding: "calc(env(safe-area-inset-top,0px) + 16px) clamp(16px,5vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px)",
+      justifyContent: "flex-start",
+      minHeight: "100dvh",
+      padding: "calc(env(safe-area-inset-top,0px) + 20px) clamp(16px,5vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px)",
       position: "relative",
       boxSizing: "border-box",
       width: "100%",
@@ -195,18 +222,18 @@ export default function Money({
     }}>
       <MoneyHeader
         money={totalMoney}
-        titleOffset={8}
-        moneyOffset={20}
+        titleOffset={HEADER_TITLE_OFFSET}
+        moneyOffset={HEADER_MONEY_OFFSET}
         leftSlot={
           <button
             onClick={() => setShowExit(true)}
             onMouseEnter={() => setExitHover(true)}
             onMouseLeave={() => setExitHover(false)}
             style={{
-              width: "clamp(40px,11vw,44px)",
-              height: "clamp(40px,11vw,44px)",
+              width: "clamp(44px,12vw,50px)",
+              height: "clamp(44px,12vw,50px)",
               padding: 0,
-              marginLeft: "calc((min(88vw, 320px) - min(62vw, 260px)) / 2 - 44px)",
+              marginLeft: HEADER_LEFT_ACTION_OFFSET,
               border: "none",
               background: "transparent",
               borderRadius: "50%",
@@ -227,7 +254,7 @@ export default function Money({
         showExit={showExit}
         setShowExit={setShowExit}
         onResetGame={resetRoundState}
-        forfeitAmount={getCollectAmountValue(pendingMoney, clickCount, moss)}
+        forfeitAmount={collectAmount}
       />
 
       <style>{`
@@ -246,21 +273,21 @@ export default function Money({
       `}</style>
 
       <div style={playContentStyle}>
-        <div style={playInfoStyle}>
-          <p style={playNameStyle}>
-            {crystal.name} 돌멩이
-          </p>
+        <div style={playStageLabelWrapStyle}>
+          <p style={PLANET_STAGE_LABEL_STYLE}>{crystal.name}</p>
         </div>
 
         <Crystal
           crystalStyle={crystal.style}
           crystalName={crystal.name}
+          hasRing={crystal.hasRing}
           moss={moss}
           crack={crack}
           pressing={pressing}
           onClick={handleCrystalClick}
           onPressStart={() => setPressing(true)}
           onPressEnd={() => setPressing(false)}
+          size={PLANET_FRAME_SIZE}
         >
           {comboBursts.map(burst => (
             <Fragment key={burst.id}>
@@ -304,10 +331,6 @@ export default function Money({
       <div style={modalTopGlowStyle} />
 
       <div style={modalHeaderStyle}>
-        <p style={modalEyebrowStyle}>
-          ROUND COMPLETE
-        </p>
-
         <h2 style={modalTitleStyle}>
           수거를 완료했습니다
         </h2>
@@ -363,19 +386,19 @@ export default function Money({
         <Moss
           moss={moss} setMoss={setMoss}
           onRoundLost={handleRoundLoss}
-          lastClickAt={lastClickAt} gameOver={gameOver}
+          lastClickAt={lastClickAt} gameOver={roundClosed}
           mossSpeedMult={crystal.mossSpeedMult ?? 1}
         />
 
         <Crack
           crack={crack} setCrack={setCrack}
           onRoundLost={handleRoundLoss}
-          clickCount={clickCount} gameOver={gameOver}
+          clickCount={clickCount} gameOver={roundClosed}
           crackMin={crystal.crackMin ?? 1.5}
           crackMax={crystal.crackMax ?? 2.5}
         />
 
-        <div style={{ width: "min(100%,320px)", display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={playBottomStackStyle}>
           {(() => {
             const now = Date.now();
             const willContinueCombo = now - lastClickAt < (crystal.comboWindowMs ?? 500);
@@ -409,10 +432,10 @@ export default function Money({
           }}>
             <div style={{ padding: "clamp(10px,2.8vw,12px) clamp(18px,6vw,28px)" }}>
               <div style={{ fontSize: "clamp(10px,2.4vw,12px)", opacity: 0.6, marginBottom: 2, letterSpacing: "0.1em" }}>
-                채굴한 조각
+                회수 가능 조각
               </div>
               <div style={{ fontSize: "clamp(18px,5vw,22px)", fontWeight: 700 }}>
-                {formatPieces(pendingMoney)}
+                {formatPieces(collectAmount)}
               </div>
             </div>
           </div>
@@ -450,28 +473,26 @@ const playContentStyle = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: "clamp(14px, 3.5vw, 24px)",
-  marginTop: "clamp(106px,26vw,128px)",
+  gap: 0,
+  marginTop: PLANET_STAGE_TOP_MARGIN,
 };
 
-const playInfoStyle = {
+const playStageLabelWrapStyle = {
+  minHeight: PLANET_STAGE_LABEL_MIN_HEIGHT,
+  marginBottom: PLANET_STAGE_LABEL_GAP,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const playBottomStackStyle = {
+  width: "min(100%,320px)",
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
   gap: 8,
-  textAlign: "center",
-  marginBottom: "clamp(12px,3vw,16px)",
-  minHeight: "clamp(28px, 7vw, 34px)",
-  justifyContent: "flex-start",
+  marginTop: "clamp(18px, 4vw, 26px)",
 };
 
-const playNameStyle = {
-  color: "rgba(255,255,255,0.7)",
-  fontSize: "clamp(12px,3.1vw,14px)",
-  letterSpacing: "0.1em",
-  margin: 0,
-  lineHeight: 1.08,
-};
 const overlayStyle = {
   position: "fixed",
   inset: 0,

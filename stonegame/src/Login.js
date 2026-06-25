@@ -43,7 +43,6 @@ function Login() {
 
   return (
     <AuthShell
-      title="로그인"
       subtitle=""
       footer={(
         <>

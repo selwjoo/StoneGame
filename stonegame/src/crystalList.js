@@ -2,28 +2,40 @@ export const crystals = [
   {
     name: "달",
     price: 0,
-    description: "은은한 빛을 내는 지구의 위성",
+    description: "지구 주위를 도는 유일한 자연 위성",
     benefit: "",
     mossSpeedMult: 1,
     crackMin: 0.3, crackMax: 5.5,
     rewardMult: 1,
     comboWindowMs: 500,
     style: {
-      // 핵심 수정: 투명도를 적절히 살리되, 안쪽 어둠(0.35)과 아래쪽 반사 테두리(rgba(255,255,255,0.3) 1px 느낌)를 겹쳐 푹 파인 홈을 시각화
       background: `
-        radial-gradient(circle at 21% 26%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 6%, rgba(255,255,255,0.25) 7%, transparent 10%),
-        radial-gradient(circle at 63% 35%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 9%, rgba(255,255,255,0.3) 10%, transparent 14%),
-        radial-gradient(circle at 40% 68%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.08) 5%, rgba(255,255,255,0.2) 6%, transparent 9%),
-        radial-gradient(circle at 73% 62%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.05) 5%, rgba(255,255,255,0.2) 6%, transparent 9%),
-        radial-gradient(circle at 30% 25%, #ffffff 0%, #dddddd 15%, #7a7a7a 50%, #202020 85%, #080808 100%)
+        radial-gradient(circle at 21% 24%, rgba(255,255,255,0.46) 0%, rgba(255,255,255,0.08) 10%, transparent 15%),
+        radial-gradient(circle at 21% 24%, rgba(86,86,88,0.34) 0%, rgba(86,86,88,0.18) 7%, transparent 11%),
+        radial-gradient(circle at 63% 32%, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.05) 10%, transparent 14%),
+        radial-gradient(circle at 63% 32%, rgba(82,82,84,0.3) 0%, rgba(82,82,84,0.14) 7%, transparent 11%),
+        radial-gradient(circle at 37% 68%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 7%, transparent 10%),
+        radial-gradient(circle at 37% 68%, rgba(72,72,74,0.26) 0%, rgba(72,72,74,0.1) 5%, transparent 8%),
+        radial-gradient(circle at 73% 65%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 6%, transparent 9%),
+        radial-gradient(circle at 73% 65%, rgba(64,64,68,0.22) 0%, rgba(64,64,68,0.08) 5%, transparent 8%),
+        radial-gradient(ellipse at 28% 28%, rgba(255,255,255,0.18) 0%, transparent 34%),
+        radial-gradient(ellipse at 24% 34%, rgba(126,126,126,0.28) 0%, rgba(126,126,126,0.18) 16%, transparent 30%),
+        radial-gradient(ellipse at 33% 48%, rgba(152,152,150,0.16) 0%, transparent 26%),
+        radial-gradient(ellipse at 46% 56%, rgba(88,88,90,0.56) 0%, rgba(88,88,90,0.32) 22%, transparent 39%),
+        radial-gradient(ellipse at 65% 68%, rgba(74,74,78,0.5) 0%, rgba(74,74,78,0.24) 16%, transparent 30%),
+        radial-gradient(ellipse at 76% 58%, rgba(98,98,100,0.24) 0%, transparent 24%),
+        radial-gradient(ellipse at 68% 26%, rgba(238,238,236,0.12) 0%, transparent 20%),
+        radial-gradient(ellipse at 55% 18%, rgba(246,246,244,0.1) 0%, transparent 18%),
+        radial-gradient(circle at 52% 50%, rgba(255,255,255,0) 0 45%, rgba(255,255,255,0.03) 58%, rgba(0,0,0,0.3) 100%),
+        radial-gradient(circle at 31% 24%, #f3f3ef 0%, #ddddda 19%, #bab9b6 38%, #8d8d8b 58%, #575759 78%, #171718 100%)
       `,
-      boxShadow: "0 0 35px rgba(255,255,255,0.15), inset -22px -22px 40px rgba(0,0,0,0.98), inset 12px 12px 22px rgba(255,255,255,0.35)",
+      boxShadow: "0 0 17px rgba(255,255,255,0.084), inset -22px -22px 42px rgba(0,0,0,0.84), inset 8px 8px 14px rgba(255,255,255,0.12)",
     },
   },
   {
-    name: "수성",
+    name: "금성",
     price: 30000,
-    description: "태양과 가장 가까운 황량한 암석형 내부 행성",
+    description: "짙은 황산 구름층에 둘러싸인 행성",
     benefit: "균열 속도 -30%",
     mossSpeedMult: 0.7,
     crackMin: 0.2, crackMax: 4.1,
@@ -31,17 +43,22 @@ export const crystals = [
     comboWindowMs: 500,
     style: {
       background: `
-        radial-gradient(circle at 55% 55%, rgba(45,22,5,0.3) 0%, transparent 35%),
-        radial-gradient(circle at 25% 40%, rgba(0,0,0,0.15) 0%, transparent 25%),
-        radial-gradient(circle at 30% 25%, #f4e1d2 0%, #b8977e 25%, #5c4033 65%, #120702 100%)
+        radial-gradient(circle at 22% 20%, rgba(255,236,170,0.54) 0%, rgba(255,222,140,0.2) 18%, transparent 40%),
+        radial-gradient(ellipse at 63% 34%, rgba(103,50,18,0.38) 0%, rgba(103,50,18,0.14) 22%, transparent 42%),
+        radial-gradient(ellipse at 68% 72%, rgba(70,28,8,0.34) 0%, rgba(70,28,8,0.12) 18%, transparent 36%),
+        radial-gradient(ellipse at 36% 58%, rgba(168,100,38,0.2) 0%, transparent 28%),
+        radial-gradient(ellipse at 48% 52%, rgba(132,74,26,0.18) 0%, transparent 32%),
+        radial-gradient(circle at 28% 74%, rgba(86,38,10,0.18) 0%, transparent 24%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0 56%, rgba(140,70,24,0.12) 78%, rgba(42,14,4,0.24) 100%),
+        radial-gradient(circle at 30% 24%, #f3d17b 0%, #d19646 24%, #9f5720 52%, #5d280e 76%, #1e0903 100%)
       `,
-      boxShadow: "0 0 35px rgba(184,151,126,0.25), inset -18px -18px 40px rgba(0,0,0,0.95), inset 12px 12px 18px rgba(244,225,210,0.3)",
+      boxShadow: "0 0 27px rgba(177,111,42,0.231), inset -20px -20px 40px rgba(36,12,4,0.88), inset 10px 10px 16px rgba(255,216,138,0.18)",
     },
   },
   {
     name: "화성",
     price: 100000,
-    description: "붉은 사막과 산화철로 뒤덮인 행성",
+    description: "산화철로 붉게 보이는 암석 행성",
     benefit: "수익 x1.4",
     mossSpeedMult: 1,
     crackMin: 0.22, crackMax: 4.1,
@@ -60,7 +77,7 @@ export const crystals = [
   {
     name: "목성",
     price: 500000,
-    description: "거대한 가스 소용돌이와 고리를 가진 행성",
+    description: "대적점 폭풍이 지속되는 가스 행성",
     benefit: "수익 x2, 균열 +20%",
     mossSpeedMult: 1.2,
     crackMin: 0.35, crackMax: 6.0,
@@ -68,19 +85,36 @@ export const crystals = [
     comboWindowMs: 500,
     style: {
       background: `
-        radial-gradient(circle at 68% 62%, rgba(121,55,30,0.6) 0%, rgba(121,55,30,0) 14%),
-        repeating-linear-gradient(15deg, transparent, transparent 6px, rgba(111,44,20,0.06) 6px, rgba(111,44,20,0.06) 12px),
-        repeating-linear-gradient(-5deg, transparent, transparent 10px, rgba(255,243,224,0.05) 10px, rgba(255,243,224,0.05) 20px),
-        radial-gradient(circle at 28% 25%, #ffffff 0%, #ffe0b2 15%, #b15d2e 45%, #2e1105 85%, #0f0300 100%)
+        radial-gradient(circle at 26% 18%, rgba(255,250,235,0.82) 0%, rgba(255,241,205,0.34) 18%, transparent 36%),
+        radial-gradient(ellipse at 62% 67%, rgba(56,30,14,0.42) 0%, rgba(56,30,14,0.14) 24%, transparent 48%),
+        radial-gradient(ellipse at 71% 59%, rgba(191,110,56,0.88) 0%, rgba(177,88,40,0.92) 34%, rgba(143,66,28,0.72) 58%, rgba(110,46,18,0.22) 74%, transparent 100%),
+        radial-gradient(ellipse at 71% 59%, rgba(235,168,114,0.45) 0%, rgba(235,168,114,0.22) 32%, transparent 62%),
+        radial-gradient(ellipse at 56% 29%, rgba(255,243,218,0.18) 0%, rgba(255,243,218,0.08) 14%, transparent 30%),
+        radial-gradient(ellipse at 38% 41%, rgba(173,104,58,0.26) 0%, rgba(173,104,58,0.08) 10%, transparent 22%),
+        radial-gradient(ellipse 92% 10% at 50% 10%, rgba(242,221,188,0.88) 0%, rgba(242,221,188,0.88) 54%, transparent 61%),
+        radial-gradient(ellipse 96% 11% at 52% 18%, rgba(207,174,134,0.86) 0%, rgba(207,174,134,0.86) 52%, transparent 60%),
+        radial-gradient(ellipse 90% 9% at 47% 24%, rgba(150,105,68,0.78) 0%, rgba(150,105,68,0.78) 50%, transparent 59%),
+        radial-gradient(ellipse 98% 13% at 49% 33%, rgba(245,230,204,0.84) 0%, rgba(245,230,204,0.84) 54%, transparent 62%),
+        radial-gradient(ellipse 94% 10% at 54% 43%, rgba(176,129,85,0.72) 0%, rgba(176,129,85,0.72) 48%, transparent 58%),
+        radial-gradient(ellipse 101% 8% at 45% 49%, rgba(118,78,50,0.68) 0%, rgba(118,78,50,0.68) 46%, transparent 56%),
+        radial-gradient(ellipse 96% 12% at 52% 58%, rgba(234,214,184,0.82) 0%, rgba(234,214,184,0.82) 53%, transparent 61%),
+        radial-gradient(ellipse 92% 9% at 48% 66%, rgba(198,161,120,0.74) 0%, rgba(198,161,120,0.74) 49%, transparent 57%),
+        radial-gradient(ellipse 95% 10% at 55% 74%, rgba(129,88,56,0.72) 0%, rgba(129,88,56,0.72) 47%, transparent 56%),
+        radial-gradient(ellipse 90% 9% at 46% 82%, rgba(226,204,173,0.8) 0%, rgba(226,204,173,0.8) 51%, transparent 60%),
+        radial-gradient(ellipse 102% 7% at 43% 27%, rgba(255,244,221,0.11) 0%, rgba(255,244,221,0.11) 45%, transparent 54%),
+        radial-gradient(ellipse 97% 6% at 58% 39%, rgba(124,82,46,0.08) 0%, rgba(124,82,46,0.08) 42%, transparent 52%),
+        radial-gradient(ellipse 94% 7% at 41% 57%, rgba(255,246,228,0.08) 0%, rgba(255,246,228,0.08) 44%, transparent 53%),
+        radial-gradient(ellipse 98% 6% at 57% 71%, rgba(145,93,58,0.07) 0%, rgba(145,93,58,0.07) 42%, transparent 51%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0 57%, rgba(255,235,200,0.08) 73%, rgba(71,37,18,0.18) 88%, rgba(12,7,4,0.42) 100%),
+        radial-gradient(circle at 31% 23%, #fff4da 0%, #efd4a5 19%, #d3a26d 42%, #9a6138 69%, #4d2915 88%, #170b05 100%)
       `,
-      boxShadow: "0 0 45px rgba(177,93,46,0.3), inset -25px -25px 45px rgba(0,0,0,0.95), inset 12px 12px 22px rgba(255,243,224,0.25)",
+      boxShadow: "0 0 34px rgba(230,196,146,0.22), inset -24px -24px 42px rgba(35,18,9,0.7), inset 12px 12px 18px rgba(255,240,214,0.16)",
     },
-    hasRing: true,
   },
   {
     name: "해왕성",
     price: 2000000,
-    description: "메탄 가스로 빛나는 영하의 푸른 얼음 행성",
+    description: "대흑점이 나타나는 푸른 얼음 행성",
     benefit: "균열 속도 -50%",
     mossSpeedMult: 0.5,
     crackMin: 0.18, crackMax: 3.2,
@@ -89,10 +123,9 @@ export const crystals = [
     style: {
       background: `
         radial-gradient(ellipse at 42% 52%, rgba(0,36,71,0.4) 0%, transparent 35%),
-        repeating-linear-gradient(35deg, transparent, transparent 20px, rgba(0,105,92,0.06) 20px, rgba(0,105,92,0.06) 40px),
         radial-gradient(circle at 30% 25%, #e0f7fa 0%, #00b0ff 25%, #00695c 60%, #000714 100%)
       `,
-      boxShadow: "0 0 45px rgba(0,176,255,0.4), inset -22px -22px 45px rgba(0,0,0,0.95), inset 14px 14px 20px rgba(224,247,250,0.35)",
+      boxShadow: "0 0 43px rgba(0,176,255,0.38), inset -22px -22px 45px rgba(0,0,0,0.95), inset 14px 14px 20px rgba(224,247,250,0.35)",
     },
   },
   {
@@ -106,18 +139,19 @@ export const crystals = [
     comboWindowMs: 600,
     style: {
       background: `
-        radial-gradient(circle at 75% 42%, rgba(74,0,0,0.5) 0%, transparent 12%),
-        radial-gradient(circle at 25% 63%, rgba(122,0,0,0.4) 0%, transparent 16%),
-        radial-gradient(ellipse at center, transparent 25%, rgba(255,61,0,0.15) 50%, transparent 80%),
-        radial-gradient(circle at 50% 50%, #ffffff 0%, #ffeb3b 25%, #ff9100 55%, #ff3d00 85%, #4a0000 100%)
+        radial-gradient(ellipse at 34% 28%, rgba(255,205,96,0.2) 0%, rgba(255,205,96,0.1) 24%, transparent 48%),
+        radial-gradient(ellipse at 62% 34%, rgba(255,134,38,0.18) 0%, rgba(255,134,38,0.08) 22%, transparent 42%),
+        radial-gradient(ellipse at 42% 66%, rgba(214,70,18,0.18) 0%, rgba(214,70,18,0.08) 24%, transparent 46%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0 68%, rgba(255,138,28,0.08) 86%, rgba(232,72,20,0.07) 96%, rgba(0,0,0,0.02) 100%),
+        radial-gradient(circle at 34% 28%, #ffd77a 0%, #ffb347 22%, #ff842b 48%, #e95c20 72%, #c93f18 88%, #97260d 100%)
       `,
-      boxShadow: "0 0 60px rgba(255,145,0,0.75), 0 0 25px rgba(255,61,0,0.4), inset 0 0 20px rgba(255,255,255,0.8)",
+      boxShadow: "0 0 38px rgba(255,146,42,0.38), 0 0 12px rgba(214,74,20,0.18), inset -8px -10px 14px rgba(146,34,10,0.1)",
     },
   },
   {
     name: "은하",
     price: 30000000,
-    description: "수천억 개의 별이 소용돌이치는 거대한 계",
+    description: "수많은 별과 가스, 먼지가 중력으로 묶인 거대한 계",
     benefit: "수익 x2.2, 균열 -25%",
     mossSpeedMult: 0.75,
     crackMin: 0.1, crackMax: 2.0,
@@ -125,10 +159,17 @@ export const crystals = [
     comboWindowMs: 700,
     style: {
       background: `
-        repeating-radial-gradient(circle at center, transparent, transparent 15px, rgba(234,128,252,0.05) 15px, rgba(234,128,252,0.05) 35px),
-        radial-gradient(circle at 50% 50%, #ffffff 0%, #f3e5f5 15%, #e040fb 40%, #6a1b9a 75%, #0a0014 100%)
+        radial-gradient(ellipse at 50% 46%, rgba(208,229,255,0.28) 0%, rgba(208,229,255,0.16) 18%, rgba(208,229,255,0.06) 34%, transparent 58%),
+        radial-gradient(ellipse at 58% 40%, rgba(154,210,255,0.22) 0%, rgba(154,210,255,0.1) 20%, transparent 42%),
+        radial-gradient(ellipse at 42% 58%, rgba(190,146,255,0.2) 0%, rgba(190,146,255,0.08) 24%, transparent 46%),
+        radial-gradient(ellipse at 58% 60%, rgba(166,126,255,0.16) 0%, rgba(166,126,255,0.06) 22%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, rgba(232,240,255,0.16) 0%, rgba(232,240,255,0.08) 14%, transparent 30%),
+        radial-gradient(ellipse 78% 40% at 50% 50%, rgba(168,190,255,0.18) 0%, rgba(168,190,255,0.08) 28%, transparent 66%),
+        radial-gradient(ellipse 88% 54% at 50% 50%, rgba(170,124,255,0.14) 0%, rgba(170,124,255,0.06) 34%, transparent 72%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0 58%, rgba(176,194,255,0.1) 76%, rgba(88,66,150,0.16) 90%, rgba(8,8,22,0.54) 100%),
+        radial-gradient(circle at 50% 50%, #f4f0ff 0%, #cfd9ff 20%, #8b9aec 40%, #625ebf 60%, #352361 80%, #080814 100%)
       `,
-      boxShadow: "0 0 55px rgba(224,64,251,0.6), 0 0 20px rgba(106,27,154,0.4), inset 0 0 25px rgba(255,255,255,0.7)",
+      boxShadow: "0 0 46px rgba(146,154,255,0.42), 0 0 16px rgba(106,82,206,0.22), inset 0 0 20px rgba(255,255,255,0.26)",
     },
   },
 ];

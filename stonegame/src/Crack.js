@@ -60,7 +60,7 @@ export default function Crack({
     if (gameOver || lossTriggeredRef.current) return;
 
     lossTriggeredRef.current = true;
-    onRoundLost("돌이 완전히 깨졌습니다... \n 수거하지 못한 조각이 사라졌어요.");
+    onRoundLost("행성이 궤도를 이탈했습니다... \n 회수하지 못한 조각이 우주로 흩어졌어요.");
   }, [crack, gameOver, onRoundLost]);
 
   return null;

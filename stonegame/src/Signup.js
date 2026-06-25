@@ -41,7 +41,6 @@ function Signup() {
 
   return (
     <AuthShell
-      title="회원가입"
       subtitle=""
       leftAction={(
         <button
@@ -103,11 +102,12 @@ const exitButtonStyle = {
   alignItems: 'center',
   justifyContent: 'center',
   opacity: 0.82,
+  transform: 'translate(-5px, 3px)',
 };
 
 const exitImageStyle = {
-  width: 18,
-  height: 18,
+  width: 22,
+  height: 22,
   objectFit: 'contain',
 };
 
